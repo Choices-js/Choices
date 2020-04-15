@@ -271,6 +271,29 @@ describe('Choices - select one', () => {
       });
     });
 
+    describe('adding user-created choices', () => {
+      beforeEach(() => {
+        cy.get('[data-test-hook=add-items]')
+          .find('.choices')
+          .click();
+      });
+
+      it('allows the user to add choices', () => {
+        const newChoice = 'New Choice';
+
+        cy.get('[data-test-hook=add-items]')
+          .find('.choices__input--cloned')
+          .type(newChoice)
+          .type('{enter}');
+
+        cy.get('[data-test-hook=add-items]')
+          .find('.choices__list--single .choices__item')
+          .should($el => {
+            expect($el).to.contain(newChoice);
+          });
+      });
+    });
+
     describe('adding items disabled', () => {
       /*
         {

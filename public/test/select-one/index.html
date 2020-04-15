@@ -108,6 +108,19 @@
           </select>
         </div>
 
+        <div data-test-hook="add-items">
+          <label for="choices-add-items">Add user-created choices</label>
+          <select
+            class="form-control"
+            name="choices-add-items"
+            id="choices-add-items"
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+          </select>
+        </div>
+
         <div data-test-hook="add-items-disabled">
           <label for="choices-add-items-disabled">Add items disabled</label>
           <select
@@ -469,6 +482,10 @@
               label: 'Choice 4',
             },
           ],
+        });
+
+        new Choices('#choices-add-items', {
+          addItems: true,
         });
 
         new Choices('#choices-add-items-disabled', {
