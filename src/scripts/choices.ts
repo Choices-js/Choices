@@ -791,7 +791,16 @@ class Choices implements Choices {
   }
 
   _renderChoices(): void {
-    const { activeGroups, activeChoices } = this._store;
+    const {
+      activeItems,
+      disabledChoices,
+      choices,
+      activeGroups,
+      activeChoices,
+    } = this._store;
+    const { value } = this.input;
+
+    const canAddItem = this._canAddItem(activeItems, value);
     let choiceListFragment = document.createDocumentFragment();
 
     this.choiceList.clear();
@@ -830,15 +839,37 @@ class Choices implements Choices {
       choiceListFragment.childNodes &&
       choiceListFragment.childNodes.length > 0
     ) {
-      const { activeItems } = this._store;
-      const canAddItem = this._canAddItem(activeItems, this.input.value);
-
+      let addNotice = false;
       // ...and we can select them
       if (canAddItem.response) {
-        // ...append them and highlight the first choice
+        // ...append them
         this.choiceList.append(choiceListFragment);
-        this._highlightChoice();
+        // ...handle case that items can be added
+        if (this.config.addItems && value) {
+          const isInChoices = existsInArray(choices, value);
+          addNotice = true;
+          if (
+            this._isSelectMultipleElement &&
+            existsInArray(disabledChoices, value)
+          ) {
+            // adding disabled element is disabled here, so remove message
+            addNotice = false;
+          } else if (this._isSelectOneElement && isInChoices) {
+            // adding existing element is disabled here, so remove message
+            addNotice = false;
+          }
+          // ...highlight the first choice when element exists in choices
+          if (isInChoices) {
+            this._highlightChoice();
+          }
+        } else {
+          // ...highlight the first choice
+          this._highlightChoice();
+        }
       } else {
+        addNotice = true;
+      }
+      if (addNotice) {
         const notice = this._getTemplate('notice', canAddItem.notice);
         this.choiceList.append(notice);
       }
@@ -847,7 +878,9 @@ class Choices implements Choices {
       let dropdownItem;
       let notice;
 
-      if (this._isSearching) {
+      if (this.config.addItems && canAddItem.response && value) {
+        dropdownItem = this._getTemplate('notice', canAddItem.notice);
+      } else if (this._isSearching) {
         notice =
           typeof this.config.noResultsText === 'function'
             ? this.config.noResultsText()
@@ -862,7 +895,6 @@ class Choices implements Choices {
 
         dropdownItem = this._getTemplate('notice', notice, 'no-choices');
       }
-
       this.choiceList.append(dropdownItem);
     }
   }
@@ -1294,20 +1326,19 @@ class Choices implements Choices {
             ? this.config.uniqueItemText(value)
             : this.config.uniqueItemText;
       }
+    }
 
-      if (
-        this._isTextElement &&
-        this.config.addItems &&
-        canAddItem &&
-        typeof this.config.addItemFilter === 'function' &&
-        !this.config.addItemFilter(value)
-      ) {
-        canAddItem = false;
-        notice =
-          typeof this.config.customAddItemText === 'function'
-            ? this.config.customAddItemText(value)
-            : this.config.customAddItemText;
-      }
+    if (
+      this.config.addItems &&
+      canAddItem &&
+      typeof this.config.addItemFilter === 'function' &&
+      !this.config.addItemFilter(value)
+    ) {
+      canAddItem = false;
+      notice =
+        typeof this.config.customAddItemText === 'function'
+          ? this.config.customAddItemText(value)
+          : this.config.customAddItemText;
     }
 
     return {
@@ -1436,7 +1467,7 @@ class Choices implements Choices {
 
   _onKeyDown(event: KeyboardEvent): void {
     const { keyCode } = event;
-    const { activeItems } = this._store;
+    const { activeItems, choices, disabledChoices } = this._store;
     const hasFocusedInput = this.input.isFocussed;
     const hasActiveDropdown = this.dropdown.isActive;
     const hasItems = this.itemList.hasChildren();
@@ -1473,14 +1504,44 @@ class Choices implements Choices {
       case A_KEY:
         return this._onSelectKey(event, hasItems);
       case ENTER_KEY:
-        return this._onEnterKey(event, activeItems, hasActiveDropdown);
+        // existing choices are not producable
+        if (this._isSelectOneElement) {
+          return this._onEnterKey(
+            event,
+            activeItems,
+            choices,
+            hasActiveDropdown,
+          );
+        }
+
+        return this._onEnterKey(
+          event,
+          activeItems,
+          disabledChoices,
+          hasActiveDropdown,
+        );
       case ESC_KEY:
         return this._onEscapeKey(hasActiveDropdown);
       case UP_KEY:
       case PAGE_UP_KEY:
       case DOWN_KEY:
       case PAGE_DOWN_KEY:
-        return this._onDirectionKey(event, hasActiveDropdown);
+        // don't activate deselect for existing choices
+        if (this._isSelectOneElement) {
+          return this._onDirectionKey(
+            event,
+            activeItems,
+            choices,
+            hasActiveDropdown,
+          );
+        }
+
+        return this._onDirectionKey(
+          event,
+          activeItems,
+          disabledChoices,
+          hasActiveDropdown,
+        );
       case DELETE_KEY:
       case BACK_KEY:
         return this._onDeleteKey(event, activeItems, hasFocusedInput);
@@ -1549,24 +1610,14 @@ class Choices implements Choices {
   _onEnterKey(
     event: KeyboardEvent,
     activeItems: Item[],
+    nonproducibleChoices: Choice[],
     hasActiveDropdown: boolean,
   ): void {
     const { target } = event;
     const { ENTER_KEY: enterKey } = KEY_CODES;
     const targetWasButton =
       target && (target as HTMLElement).hasAttribute('data-button');
-
-    if (this._isTextElement && target && (target as HTMLInputElement).value) {
-      const { value } = this.input;
-      const canAddItem = this._canAddItem(activeItems, value);
-
-      if (canAddItem.response) {
-        this.hideDropdown(true);
-        this._addItem({ value });
-        this._triggerChange(value);
-        this.clearInput();
-      }
-    }
+    let highlightedChoice: null | HTMLElement = null;
 
     if (targetWasButton) {
       this._handleButtonAction(activeItems, target as HTMLElement);
@@ -1574,7 +1625,7 @@ class Choices implements Choices {
     }
 
     if (hasActiveDropdown) {
-      const highlightedChoice = this.dropdown.getChild(
+      highlightedChoice = this.dropdown.getChild(
         `.${this.config.classNames.highlightedState}`,
       );
 
@@ -1590,6 +1641,25 @@ class Choices implements Choices {
     } else if (this._isSelectOneElement) {
       this.showDropdown();
       event.preventDefault();
+
+      return;
+    }
+
+    if (
+      this.config.addItems &&
+      !highlightedChoice &&
+      target &&
+      (target as HTMLInputElement).value
+    ) {
+      const { value } = this.input;
+      const canAddItem = this._canAddItem(activeItems, value);
+
+      if (canAddItem.response && !existsInArray(nonproducibleChoices, value)) {
+        this.hideDropdown(true);
+        this._setChoiceOrItem({ value });
+        this._triggerChange(value);
+        this.clearInput();
+      }
     }
   }
 
@@ -1600,8 +1670,13 @@ class Choices implements Choices {
     }
   }
 
-  _onDirectionKey(event: KeyboardEvent, hasActiveDropdown: boolean): void {
-    const { keyCode, metaKey } = event;
+  _onDirectionKey(
+    event: KeyboardEvent,
+    activeItems: Item[],
+    nonproducibleChoices: Choice[],
+    hasActiveDropdown: boolean,
+  ): void {
+    const { keyCode, metaKey, target } = event;
     const {
       DOWN_KEY: downKey,
       PAGE_UP_KEY: pageUpKey,
@@ -1656,6 +1731,20 @@ class Choices implements Choices {
           this.choiceList.scrollToChildElement(nextEl, directionInt);
         }
         this._highlightChoice(nextEl);
+      } else if (
+        this.config.addItems &&
+        target &&
+        (target as HTMLInputElement).value
+      ) {
+        // can unselect all items for creating new options
+        const { value } = this.input;
+        const canAddItem = this._canAddItem(activeItems, value);
+        if (
+          canAddItem.response &&
+          !existsInArray(nonproducibleChoices, value)
+        ) {
+          this.unhighlightAll();
+        }
       }
 
       // Prevent default to maintain cursor position whilst
