@@ -105,7 +105,7 @@ export interface Options {
   /**
    * Whether a user can add items.
    *
-   * **Input types affected:** text
+   * **Input types affected:** text, select, select-multiple
    *
    * @default true
    */
