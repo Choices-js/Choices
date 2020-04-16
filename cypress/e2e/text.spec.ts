@@ -304,10 +304,28 @@ describe('Choices - text element', () => {
     });
 
     describe('adding items disabled', () => {
-      it('does not allow me to input data', () => {
-        cy.get('[data-test-hook=adding-items-disabled]')
+      /*
+        {
+          addItems: false,
+        }
+      */
+      beforeEach(() => {
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices')
+          .click();
+      });
+      it('disables adding new items', () => {
+        const newChoice = 'New Choice';
+        cy.get('[data-test-hook=add-items-disabled]')
           .find('.choices__input--cloned')
-          .should('be.disabled');
+          .type(newChoice)
+          .type('{enter}');
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.not.contain(newChoice);
+          });
       });
     });
 

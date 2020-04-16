@@ -347,10 +347,7 @@ class Choices implements Choices {
     this._render();
     this._addEventListeners();
 
-    let shouldDisable = this.passedElement.element.hasAttribute('disabled');
-    if (this._isTextElement) {
-      shouldDisable = shouldDisable || !this.config.addItems;
-    }
+    const shouldDisable = this.passedElement.element.hasAttribute('disabled');
 
     if (shouldDisable) {
       this.disable();
@@ -1562,7 +1559,8 @@ class Choices implements Choices {
     // We are typing into a text input and have a value, we want to show a dropdown
     // notice. Otherwise hide the dropdown
     if (this._isTextElement) {
-      const canShowDropdownNotice = canAddItem.notice && value;
+      const canShowDropdownNotice =
+        this.config.addItems && canAddItem.notice && value;
 
       if (canShowDropdownNotice) {
         const dropdownItem = this._getTemplate('notice', canAddItem.notice);
