@@ -2176,6 +2176,7 @@ describe('choices', () => {
 
     describe('_onKeyDown', () => {
       let activeItems;
+      let disabledChoices;
       let hasItems;
       let hasActiveDropdown;
       let hasFocussedInput;
@@ -2188,7 +2189,7 @@ describe('choices', () => {
         instance._onDirectionKey = stub();
         instance._onDeleteKey = stub();
 
-        ({ activeItems } = instance._store);
+        ({ activeItems, disabledChoices } = instance._store);
         hasItems = instance.itemList.hasChildren();
         hasActiveDropdown = instance.dropdown.isActive;
         hasFocussedInput = instance.input.isFocussed;
@@ -2212,6 +2213,8 @@ describe('choices', () => {
 
             expect(instance._onDirectionKey).to.have.been.calledWith(
               event,
+              activeItems,
+              disabledChoices,
               hasActiveDropdown,
             );
           });
@@ -2244,6 +2247,7 @@ describe('choices', () => {
           expect(instance._onEnterKey).to.have.been.calledWith(
             event,
             activeItems,
+            disabledChoices,
             hasActiveDropdown,
           );
         });

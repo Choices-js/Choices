@@ -191,6 +191,15 @@ describe('reducers/store', () => {
       });
     });
 
+    describe('disabledChoices getter', () => {
+      it('returns choices that are disabled', () => {
+        const expectedResponse = state.choices.filter(
+          choice => choice.disabled,
+        );
+        expect(instance.disabledChoices).to.eql(expectedResponse);
+      });
+    });
+
     describe('selectableChoices getter', () => {
       it('returns choices that are not disabled', () => {
         const expectedResponse = state.choices.filter(
