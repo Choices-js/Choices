@@ -415,9 +415,7 @@
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const choicesBasic = new Choices('#choices-basic', {
-          allowHTML: true,
-        });
+        const choicesBasic = new Choices('#choices-basic', { addItems: false, allowHTML: true, });
 
         document
           .querySelector('button.disable')
@@ -573,7 +571,8 @@
 
         new Choices('#choices-search-by-label', {
           allowHTML: true,
-          searchFields: ['label']
+          searchFields: ['label'],
+          addItems: false,
         });
 
         new Choices('#choices-allowhtml-undefined', {

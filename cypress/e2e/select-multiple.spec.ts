@@ -332,20 +332,32 @@ describe('Choices - select multiple', () => {
           addItems: false,
         }
       */
-      it('disables the search input', () => {
+      it('disables adding new items', () => {
+        const newChoice = 'New Choice';
         cy.get('[data-test-hook=add-items-disabled]')
           .find('.choices__input--cloned')
-          .should('be.disabled');
+          .type(newChoice)
+          .type('{enter}');
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.not.contain(newChoice);
+          });
       });
 
-      describe('on click', () => {
-        it('does not open choice dropdown', () => {
-          cy.get('[data-test-hook=add-items-disabled]')
-            .find('.choices')
-            .click()
-            .find('.choices__list--dropdown')
-            .should('not.have.class', 'is-active');
-        });
+      it('allows selecting items', () => {
+        const choice = 'Choice 2';
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__input--cloned')
+          .type(choice)
+          .type('{enter}');
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.contain(choice);
+          });
       });
     });
 
