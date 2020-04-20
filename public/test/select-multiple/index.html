@@ -88,6 +88,22 @@
           </select>
         </div>
 
+        <div data-test-hook="unique-values">
+          <label for="choices-unique-values">Unique values</label>
+          <select
+            class="form-control"
+            name="choices-unique-values"
+            id="choices-unique-values"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+          </select>
+        </div>
+
         <div data-test-hook="disabled-choice">
           <label for="choices-disabled-choice">Disabled choice</label>
           <select
@@ -436,6 +452,9 @@
 
         new Choices('#choices-disabled-choice', {
           allowHTML: true,
+        });
+        new Choices('#choices-unique-values', {
+          duplicateItemsAllowed: false,
         });
 
         new Choices('#choices-add-items', {

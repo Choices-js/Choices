@@ -3,11 +3,11 @@ import merge from 'deepmerge';
 import Fuse from 'fuse.js';
 
 import {
+  Result,
   activateChoices,
   addChoice,
   clearChoices,
   filterChoices,
-  Result,
 } from './actions/choices';
 import { addGroup } from './actions/groups';
 import { addItem, highlightItem, removeItem } from './actions/items';
@@ -35,7 +35,6 @@ import { Notice } from './interfaces/notice';
 import { Options } from './interfaces/options';
 import { PassedElement } from './interfaces/passed-element';
 import { State } from './interfaces/state';
-
 import {
   diff,
   existsInArray,
@@ -44,9 +43,9 @@ import {
   getType,
   isScrolledIntoView,
   isType,
+  parseCustomProperties,
   sortByScore,
   strToEl,
-  parseCustomProperties,
 } from './lib/utils';
 import { defaultState } from './reducers';
 import Store from './store/store';
@@ -1555,13 +1554,12 @@ class Choices implements Choices {
     const { activeItems } = this._store;
     const canAddItem = this._canAddItem(activeItems, value);
     const { BACK_KEY: backKey, DELETE_KEY: deleteKey } = KEY_CODES;
+    const canShowDropdownNotice =
+      this.config.addItems && canAddItem.notice && value;
 
     // We are typing into a text input and have a value, we want to show a dropdown
     // notice. Otherwise hide the dropdown
     if (this._isTextElement) {
-      const canShowDropdownNotice =
-        this.config.addItems && canAddItem.notice && value;
-
       if (canShowDropdownNotice) {
         const dropdownItem = this._getTemplate('notice', canAddItem.notice);
         this.dropdown.element.innerHTML = dropdownItem.outerHTML;
@@ -1579,7 +1577,7 @@ class Choices implements Choices {
       if (userHasRemovedValue && canReactivateChoices) {
         this._isSearching = false;
         this._store.dispatch(activateChoices(true));
-      } else if (canSearch) {
+      } else if (canSearch || canShowDropdownNotice) {
         this._handleSearch(this.input.rawValue);
       }
     }

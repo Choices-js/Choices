@@ -282,6 +282,41 @@ describe('Choices - select multiple', () => {
       });
     });
 
+    describe('unique values only', () => {
+      describe('unique values', () => {
+        beforeEach(() => {
+          cy.get('[data-test-hook=unique-values]')
+            .find('.choices__input--cloned')
+            .type('Choice 1')
+            .type('{enter}');
+        });
+
+        it('only allows me to input unique values', () => {
+          cy.get('[data-test-hook=unique-values]')
+            .find('.choices__list--multiple')
+            .first()
+            .children()
+            .should($items => {
+              expect($items.length).to.equal(1);
+            });
+        });
+
+        describe('inputting a non-unique value', () => {
+          it('displays dropdown prompt', () => {
+            cy.get('[data-test-hook=unique-values]')
+              .find('.choices__list--dropdown')
+              .should('be.visible')
+              .should($dropdown => {
+                const dropdownText = $dropdown.text().trim();
+                expect(dropdownText).to.equal(
+                  'Only unique values can be added',
+                );
+              });
+          });
+        });
+      });
+    });
+
     describe('disabled choice', () => {
       describe('selecting a disabled choice', () => {
         beforeEach(() => {
