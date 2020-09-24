@@ -267,7 +267,8 @@ const templates = {
     placeholderValue: string,
   ): HTMLInputElement {
     const inp = Object.assign(document.createElement('input'), {
-      type: 'text',
+      type: 'search',
+      name: 'search_terms',
       className: `${input} ${inputCloned}`,
       autocomplete: 'off',
       autocapitalize: 'off',
