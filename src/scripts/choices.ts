@@ -2107,6 +2107,7 @@ class Choices {
         this._isSelectOneElement,
         this.config.searchEnabled,
         this.passedElement.element.type,
+        this.config.labelId,
       ),
       classNames: this.config.classNames,
       type: this.passedElement.element.type as PassedElement['type'],

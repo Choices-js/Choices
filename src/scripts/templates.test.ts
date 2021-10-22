@@ -35,6 +35,7 @@ describe('templates', () => {
           const isSelectOneElement = false;
           const searchEnabled = true;
           const passedElementType = 'select-multiple';
+          const labelId = '';
 
           const expectedOutput = strToEl(`
             <div
@@ -55,6 +56,7 @@ describe('templates', () => {
             isSelectOneElement,
             searchEnabled,
             passedElementType,
+            labelId,
           );
           expectEqualElements(actualOutput, expectedOutput);
         });
@@ -66,6 +68,7 @@ describe('templates', () => {
           const isSelectOneElement = false;
           const searchEnabled = false;
           const passedElementType = 'select-multiple';
+          const labelId = '';
 
           const expectedOutput = strToEl(`
             <div
@@ -85,6 +88,7 @@ describe('templates', () => {
             isSelectOneElement,
             searchEnabled,
             passedElementType,
+            labelId,
           );
 
           expectEqualElements(actualOutput, expectedOutput);
@@ -97,6 +101,7 @@ describe('templates', () => {
           const isSelectOneElement = true;
           const searchEnabled = false;
           const passedElementType = 'select-one';
+          const labelId = '';
 
           const expectedOutput = strToEl(`
             <div
@@ -117,6 +122,7 @@ describe('templates', () => {
             isSelectOneElement,
             searchEnabled,
             passedElementType,
+            labelId,
           );
 
           expectEqualElements(actualOutput, expectedOutput);
@@ -130,6 +136,7 @@ describe('templates', () => {
         const isSelectOneElement = false;
         const searchEnabled = false;
         const passedElementType = 'text';
+        const labelId = '';
 
         const expectedOutput = strToEl(`
           <div
@@ -148,6 +155,7 @@ describe('templates', () => {
           isSelectOneElement,
           searchEnabled,
           passedElementType,
+          labelId,
         );
 
         expectEqualElements(actualOutput, expectedOutput);

@@ -288,7 +288,9 @@
         <hr />
 
         <h2>Single select input</h2>
-        <label for="choices-single-default">Default</label>
+        <label id="choices-single-default-label" for="choices-single-default"
+          >Default</label
+        >
         <select
           class="form-control"
           data-trigger
@@ -433,7 +435,11 @@
           >
         </select>
 
-        <label for="choices-single-no-sorting">Options without sorting</label>
+        <label
+          id="choices-single-no-sorting-label"
+          for="choices-single-no-sorting"
+          >Options without sorting</label
+        >
         <select
           class="form-control"
           name="choices-single-no-sorting"
@@ -783,6 +789,7 @@
 
         var singleNoSorting = new Choices('#choices-single-no-sorting', {
           shouldSort: false,
+          labelId: 'choices-single-no-sorting-label',
         });
 
         var cities = new Choices(document.getElementById('cities'));

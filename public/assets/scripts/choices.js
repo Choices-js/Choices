@@ -1,4 +1,4 @@
-/*! choices.js v9.0.1 | © 2019 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v9.0.1 | © 2021 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -184,6 +184,7 @@ exports.DEFAULT_CONFIG = {
   fuseOptions: {
     includeScore: true
   },
+  labelId: '',
   callbackOnInit: null,
   callbackOnCreateTemplates: null,
   classNames: exports.DEFAULT_CLASSNAMES
@@ -3318,7 +3319,7 @@ function () {
 
   Choices.prototype._createElements = function () {
     this.containerOuter = new components_1.Container({
-      element: this._getTemplate('containerOuter', this._direction, this._isSelectElement, this._isSelectOneElement, this.config.searchEnabled, this.passedElement.element.type),
+      element: this._getTemplate('containerOuter', this._direction, this._isSelectElement, this._isSelectOneElement, this.config.searchEnabled, this.passedElement.element.type, this.config.labelId),
       classNames: this.config.classNames,
       type: this.passedElement.element.type,
       position: this.config.position
@@ -3577,7 +3578,7 @@ function () {
   };
 
   Choices.prototype._generatePlaceholderValue = function () {
-    if (this._isSelectElement) {
+    if (this._isSelectElement && this.passedElement.placeholderOption) {
       var placeholderOption = this.passedElement.placeholderOption;
       return placeholderOption ? placeholderOption.text : null;
     }
@@ -5122,7 +5123,7 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 var templates = {
-  containerOuter: function containerOuter(_a, dir, isSelectElement, isSelectOneElement, searchEnabled, passedElementType) {
+  containerOuter: function containerOuter(_a, dir, isSelectElement, isSelectOneElement, searchEnabled, passedElementType, labelId) {
     var containerOuter = _a.containerOuter;
     var div = Object.assign(document.createElement('div'), {
       className: containerOuter
@@ -5147,6 +5148,11 @@ var templates = {
 
     div.setAttribute('aria-haspopup', 'true');
     div.setAttribute('aria-expanded', 'false');
+
+    if (labelId) {
+      div.setAttribute('aria-labeledby', labelId);
+    }
+
     return div;
   },
   containerInner: function containerInner(_a) {
