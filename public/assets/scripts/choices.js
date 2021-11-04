@@ -3460,7 +3460,6 @@ function () {
           var shouldPreselect = _this._isSelectOneElement && !hasSelectedChoice && index === firstEnabledChoiceIndex;
           var isSelected = shouldPreselect ? true : choice.selected;
           var isDisabled = choice.disabled;
-          console.log(isDisabled, choice);
 
           _this._addChoice({
             value: value,
