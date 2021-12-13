@@ -131,7 +131,7 @@ $choices-z-index: 1;
     position: relative;
     display: inline-block;
     margin-top: 0;
-    margin-right: -$choices-button-offset/2;
+    margin-right: -$choices-button-offset * .5;
     margin-bottom: 0;
     margin-left: $choices-button-offset;
     padding-left: $choices-button-offset * 2;
