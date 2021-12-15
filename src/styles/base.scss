@@ -65,7 +65,7 @@ h4,
 h5,
 h6 {
   margin-top: 0;
-  margin-bottom: $global-guttering * .5;
+  margin-bottom: $global-guttering * 0.5;
   font-weight: 400;
   line-height: 1.2;
 }
@@ -152,7 +152,7 @@ label + p {
 
 .logo {
   display: block;
-  margin-bottom: $global-guttering * .5;
+  margin-bottom: $global-guttering * 0.5;
 }
 
 .logo__img {
@@ -161,7 +161,7 @@ label + p {
   display: inline-block;
   max-width: 100%;
   vertical-align: top;
-  padding: $global-guttering * .25 0;
+  padding: $global-guttering * 0.25 0;
 }
 
 .visible-ie {
