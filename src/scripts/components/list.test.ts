@@ -41,7 +41,7 @@ describe('components/list', () => {
     it('appends passed node to element', () => {
       const elementToAppend = document.createElement('span');
       const childClass = 'test-element';
-      elementToAppend.classList.add(childClass);
+      elementToAppend.classList.add(...childClass.split(" "));
       expect(instance.element.querySelector(`.${childClass}`)).to.equal(null);
       instance.append(elementToAppend);
       expect(instance.element.querySelector(`.${childClass}`)).to.equal(
@@ -56,7 +56,7 @@ describe('components/list', () => {
 
     beforeEach(() => {
       childElement = document.createElement('span');
-      childElement.classList.add(childClass);
+      childElement.classList.add(...childClass.split(" "));
       instance.element.appendChild(childElement);
     });
 

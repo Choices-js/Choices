@@ -78,25 +78,25 @@ export default class Container {
   }
 
   open(dropdownPos: number): void {
-    this.element.classList.add(this.classNames.openState);
+    this.element.classList.add(...this.classNames.openState.split(" "));
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
 
     if (this.shouldFlip(dropdownPos)) {
-      this.element.classList.add(this.classNames.flippedState);
+      this.element.classList.add(...this.classNames.flippedState.split(" "));
       this.isFlipped = true;
     }
   }
 
   close(): void {
-    this.element.classList.remove(this.classNames.openState);
+    this.element.classList.remove(...this.classNames.openState.split(" "));
     this.element.setAttribute('aria-expanded', 'false');
     this.removeActiveDescendant();
     this.isOpen = false;
 
     // A dropdown flips if it does not have space within the page
     if (this.isFlipped) {
-      this.element.classList.remove(this.classNames.flippedState);
+      this.element.classList.remove(...this.classNames.flippedState.split(" "));
       this.isFlipped = false;
     }
   }
@@ -108,15 +108,15 @@ export default class Container {
   }
 
   addFocusState(): void {
-    this.element.classList.add(this.classNames.focusState);
+    this.element.classList.add(...this.classNames.focusState.split(" "));
   }
 
   removeFocusState(): void {
-    this.element.classList.remove(this.classNames.focusState);
+    this.element.classList.remove(...this.classNames.focusState.split(" "));
   }
 
   enable(): void {
-    this.element.classList.remove(this.classNames.disabledState);
+    this.element.classList.remove(...this.classNames.disabledState.split(" "));
     this.element.removeAttribute('aria-disabled');
     if (this.type === SELECT_ONE_TYPE) {
       this.element.setAttribute('tabindex', '0');
@@ -125,7 +125,7 @@ export default class Container {
   }
 
   disable(): void {
-    this.element.classList.add(this.classNames.disabledState);
+    this.element.classList.add(...this.classNames.disabledState.split(" "));
     this.element.setAttribute('aria-disabled', 'true');
     if (this.type === SELECT_ONE_TYPE) {
       this.element.setAttribute('tabindex', '-1');
@@ -147,13 +147,13 @@ export default class Container {
   }
 
   addLoadingState(): void {
-    this.element.classList.add(this.classNames.loadingState);
+    this.element.classList.add(...this.classNames.loadingState.split(" "));
     this.element.setAttribute('aria-busy', 'true');
     this.isLoading = true;
   }
 
   removeLoadingState(): void {
-    this.element.classList.remove(this.classNames.loadingState);
+    this.element.classList.remove(...this.classNames.loadingState.split(" "));
     this.element.removeAttribute('aria-busy');
     this.isLoading = false;
   }

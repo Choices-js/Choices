@@ -39,7 +39,7 @@ export default class WrappedElement {
 
   conceal(): void {
     // Hide passed input
-    this.element.classList.add(this.classNames.input);
+    this.element.classList.add(...this.classNames.input.split(" "));
     this.element.hidden = true;
 
     // Remove element from tab index
@@ -57,7 +57,7 @@ export default class WrappedElement {
 
   reveal(): void {
     // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
+    this.element.classList.remove(...this.classNames.input.split(" "));
     this.element.hidden = false;
     this.element.removeAttribute('tabindex');
 

@@ -1863,7 +1863,7 @@ class Choices {
 
     // Remove any highlighted choices
     highlightedChoices.forEach(choice => {
-      choice.classList.remove(this.config.classNames.highlightedState);
+      choice.classList.remove(...this.config.classNames.highlightedState.split(" "));
       choice.setAttribute('aria-selected', 'false');
     });
 
@@ -1884,7 +1884,7 @@ class Choices {
       }
     }
 
-    passedEl.classList.add(this.config.classNames.highlightedState);
+    passedEl.classList.add(...this.config.classNames.highlightedState.split(" "));
     passedEl.setAttribute('aria-selected', 'true');
     this.passedElement.triggerEvent(EVENTS.highlightChoice, { el: passedEl });
 

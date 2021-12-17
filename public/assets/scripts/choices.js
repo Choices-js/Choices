@@ -1,4 +1,4 @@
-/*! choices.js v9.0.1 | © 2019 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v9.0.1 | © 2020 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1214,8 +1214,11 @@ function () {
   });
 
   WrappedElement.prototype.conceal = function () {
-    // Hide passed input
-    this.element.classList.add(this.classNames.input);
+    var _a; // Hide passed input
+
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.input.split(" "));
+
     this.element.hidden = true; // Remove element from tab index
 
     this.element.tabIndex = -1; // Backup original styles if any
@@ -1230,8 +1233,11 @@ function () {
   };
 
   WrappedElement.prototype.reveal = function () {
-    // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
+    var _a; // Reinstate passed element
+
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.input.split(" "));
+
     this.element.hidden = false;
     this.element.removeAttribute('tabindex'); // Recover original styles if any
 
@@ -3064,6 +3070,8 @@ function () {
   };
 
   Choices.prototype._highlightChoice = function (el) {
+    var _a;
+
     var _this = this;
 
     if (el === void 0) {
@@ -3080,7 +3088,10 @@ function () {
     var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll("." + this.config.classNames.highlightedState)); // Remove any highlighted choices
 
     highlightedChoices.forEach(function (choice) {
-      choice.classList.remove(_this.config.classNames.highlightedState);
+      var _a;
+
+      (_a = choice.classList).remove.apply(_a, _this.config.classNames.highlightedState.split(" "));
+
       choice.setAttribute('aria-selected', 'false');
     });
 
@@ -3101,7 +3112,8 @@ function () {
       }
     }
 
-    passedEl.classList.add(this.config.classNames.highlightedState);
+    (_a = passedEl.classList).add.apply(_a, this.config.classNames.highlightedState.split(" "));
+
     passedEl.setAttribute('aria-selected', 'true');
     this.passedElement.triggerEvent(constants_1.EVENTS.highlightChoice, {
       el: passedEl
@@ -3577,7 +3589,7 @@ function () {
   };
 
   Choices.prototype._generatePlaceholderValue = function () {
-    if (this._isSelectElement) {
+    if (this._isSelectElement && this.passedElement.placeholderOption) {
       var placeholderOption = this.passedElement.placeholderOption;
       return placeholderOption ? placeholderOption.text : null;
     }
@@ -4447,7 +4459,10 @@ function () {
 
 
   Dropdown.prototype.show = function () {
-    this.element.classList.add(this.classNames.activeState);
+    var _a;
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.activeState.split(" "));
+
     this.element.setAttribute('aria-expanded', 'true');
     this.isActive = true;
     return this;
@@ -4458,7 +4473,10 @@ function () {
 
 
   Dropdown.prototype.hide = function () {
-    this.element.classList.remove(this.classNames.activeState);
+    var _a;
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.activeState.split(" "));
+
     this.element.setAttribute('aria-expanded', 'false');
     this.isActive = false;
     return this;
@@ -4547,24 +4565,32 @@ function () {
   };
 
   Container.prototype.open = function (dropdownPos) {
-    this.element.classList.add(this.classNames.openState);
+    var _a, _b;
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.openState.split(" "));
+
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
 
     if (this.shouldFlip(dropdownPos)) {
-      this.element.classList.add(this.classNames.flippedState);
+      (_b = this.element.classList).add.apply(_b, this.classNames.flippedState.split(" "));
+
       this.isFlipped = true;
     }
   };
 
   Container.prototype.close = function () {
-    this.element.classList.remove(this.classNames.openState);
+    var _a, _b;
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.openState.split(" "));
+
     this.element.setAttribute('aria-expanded', 'false');
     this.removeActiveDescendant();
     this.isOpen = false; // A dropdown flips if it does not have space within the page
 
     if (this.isFlipped) {
-      this.element.classList.remove(this.classNames.flippedState);
+      (_b = this.element.classList).remove.apply(_b, this.classNames.flippedState.split(" "));
+
       this.isFlipped = false;
     }
   };
@@ -4576,15 +4602,22 @@ function () {
   };
 
   Container.prototype.addFocusState = function () {
-    this.element.classList.add(this.classNames.focusState);
+    var _a;
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.focusState.split(" "));
   };
 
   Container.prototype.removeFocusState = function () {
-    this.element.classList.remove(this.classNames.focusState);
+    var _a;
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.focusState.split(" "));
   };
 
   Container.prototype.enable = function () {
-    this.element.classList.remove(this.classNames.disabledState);
+    var _a;
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.disabledState.split(" "));
+
     this.element.removeAttribute('aria-disabled');
 
     if (this.type === constants_1.SELECT_ONE_TYPE) {
@@ -4595,7 +4628,10 @@ function () {
   };
 
   Container.prototype.disable = function () {
-    this.element.classList.add(this.classNames.disabledState);
+    var _a;
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.disabledState.split(" "));
+
     this.element.setAttribute('aria-disabled', 'true');
 
     if (this.type === constants_1.SELECT_ONE_TYPE) {
@@ -4619,13 +4655,19 @@ function () {
   };
 
   Container.prototype.addLoadingState = function () {
-    this.element.classList.add(this.classNames.loadingState);
+    var _a;
+
+    (_a = this.element.classList).add.apply(_a, this.classNames.loadingState.split(" "));
+
     this.element.setAttribute('aria-busy', 'true');
     this.isLoading = true;
   };
 
   Container.prototype.removeLoadingState = function () {
-    this.element.classList.remove(this.classNames.loadingState);
+    var _a;
+
+    (_a = this.element.classList).remove.apply(_a, this.classNames.loadingState.split(" "));
+
     this.element.removeAttribute('aria-busy');
     this.isLoading = false;
   };
@@ -5113,6 +5155,20 @@ exports.default = WrappedSelect;
 "use strict";
 
 
+var __spreadArrays = this && this.__spreadArrays || function () {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
+    s += arguments[i].length;
+  }
+
+  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
+    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
+      r[k] = a[j];
+    }
+  }
+
+  return r;
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5171,6 +5227,8 @@ var templates = {
     });
   },
   item: function item(_a, _b, removeItemButton) {
+    var _c, _d, _e;
+
     var item = _a.item,
         button = _a.button,
         highlightedState = _a.highlightedState,
@@ -5204,14 +5262,14 @@ var templates = {
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      (_c = div.classList).add.apply(_c, placeholder.split(' '));
     }
 
-    div.classList.add(highlighted ? highlightedState : itemSelectable);
+    (_d = div.classList).add.apply(_d, highlighted ? highlightedState.split(' ') : itemSelectable.split(' '));
 
     if (removeItemButton) {
       if (disabled) {
-        div.classList.remove(itemSelectable);
+        (_e = div.classList).remove.apply(_e, itemSelectable.split(' '));
       }
 
       div.dataset.deletable = '';
@@ -5271,6 +5329,8 @@ var templates = {
     return div;
   },
   choice: function choice(_a, _b, selectText) {
+    var _c, _d, _e, _f;
+
     var item = _a.item,
         itemChoice = _a.itemChoice,
         itemSelectable = _a.itemSelectable,
@@ -5292,11 +5352,11 @@ var templates = {
     });
 
     if (isSelected) {
-      div.classList.add(selectedState);
+      (_c = div.classList).add.apply(_c, selectedState.split(' '));
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      (_d = div.classList).add.apply(_d, placeholder.split(' '));
     }
 
     div.setAttribute('role', groupId && groupId > 0 ? 'treeitem' : 'option');
@@ -5308,11 +5368,13 @@ var templates = {
     });
 
     if (isDisabled) {
-      div.classList.add(itemDisabled);
+      (_e = div.classList).add.apply(_e, itemDisabled.split(' '));
+
       div.dataset.choiceDisabled = '';
       div.setAttribute('aria-disabled', 'true');
     } else {
-      div.classList.add(itemSelectable);
+      (_f = div.classList).add.apply(_f, itemSelectable.split(' '));
+
       div.dataset.choiceSelectable = '';
     }
 
@@ -5334,10 +5396,14 @@ var templates = {
     return inp;
   },
   dropdown: function dropdown(_a) {
+    var _b;
+
     var list = _a.list,
         listDropdown = _a.listDropdown;
     var div = document.createElement('div');
-    div.classList.add(list, listDropdown);
+
+    (_b = div.classList).add.apply(_b, __spreadArrays(list.split(' '), listDropdown.split(' ')));
+
     div.setAttribute('aria-expanded', 'false');
     return div;
   },

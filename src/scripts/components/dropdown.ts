@@ -36,7 +36,7 @@ export default class Dropdown {
    * Show dropdown to user by adding active state class
    */
   show(): this {
-    this.element.classList.add(this.classNames.activeState);
+    this.element.classList.add(...this.classNames.activeState.split(" "));
     this.element.setAttribute('aria-expanded', 'true');
     this.isActive = true;
 
@@ -47,7 +47,7 @@ export default class Dropdown {
    * Hide dropdown from user
    */
   hide(): this {
-    this.element.classList.remove(this.classNames.activeState);
+    this.element.classList.remove(...this.classNames.activeState.split(" "));
     this.element.setAttribute('aria-expanded', 'false');
     this.isActive = false;
 

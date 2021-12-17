@@ -116,14 +116,18 @@ const templates = {
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...placeholder.split(' '));
     }
 
-    div.classList.add(highlighted ? highlightedState : itemSelectable);
+    div.classList.add(
+      ...(highlighted
+        ? highlightedState.split(' ')
+        : itemSelectable.split(' ')),
+    );
 
     if (removeItemButton) {
       if (disabled) {
-        div.classList.remove(itemSelectable);
+        div.classList.remove(...itemSelectable.split(' '));
       }
       div.dataset.deletable = '';
       /** @todo This MUST be localizable, not hardcoded! */
@@ -230,11 +234,11 @@ const templates = {
     });
 
     if (isSelected) {
-      div.classList.add(selectedState);
+      div.classList.add(...selectedState.split(' '));
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...placeholder.split(' '));
     }
 
     div.setAttribute('role', groupId && groupId > 0 ? 'treeitem' : 'option');
@@ -247,11 +251,11 @@ const templates = {
     });
 
     if (isDisabled) {
-      div.classList.add(itemDisabled);
+      div.classList.add(...itemDisabled.split(' '));
       div.dataset.choiceDisabled = '';
       div.setAttribute('aria-disabled', 'true');
     } else {
-      div.classList.add(itemSelectable);
+      div.classList.add(...itemSelectable.split(' '));
       div.dataset.choiceSelectable = '';
     }
 
@@ -283,7 +287,7 @@ const templates = {
   }: Pick<ClassNames, 'list' | 'listDropdown'>): HTMLDivElement {
     const div = document.createElement('div');
 
-    div.classList.add(list, listDropdown);
+    div.classList.add(...list.split(' '), ...listDropdown.split(' '));
     div.setAttribute('aria-expanded', 'false');
 
     return div;

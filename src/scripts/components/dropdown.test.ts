@@ -70,7 +70,7 @@ describe('components/dropdown', () => {
 
     beforeEach(() => {
       childElement = document.createElement('span');
-      childElement.classList.add(childClass);
+      childElement.classList.add(...childClass.split(" "));
       instance.element.appendChild(childElement);
     });
 
