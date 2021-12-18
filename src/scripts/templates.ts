@@ -94,6 +94,7 @@ const templates = {
       placeholder: isPlaceholder,
     }: Item,
     removeItemButton: boolean,
+    removeItemText: string,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
       className: item,
@@ -126,17 +127,13 @@ const templates = {
         div.classList.remove(itemSelectable);
       }
       div.dataset.deletable = '';
-      /** @todo This MUST be localizable, not hardcoded! */
-      const REMOVE_ITEM_TEXT = 'Remove item';
+
       const removeButton = Object.assign(document.createElement('button'), {
         type: 'button',
         className: button,
-        innerHTML: REMOVE_ITEM_TEXT,
+        innerHTML: removeItemText,
       });
-      removeButton.setAttribute(
-        'aria-label',
-        `${REMOVE_ITEM_TEXT}: '${value}'`,
-      );
+      removeButton.setAttribute('aria-label', `${removeItemText}: '${value}'`);
       removeButton.dataset.button = '';
       div.appendChild(removeButton);
     }

@@ -632,6 +632,15 @@ export interface Options {
   noChoicesText: string | Types.stringFunction;
 
   /**
+   * The text that is used in the aria-label of the remove button.
+   *
+   * **Input types affected:** select-multiple
+   *
+   * @default 'Remove item'
+   */
+  removeItemText: string | Types.stringFunction;
+
+  /**
    * The text that is shown when a user hovers over a selectable choice.
    *
    * **Input types affected:** select-multiple, select-one

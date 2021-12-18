@@ -981,7 +981,12 @@ class Choices {
 
     const addItemToFragment = (item: Item): void => {
       // Create new list element
-      const listItem = this._getTemplate('item', item, removeItemButton);
+      const listItem = this._getTemplate(
+        'item',
+        item,
+        removeItemButton,
+        this.config.removeItemText,
+      );
       // Append it to list
       fragment.appendChild(listItem);
     };

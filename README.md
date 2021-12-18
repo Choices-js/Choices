@@ -135,6 +135,7 @@ Or include Choices directly:
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
+    removeItemText: 'Remove item',
     itemSelectText: 'Press to select',
     addItemText: (value) => {
       return `Press Enter to add <b>"${value}"</b>`;

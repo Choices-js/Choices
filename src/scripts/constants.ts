@@ -69,6 +69,7 @@ export const DEFAULT_CONFIG: Options = {
   loadingText: 'Loading...',
   noResultsText: 'No results found',
   noChoicesText: 'No choices to choose from',
+  removeItemText: 'Remove item',
   itemSelectText: 'Press to select',
   uniqueItemText: 'Only unique values can be added',
   customAddItemText: 'Only values matching specific conditions can be added',
