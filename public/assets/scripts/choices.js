@@ -1,4 +1,4 @@
-/*! choices.js v9.0.1 | © 2019 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v9.0.1 | © 2020 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -2571,16 +2571,15 @@ function () {
   };
 
   Choices.prototype._addEventListeners = function () {
-    var documentElement = document.documentElement; // capture events - can cancel event processing or propagation
-
-    documentElement.addEventListener('touchend', this._onTouchEnd, true);
+    // capture events - can cancel event processing or propagation
+    this.containerOuter.element.addEventListener('touchend', this._onTouchEnd, true);
     this.containerOuter.element.addEventListener('keydown', this._onKeyDown, true);
     this.containerOuter.element.addEventListener('mousedown', this._onMouseDown, true); // passive events - doesn't call `preventDefault` or `stopPropagation`
 
-    documentElement.addEventListener('click', this._onClick, {
+    this.containerOuter.element.addEventListener('click', this._onClick, {
       passive: true
     });
-    documentElement.addEventListener('touchmove', this._onTouchMove, {
+    this.containerOuter.element.addEventListener('touchmove', this._onTouchMove, {
       passive: true
     });
     this.dropdown.element.addEventListener('mouseover', this._onMouseOver, {
@@ -2616,12 +2615,11 @@ function () {
   };
 
   Choices.prototype._removeEventListeners = function () {
-    var documentElement = document.documentElement;
-    documentElement.removeEventListener('touchend', this._onTouchEnd, true);
+    this.containerOuter.element.removeEventListener('touchend', this._onTouchEnd, true);
     this.containerOuter.element.removeEventListener('keydown', this._onKeyDown, true);
     this.containerOuter.element.removeEventListener('mousedown', this._onMouseDown, true);
-    documentElement.removeEventListener('click', this._onClick);
-    documentElement.removeEventListener('touchmove', this._onTouchMove);
+    this.containerOuter.element.removeEventListener('click', this._onClick);
+    this.containerOuter.element.removeEventListener('touchmove', this._onTouchMove);
     this.dropdown.element.removeEventListener('mouseover', this._onMouseOver);
 
     if (this._isSelectOneElement) {
@@ -3577,7 +3575,7 @@ function () {
   };
 
   Choices.prototype._generatePlaceholderValue = function () {
-    if (this._isSelectElement) {
+    if (this._isSelectElement && this.passedElement.placeholderOption) {
       var placeholderOption = this.passedElement.placeholderOption;
       return placeholderOption ? placeholderOption.text : null;
     }
