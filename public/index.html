@@ -247,23 +247,6 @@
           </optgroup>
         </select>
 
-        <p>
-          <small
-            >If the following example do not load, the Discogs rate limit has
-            probably been reached. Try again later!</small
-          >
-        </p>
-
-        <label for="choices-multiple-remote-fetch"
-          >Options from remote source (Fetch API) &amp; limited to 5</label
-        >
-        <select
-          class="form-control"
-          name="choices-multiple-remote-fetch"
-          id="choices-multiple-remote-fetch"
-          multiple
-        ></select>
-
         <label for="choices-multiple-rtl">Right-to-left</label>
         <select
           class="form-control"
@@ -618,18 +601,25 @@
           placeholder: true,
           placeholderValue: 'Pick an Strokes record',
           maxItemCount: 5,
-        }).setChoices(function() {
-          return fetch(
-            'https://api.discogs.com/artists/55980/releases?token=QBRmstCkwXEvCjTclCpumbtNwvVkEzGAdELXyRyW'
-          )
-            .then(function(response) {
-              return response.json();
-            })
-            .then(function(data) {
-              return data.releases.map(function(release) {
-                return { value: release.title, label: release.title };
+        });
+
+        var remoteSearchElement = document.querySelector(
+          '#choices-multiple-remote-fetch'
+        );
+        remoteSearchElement.addEventListener('search', function(event) {
+          multipleFetch.setChoices(function() {
+            return fetch(
+              'https://api.discogs.com/artists/55980/releases?token=QBRmstCkwXEvCjTclCpumbtNwvVkEzGAdELXyRyW'
+            )
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(data) {
+                return data.releases.map(function(release) {
+                  return { value: release.title, label: release.title };
+                });
               });
-            });
+          });
         });
 
         var multipleCancelButton = new Choices(

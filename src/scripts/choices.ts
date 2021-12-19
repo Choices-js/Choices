@@ -382,6 +382,7 @@ class Choices implements Choices {
     if (this.containerOuter.isDisabled) {
       this._addEventListeners();
       this.input.enable();
+      this.input.element.focus();
       this.containerOuter.enable();
     }
 
@@ -656,7 +657,6 @@ class Choices implements Choices {
     if (typeof choicesArrayOrFetcher === 'function') {
       // it's a choices fetcher function
       const fetcher = choicesArrayOrFetcher(this);
-
       if (typeof Promise === 'function' && fetcher instanceof Promise) {
         // that's a promise
         // eslint-disable-next-line no-promise-executor-return
