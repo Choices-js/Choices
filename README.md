@@ -621,7 +621,7 @@ classNames: {
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
-**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/jshjohnson/Choices/blob/master/src/scripts/templates.ts).
+**Usage:** Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined [here](https://github.com/Choices-js/Choices/blob/master/src/scripts/templates.ts).
 If you want just extend a little original template then you may use `Choices.defaults.templates` to get access to
 original template function.
 
