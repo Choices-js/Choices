@@ -187,13 +187,13 @@ Or include Choices directly:
 
 ## Input Types
 
-Choices works with the following input types, referenced in the doucmentation as noted.
+Choices works with the following input types, referenced in the documentation as noted.
 
-| HTML input elemnt    | w3schools reference | Documentation "input type" name                        |
-| -------------------- | ------------------- |------------------------------------------------------- |
-| `<input type="text">`| <https://www.w3schools.com/html/html_form_input_types.asp> | `text`          |
-| `<select>`           | <https://www.w3schools.com/tags/tag_select.asp> | `select-single`            |
-| `<select multiple>`  | <https://www.w3schools.com/tags/att_select_multiple.asp> | `select-multiple` |
+| HTML Element                                                                                           | Documentation "Input Type" |
+| -------------------------------------------------------------------------------------------------------| -------------------------- |
+| [`<input type="text">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input)               | `text`                     |
+| [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)                         | `select-single`            |
+| [`<select multiple>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attr-multiple)  | `select-multiple`          |
 
 ## Configuration options
 
