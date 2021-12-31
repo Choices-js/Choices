@@ -1734,6 +1734,38 @@ describe('choices', () => {
     });
   });
 
+  describe('events', () => {
+    describe('search', () => {
+      beforeEach(() => {
+        document.body.innerHTML = `
+        <select data-choice multiple></select>
+        `;
+
+        instance = new Choices('[data-choice]', {
+          allowHTML: false,
+          searchEnabled: true,
+        });
+      });
+
+      it('details are passed', (done) => {
+        const query =
+          'This is a <search> query & a "test" with characters that should not be sanitised.';
+
+        instance.input.value = query;
+        instance.input.focus();
+        instance.passedElement.element.addEventListener('search', (event) => {
+          expect(event.detail).to.eql({
+            value: query,
+            resultCount: 0,
+          });
+          done();
+        });
+
+        instance._onKeyUp({ target: null, keyCode: null });
+      });
+    });
+  });
+
   describe('private methods', () => {
     describe('_createGroupsFragment', () => {
       let _createChoicesFragmentStub;

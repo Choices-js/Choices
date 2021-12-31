@@ -52,6 +52,10 @@ export default class Input {
     this.element.value = value;
   }
 
+  get rawValue(): string {
+    return this.element.value;
+  }
+
   addEventListeners(): void {
     this.element.addEventListener('paste', this._onPaste);
     this.element.addEventListener('input', this._onInput, {

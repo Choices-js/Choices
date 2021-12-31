@@ -1513,7 +1513,7 @@ class Choices implements Choices {
         this._isSearching = false;
         this._store.dispatch(activateChoices(true));
       } else if (canSearch) {
-        this._handleSearch(this.input.element.value);
+        this._handleSearch(this.input.rawValue);
       }
     }
 
