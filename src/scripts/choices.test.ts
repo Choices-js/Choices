@@ -4,11 +4,14 @@ import sinonChai from 'sinon-chai';
 
 import Choices from './choices';
 
-import { EVENTS, ACTION_TYPES, DEFAULT_CONFIG, KEY_CODES } from './constants';
+import { EVENTS, ACTION_TYPES, KEY_CODES } from './constants';
 import { WrappedSelect, WrappedInput } from './components/index';
 import { removeItem } from './actions/items';
-import { Item, Choice, Group } from './interfaces';
 import templates from './templates';
+import { Choice } from './interfaces/choice';
+import { Group } from './interfaces/group';
+import { Item } from './interfaces/item';
+import { DEFAULT_CONFIG } from './defaults';
 
 chai.use(sinonChai);
 
@@ -23,7 +26,7 @@ describe('choices', () => {
     passedElement.className = 'js-choices';
     document.body.appendChild(passedElement);
 
-    instance = new Choices(passedElement);
+    instance = new Choices(passedElement, { allowHTML: true });
   });
 
   afterEach(() => {
@@ -52,6 +55,7 @@ describe('choices', () => {
           `;
 
           const config = {
+            allowHTML: true,
             renderChoiceLimit: 5,
           };
           instance = new Choices('[data-choice]', config);
@@ -70,6 +74,7 @@ describe('choices', () => {
               `;
 
               instance = new Choices('[data-choice]', {
+                allowHTML: true,
                 searchEnabled: false,
               });
 
@@ -85,6 +90,7 @@ describe('choices', () => {
             `;
 
             instance = new Choices('[data-choice]', {
+              allowHTML: true,
               renderSelectedChoices: 'test' as any,
             });
 
@@ -105,7 +111,7 @@ describe('choices', () => {
         const inputs = document.querySelectorAll('[data-choice]');
         expect(inputs.length).to.equal(3);
 
-        instance = new Choices();
+        instance = new Choices(undefined, { allowHTML: true });
 
         expect(instance.passedElement.element.id).to.equal(inputs[0].id);
       });
@@ -113,7 +119,7 @@ describe('choices', () => {
       describe('when an element cannot be found in the DOM', () => {
         it('throws an error', () => {
           document.body.innerHTML = ``;
-          expect(() => new Choices()).to.throw(
+          expect(() => new Choices(undefined, { allowHTML: true })).to.throw(
             TypeError,
             'Expected one of the following types text|select-one|select-multiple',
           );
@@ -130,7 +136,7 @@ describe('choices', () => {
         });
 
         it('sets the initialised flag to true', () => {
-          instance = new Choices('#input-1');
+          instance = new Choices('#input-1', { allowHTML: true });
           expect(instance.initialised).to.equal(true);
         });
 
@@ -138,6 +144,7 @@ describe('choices', () => {
           const initSpy = spy();
           // initialise with the same element
           instance = new Choices('#input-1', {
+            allowHTML: true,
             silent: true,
             callbackOnInit: initSpy,
           });
@@ -153,12 +160,12 @@ describe('choices', () => {
           `;
 
           // initialise once
-          new Choices('#input-1', { silent: true });
+          new Choices('#input-1', { allowHTML: true, silent: true });
         });
 
         it('sets the initialised flag to true', () => {
           // initialise with the same element
-          instance = new Choices('#input-1', { silent: true });
+          instance = new Choices('#input-1', { allowHTML: true, silent: true });
 
           expect(instance.initialised).to.equal(true);
         });
@@ -167,6 +174,7 @@ describe('choices', () => {
           const initSpy = spy();
           // initialise with the same element
           instance = new Choices('#input-1', {
+            allowHTML: true,
             silent: true,
             callbackOnInit: initSpy,
           });
@@ -182,7 +190,7 @@ describe('choices', () => {
             <input data-choice type="text" id="input-1" />
             `;
 
-            instance = new Choices('[data-choice]');
+            instance = new Choices('[data-choice]', { allowHTML: true });
 
             expect(instance.passedElement).to.be.an.instanceOf(WrappedInput);
           });
@@ -194,7 +202,7 @@ describe('choices', () => {
             <select data-choice id="select-1"></select>
             `;
 
-            instance = new Choices('[data-choice]');
+            instance = new Choices('[data-choice]', { allowHTML: true });
 
             expect(instance.passedElement).to.be.an.instanceOf(WrappedSelect);
           });
@@ -208,7 +216,7 @@ describe('choices', () => {
             <input data-choice type="text" id="input-1" />
             `;
 
-            instance = new Choices('[data-choice]');
+            instance = new Choices('[data-choice]', { allowHTML: true });
 
             expect(instance.passedElement).to.be.an.instanceOf(WrappedInput);
           });
@@ -220,7 +228,7 @@ describe('choices', () => {
             <select data-choice id="select-1"></select>
             `;
 
-            instance = new Choices('[data-choice]');
+            instance = new Choices('[data-choice]', { allowHTML: true });
 
             expect(instance.passedElement).to.be.an.instanceOf(WrappedSelect);
           });
@@ -232,7 +240,9 @@ describe('choices', () => {
           document.body.innerHTML = `
           <div data-choice id="div-1"></div>
           `;
-          expect(() => new Choices('[data-choice]')).to.throw(
+          expect(
+            () => new Choices('[data-choice]', { allowHTML: true }),
+          ).to.throw(
             TypeError,
             'Expected one of the following types text|select-one|select-multiple',
           );
@@ -247,6 +257,7 @@ describe('choices', () => {
 
       beforeEach(() => {
         instance = new Choices(passedElement, {
+          allowHTML: true,
           callbackOnInit: callbackOnInitSpy,
           silent: true,
         });
@@ -327,7 +338,7 @@ describe('choices', () => {
         passedElement.className = 'js-choices';
         document.body.appendChild(passedElement);
 
-        instance = new Choices(passedElement);
+        instance = new Choices(passedElement, { allowHTML: true });
       });
 
       describe('not already initialised', () => {
@@ -563,21 +574,21 @@ describe('choices', () => {
           expect(output).to.eql(instance);
         });
 
-        it('opens containerOuter', done => {
+        it('opens containerOuter', (done) => {
           requestAnimationFrame(() => {
             expect(containerOuterOpenSpy.called).to.equal(true);
             done();
           });
         });
 
-        it('shows dropdown with blurInput flag', done => {
+        it('shows dropdown with blurInput flag', (done) => {
           requestAnimationFrame(() => {
             expect(dropdownShowSpy.called).to.equal(true);
             done();
           });
         });
 
-        it('triggers event on passedElement', done => {
+        it('triggers event on passedElement', (done) => {
           requestAnimationFrame(() => {
             expect(passedElementTriggerEventStub.called).to.equal(true);
             expect(passedElementTriggerEventStub.lastCall.args[0]).to.eql(
@@ -595,7 +606,7 @@ describe('choices', () => {
             output = instance.showDropdown(true);
           });
 
-          it('focuses input', done => {
+          it('focuses input', (done) => {
             requestAnimationFrame(() => {
               expect(inputFocusSpy.called).to.equal(true);
               done();
@@ -661,21 +672,21 @@ describe('choices', () => {
           expect(output).to.eql(instance);
         });
 
-        it('closes containerOuter', done => {
+        it('closes containerOuter', (done) => {
           requestAnimationFrame(() => {
             expect(containerOuterCloseSpy.called).to.equal(true);
             done();
           });
         });
 
-        it('hides dropdown with blurInput flag', done => {
+        it('hides dropdown with blurInput flag', (done) => {
           requestAnimationFrame(() => {
             expect(dropdownHideSpy.called).to.equal(true);
             done();
           });
         });
 
-        it('triggers event on passedElement', done => {
+        it('triggers event on passedElement', (done) => {
           requestAnimationFrame(() => {
             expect(passedElementTriggerEventStub.called).to.equal(true);
             expect(passedElementTriggerEventStub.lastCall.args[0]).to.eql(
@@ -693,14 +704,14 @@ describe('choices', () => {
             output = instance.hideDropdown(true);
           });
 
-          it('removes active descendants', done => {
+          it('removes active descendants', (done) => {
             requestAnimationFrame(() => {
               expect(inputRemoveActiveDescendantSpy.called).to.equal(true);
               done();
             });
           });
 
-          it('blurs input', done => {
+          it('blurs input', (done) => {
             requestAnimationFrame(() => {
               expect(inputBlurSpy.called).to.equal(true);
               done();
@@ -1185,14 +1196,15 @@ describe('choices', () => {
       describe('select element', () => {
         it('fetches and sets choices', async () => {
           document.body.innerHTML = '<select id="test" />';
-          const choice = new Choices('#test');
+          const choice = new Choices('#test', { allowHTML: true });
           const handleLoadingStateSpy = spy(choice, '_handleLoadingState');
 
           let fetcherCalled = false;
           const fetcher = async (inst): Promise<Choice[]> => {
             expect(inst).to.eq(choice);
             fetcherCalled = true;
-            await new Promise(resolve => setTimeout(resolve, 800));
+            // eslint-disable-next-line no-promise-executor-return
+            await new Promise((resolve) => setTimeout(resolve, 800));
 
             return [
               { label: 'l1', value: 'v1', customProperties: { prop1: true } },
@@ -1381,7 +1393,7 @@ describe('choices', () => {
           });
 
           it('returns all active item values', () => {
-            expect(output).to.eql(items.map(item => item.value));
+            expect(output).to.eql(items.map((item) => item.value));
           });
         });
       });
@@ -1612,7 +1624,8 @@ describe('choices', () => {
         instance.clearChoices = clearChoicesStub;
         instance._addGroup = addGroupStub;
         instance._addChoice = addChoiceStub;
-        instance.containerOuter.removeLoadingState = containerOuterRemoveLoadingStateStub;
+        instance.containerOuter.removeLoadingState =
+          containerOuterRemoveLoadingStateStub;
       });
 
       afterEach(() => {
@@ -1717,6 +1730,102 @@ describe('choices', () => {
             expect(clearChoicesStub.called).to.equal(false);
           });
         });
+      });
+    });
+  });
+
+  describe('events', () => {
+    describe('search', () => {
+      const choices: Choice[] = [
+        {
+          id: 1,
+          value: '1',
+          label: 'Test 1',
+          selected: false,
+          disabled: false,
+        },
+        {
+          id: 2,
+          value: '2',
+          label: 'Test 2',
+          selected: false,
+          disabled: false,
+        },
+      ];
+
+      beforeEach(() => {
+        document.body.innerHTML = `
+        <select data-choice multiple></select>
+        `;
+
+        instance = new Choices('[data-choice]', {
+          choices,
+          allowHTML: false,
+          searchEnabled: true,
+        });
+      });
+
+      it('details are passed', (done) => {
+        const query =
+          'This is a <search> query & a "test" with characters that should not be sanitised.';
+
+        instance.input.value = query;
+        instance.input.focus();
+        instance.passedElement.element.addEventListener(
+          'search',
+          (event) => {
+            expect(event.detail).to.eql({
+              value: query,
+              resultCount: 0,
+            });
+            done();
+          },
+          { once: true },
+        );
+
+        instance._onKeyUp({ target: null, keyCode: null });
+      });
+
+      it('uses Fuse options', (done) => {
+        instance.input.value = 'test';
+        instance.input.focus();
+        instance.passedElement.element.addEventListener(
+          'search',
+          (event) => {
+            expect(event.detail.resultCount).to.eql(2);
+
+            instance.config.fuseOptions.isCaseSensitive = true;
+            instance.config.fuseOptions.minMatchCharLength = 4;
+            instance.passedElement.element.addEventListener(
+              'search',
+              (eventCaseSensitive) => {
+                expect(eventCaseSensitive.detail.resultCount).to.eql(0);
+                done();
+              },
+              { once: true },
+            );
+
+            instance._onKeyUp({ target: null, keyCode: null });
+          },
+          { once: true },
+        );
+
+        instance._onKeyUp({ target: null, keyCode: null });
+      });
+
+      it('is fired with a searchFloor of 0', (done) => {
+        instance.config.searchFloor = 0;
+        instance.input.value = '';
+        instance.input.focus();
+        instance.passedElement.element.addEventListener('search', (event) => {
+          expect(event.detail).to.eql({
+            value: instance.input.value,
+            resultCount: 0,
+          });
+          done();
+        });
+
+        instance._onKeyUp({ target: null, keyCode: null });
       });
     });
   });
@@ -2058,7 +2167,7 @@ describe('choices', () => {
           output = instance._getTemplate(templateKey, customArg);
           expect(output).to.deep.equal(element);
           expect(instance._templates[templateKey]).to.have.been.calledOnceWith(
-            instance.config.classNames,
+            instance.config,
             customArg,
           );
         });
@@ -2093,7 +2202,7 @@ describe('choices', () => {
           KEY_CODES.PAGE_DOWN_KEY,
         ];
 
-        keyCodes.forEach(keyCode => {
+        keyCodes.forEach((keyCode) => {
           it(`calls _onDirectionKey with the expected arguments`, () => {
             const event = {
               keyCode,
@@ -2143,7 +2252,7 @@ describe('choices', () => {
       describe('delete key', () => {
         const keyCodes = [KEY_CODES.DELETE_KEY, KEY_CODES.BACK_KEY];
 
-        keyCodes.forEach(keyCode => {
+        keyCodes.forEach((keyCode) => {
           it(`calls _onDeleteKey with the expected arguments`, () => {
             const event = {
               keyCode,
@@ -2188,10 +2297,10 @@ describe('choices', () => {
           );
         });
 
-        it('triggers a REMOVE_ITEM event on the passed element', done => {
+        it('triggers a REMOVE_ITEM event on the passed element', (done) => {
           passedElement.addEventListener(
             'removeItem',
-            event => {
+            (event) => {
               expect(event.detail).to.eql({
                 id: item.id,
                 value: item.value,
@@ -2226,10 +2335,10 @@ describe('choices', () => {
             instance._store.getGroupById.reset();
           });
 
-          it("includes the group's value in the triggered event", done => {
+          it("includes the group's value in the triggered event", (done) => {
             passedElement.addEventListener(
               'removeItem',
-              event => {
+              (event) => {
                 expect(event.detail).to.eql({
                   id: itemWithGroup.id,
                   value: itemWithGroup.value,

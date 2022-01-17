@@ -1,8 +1,9 @@
+import { ClassNames } from '../interfaces/class-names';
 import WrappedElement from './wrapped-element';
-import { ClassNames } from '../interfaces';
 
 export default class WrappedInput extends WrappedElement {
   element: HTMLInputElement;
+
   delimiter: string;
 
   constructor({

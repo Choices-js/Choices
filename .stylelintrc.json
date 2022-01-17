@@ -1,0 +1,6 @@
+{
+  "extends": "stylelint-config-standard-scss",
+  "rules": {
+    "declaration-block-no-redundant-longhand-properties": null
+  }
+}

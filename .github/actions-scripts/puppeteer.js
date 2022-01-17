@@ -11,8 +11,11 @@ const server = require('../../server');
 async function test() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  const artifactsPath = 'screenshot';
+  const snapshotName = `puppeteer-${process.platform}.png`;
   let error;
   let pixelDifference;
+  let diff;
 
   if (!server.listening) await once(server, 'listening');
 
@@ -28,12 +31,11 @@ async function test() {
       waitUntil: 'networkidle2',
     });
     await page.setViewport({ width: 640, height: 1000 });
+    await page.waitForTimeout(500); // Wait for resize to complete
     await page.click('label[for="choices-single-custom-templates"]');
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('ArrowDown');
 
-    const snapshotName = `puppeteer-${process.platform}.png`;
-    const artifactsPath = 'screenshot';
     mkdirSync(artifactsPath, { recursive: true });
     const imageBuffer = await page.screenshot({
       path: path.join(artifactsPath, snapshotName),
@@ -46,7 +48,7 @@ async function test() {
       readFileSync(path.resolve(__dirname, `./__snapshots__/${snapshotName}`)),
     );
     const { width, height } = screenshot;
-    const diff = new PNG({ width, height });
+    diff = new PNG({ width, height });
     pixelDifference = pixelmatch(
       screenshot.data,
       snapshot.data,
@@ -57,11 +59,13 @@ async function test() {
         threshold: 0.6,
       },
     );
-    writeFileSync(path.join(artifactsPath, 'diff.png'), PNG.sync.write(diff));
   } catch (err) {
     console.error(err);
     error = err;
   } finally {
+    if (diff) {
+      writeFileSync(path.join(artifactsPath, 'diff-' + snapshotName), PNG.sync.write(diff));
+    }
     await Promise.all([
       browser.close(),
       new Promise(resolve => server.close(resolve)),

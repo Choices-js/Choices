@@ -1,4 +1,3 @@
-import { Choice } from '../interfaces';
 import {
   AddChoiceAction,
   FilterChoicesAction,
@@ -6,6 +5,7 @@ import {
   ClearChoicesAction,
 } from '../actions/choices';
 import { AddItemAction, RemoveItemAction } from '../actions/items';
+import { Choice } from '../interfaces/choice';
 
 export const defaultState = [];
 
@@ -15,11 +15,12 @@ type ActionTypes =
   | ActivateChoicesAction
   | ClearChoicesAction
   | AddItemAction
-  | RemoveItemAction;
+  | RemoveItemAction
+  | Record<string, never>;
 
 export default function choices(
   state: Choice[] = defaultState,
-  action: ActionTypes,
+  action: ActionTypes = {},
 ): Choice[] {
   switch (action.type) {
     case 'ADD_CHOICE': {
@@ -52,7 +53,7 @@ export default function choices(
       // When an item is added and it has an associated choice,
       // we want to disable it so it can't be chosen again
       if (addItemAction.choiceId > -1) {
-        return state.map(obj => {
+        return state.map((obj) => {
           const choice = obj;
           if (choice.id === parseInt(`${addItemAction.choiceId}`, 10)) {
             choice.selected = true;
@@ -71,7 +72,7 @@ export default function choices(
       // When an item is removed and it has an associated choice,
       // we want to re-enable it so it can be chosen again
       if (removeItemAction.choiceId && removeItemAction.choiceId > -1) {
-        return state.map(obj => {
+        return state.map((obj) => {
           const choice = obj;
           if (choice.id === parseInt(`${removeItemAction.choiceId}`, 10)) {
             choice.selected = false;
@@ -87,7 +88,7 @@ export default function choices(
     case 'FILTER_CHOICES': {
       const filterChoicesAction = action as FilterChoicesAction;
 
-      return state.map(obj => {
+      return state.map((obj) => {
         const choice = obj;
         // Set active state based on whether choice is
         // within filtered results
@@ -108,7 +109,7 @@ export default function choices(
     case 'ACTIVATE_CHOICES': {
       const activateChoicesAction = action as ActivateChoicesAction;
 
-      return state.map(obj => {
+      return state.map((obj) => {
         const choice = obj;
         choice.active = activateChoicesAction.active;
 

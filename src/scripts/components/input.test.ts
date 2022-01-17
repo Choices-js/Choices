@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 import Input from './input';
-import { DEFAULT_CLASSNAMES } from '../constants';
 
 describe('components/input', () => {
   let instance;
@@ -315,7 +315,7 @@ describe('components/input', () => {
       const value = '<script>somethingMalicious();</script>';
       instance.element.value = value;
       expect(instance.value).to.equal(
-        '&lt;script&rt;somethingMalicious();&lt;/script&rt;',
+        '&lt;script&gt;somethingMalicious();&lt;/script&gt;',
       );
     });
   });

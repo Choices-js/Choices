@@ -1,6 +1,10 @@
 describe('Choices - select one', () => {
   beforeEach(() => {
-    cy.visit('/select-one');
+    cy.visit('/select-one', {
+      onBeforeLoad(win) {
+        cy.stub(win.console, 'warn').as('consoleWarn');
+      },
+    });
   });
 
   describe('scenarios', () => {
@@ -51,9 +55,7 @@ describe('Choices - select one', () => {
       describe('selecting choices', () => {
         beforeEach(() => {
           // open dropdown
-          cy.get('[data-test-hook=basic]')
-            .find('.choices')
-            .click();
+          cy.get('[data-test-hook=basic]').find('.choices').click();
         });
 
         const selectedChoiceText = 'Choice 1';
@@ -68,7 +70,7 @@ describe('Choices - select one', () => {
           cy.get('[data-test-hook=basic]')
             .find('.choices__list--single .choices__item')
             .last()
-            .should($item => {
+            .should(($item) => {
               expect($item).to.contain(selectedChoiceText);
             });
         });
@@ -84,7 +86,7 @@ describe('Choices - select one', () => {
             .find('.choices__list--dropdown .choices__list')
             .children()
             .first()
-            .should($item => {
+            .should(($item) => {
               expect($item).to.contain(selectedChoiceText);
             });
         });
@@ -93,9 +95,7 @@ describe('Choices - select one', () => {
       describe('searching choices', () => {
         beforeEach(() => {
           // open dropdown
-          cy.get('[data-test-hook=basic]')
-            .find('.choices')
-            .click();
+          cy.get('[data-test-hook=basic]').find('.choices').click();
         });
 
         describe('on input', () => {
@@ -109,7 +109,7 @@ describe('Choices - select one', () => {
                 .find('.choices__list--dropdown .choices__list')
                 .children()
                 .first()
-                .should($choice => {
+                .should(($choice) => {
                   expect($choice.text().trim()).to.equal('Choice 2');
                 });
             });
@@ -125,7 +125,7 @@ describe('Choices - select one', () => {
                 .find('.choices__list--dropdown .choices__list')
                 .children()
                 .first()
-                .should($choice => {
+                .should(($choice) => {
                   expect($choice.text().trim()).to.equal('Choice 3');
                 });
             });
@@ -140,7 +140,7 @@ describe('Choices - select one', () => {
               cy.get('[data-test-hook=basic]')
                 .find('.choices__list--dropdown')
                 .should('be.visible')
-                .should($dropdown => {
+                .should(($dropdown) => {
                   const dropdownText = $dropdown.text().trim();
                   expect(dropdownText).to.equal('No results found');
                 });
@@ -206,7 +206,7 @@ describe('Choices - select one', () => {
             cy.get('[data-test-hook=remove-button]')
               .find('.choices__list--single .choices__item')
               .last()
-              .then($choice => {
+              .then(($choice) => {
                 removedChoiceText = $choice.text().trim();
               })
               .click();
@@ -229,7 +229,7 @@ describe('Choices - select one', () => {
           it('updates the value of the original input', () => {
             cy.get('[data-test-hook=remove-button]')
               .find('.choices__input[hidden]')
-              .should($select => {
+              .should(($select) => {
                 const val = $select.val() || [];
 
                 expect(val).to.not.contain(removedChoiceText);
@@ -248,7 +248,7 @@ describe('Choices - select one', () => {
 
           cy.get('[data-test-hook=disabled-choice]')
             .find('.choices__list--dropdown .choices__item--disabled')
-            .then($choice => {
+            .then(($choice) => {
               selectedChoiceText = $choice.text().trim();
             })
             .click();
@@ -258,7 +258,7 @@ describe('Choices - select one', () => {
           cy.get('[data-test-hook=prepend-append]')
             .find('.choices__list--single .choices__item')
             .last()
-            .should($choice => {
+            .should(($choice) => {
               expect($choice.text()).to.not.contain(selectedChoiceText);
             });
         });
@@ -305,9 +305,7 @@ describe('Choices - select one', () => {
 
       describe('on click', () => {
         it('does not open choice dropdown', () => {
-          cy.get('[data-test-hook=disabled-via-attr]')
-            .find('.choices')
-            .click();
+          cy.get('[data-test-hook=disabled-via-attr]').find('.choices').click();
 
           cy.get('[data-test-hook=disabled-via-attr]')
             .find('.choices__list--dropdown')
@@ -335,7 +333,7 @@ describe('Choices - select one', () => {
           .find('.choices__list--dropdown .choices__list')
           .children()
           .last()
-          .then($choice => {
+          .then(($choice) => {
             selectedChoiceText = $choice.text().trim();
           })
           .click();
@@ -345,7 +343,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=prepend-append]')
           .find('.choices__list--single .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.data('value')).to.equal(
               `before-${selectedChoiceText}-after`,
             );
@@ -356,7 +354,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=prepend-append]')
           .find('.choices__list--single .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text()).to.not.contain(
               `before-${selectedChoiceText}-after`,
             );
@@ -389,9 +387,7 @@ describe('Choices - select one', () => {
       const selectedChoiceText = 'Choice 3';
 
       beforeEach(() => {
-        cy.get('[data-test-hook=search-disabled]')
-          .find('.choices')
-          .click();
+        cy.get('[data-test-hook=search-disabled]').find('.choices').click();
       });
 
       it('does not display a search input', () => {
@@ -410,7 +406,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=search-disabled]')
           .find('.choices__list--single .choices__item')
           .last()
-          .should($item => {
+          .should(($item) => {
             expect($item).to.contain(selectedChoiceText);
           });
       });
@@ -442,7 +438,7 @@ describe('Choices - select one', () => {
               .find('.choices__list--dropdown .choices__list')
               .children()
               .first()
-              .should($choice => {
+              .should(($choice) => {
                 expect($choice.text().trim()).to.not.contain(searchTerm);
               });
           });
@@ -460,7 +456,7 @@ describe('Choices - select one', () => {
               .find('.choices__list--dropdown .choices__list')
               .children()
               .first()
-              .should($choice => {
+              .should(($choice) => {
                 expect($choice.text().trim()).to.contain(searchTerm);
               });
           });
@@ -476,7 +472,7 @@ describe('Choices - select one', () => {
             .children()
             .first()
             .should('have.class', 'choices__placeholder')
-            .and($placeholder => {
+            .and(($placeholder) => {
               expect($placeholder).to.contain('I am a placeholder');
             });
         });
@@ -524,7 +520,7 @@ describe('Choices - select one', () => {
             .children()
             .first()
             .should('have.class', 'choices__placeholder')
-            .and($placeholder => {
+            .and(($placeholder) => {
               expect($placeholder).to.contain('I am a placeholder');
             });
         });
@@ -577,7 +573,7 @@ describe('Choices - select one', () => {
             .should('have.length', 1)
             .first()
             .should('have.class', 'choices__placeholder')
-            .and($placeholder => {
+            .and(($placeholder) => {
               expect($placeholder).to.contain('Loading...');
             });
         });
@@ -620,19 +616,17 @@ describe('Choices - select one', () => {
       beforeEach(() => {
         cy.get('[data-test-hook=scrolling-dropdown]')
           .find('.choices__list--dropdown .choices__list .choices__item')
-          .then($choices => {
+          .then(($choices) => {
             choicesCount = $choices.length;
           });
 
-        cy.get('[data-test-hook=scrolling-dropdown]')
-          .find('.choices')
-          .click();
+        cy.get('[data-test-hook=scrolling-dropdown]').find('.choices').click();
       });
 
       it('highlights first choice on dropdown open', () => {
         cy.get('[data-test-hook=scrolling-dropdown]')
           .find('.choices__list--dropdown .choices__list .is-highlighted')
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal('Choice 1');
           });
       });
@@ -641,7 +635,7 @@ describe('Choices - select one', () => {
         for (let index = 0; index < choicesCount; index++) {
           cy.get('[data-test-hook=scrolling-dropdown]')
             .find('.choices__list--dropdown .choices__list .is-highlighted')
-            .should($choice => {
+            .should(($choice) => {
               expect($choice.text().trim()).to.equal(`Choice ${index + 1}`);
             });
 
@@ -665,7 +659,7 @@ describe('Choices - select one', () => {
 
           cy.get('[data-test-hook=scrolling-dropdown]')
             .find('.choices__list--dropdown .choices__list .is-highlighted')
-            .should($choice => {
+            .should(($choice) => {
               expect($choice.text().trim()).to.equal(`Choice ${index}`);
             });
 
@@ -684,7 +678,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=groups]')
           .find('.choices__list--dropdown .choices__list .choices__group')
           .first()
-          .then($group => {
+          .then(($group) => {
             groupValue = $group.text().trim();
           });
       });
@@ -705,7 +699,7 @@ describe('Choices - select one', () => {
           cy.get('[data-test-hook=groups]')
             .find('.choices__list--dropdown .choices__list .choices__group')
             .first()
-            .should($group => {
+            .should(($group) => {
               expect($group.text().trim()).to.not.equal(groupValue);
             });
         });
@@ -736,7 +730,7 @@ describe('Choices - select one', () => {
           cy.get('[data-test-hook=groups]')
             .find('.choices__list--dropdown .choices__list .choices__group')
             .first()
-            .should($group => {
+            .should(($group) => {
               expect($group.text().trim()).to.equal(groupValue);
             });
         });
@@ -806,9 +800,7 @@ describe('Choices - select one', () => {
 
     describe('custom properties', () => {
       beforeEach(() => {
-        cy.get('[data-test-hook=custom-properties]')
-          .find('.choices')
-          .click();
+        cy.get('[data-test-hook=custom-properties]').find('.choices').click();
       });
 
       describe('on input', () => {
@@ -837,7 +829,7 @@ describe('Choices - select one', () => {
               .find('.choices__list--dropdown .choices__list')
               .children()
               .first()
-              .should($choice => {
+              .should(($choice) => {
                 expect($choice.text().trim()).to.equal(city);
               });
 
@@ -851,9 +843,7 @@ describe('Choices - select one', () => {
 
     describe('non-string values', () => {
       beforeEach(() => {
-        cy.get('[data-test-hook=non-string-values]')
-          .find('.choices')
-          .click();
+        cy.get('[data-test-hook=non-string-values]').find('.choices').click();
       });
 
       it('displays expected amount of choices in dropdown', () => {
@@ -869,7 +859,7 @@ describe('Choices - select one', () => {
           .find('.choices__list--dropdown .choices__list')
           .children()
           .first()
-          .then($choice => {
+          .then(($choice) => {
             $selectedChoice = $choice;
           })
           .click();
@@ -877,7 +867,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=non-string-values]')
           .find('.choices__list--single .choices__item')
           .last()
-          .should($item => {
+          .should(($item) => {
             expect($item.text().trim()).to.equal($selectedChoice.text().trim());
           });
       });
@@ -887,7 +877,7 @@ describe('Choices - select one', () => {
       describe('selecting choice', () => {
         describe('on enter key', () => {
           it('does not submit form', () => {
-            cy.get('[data-test-hook=within-form] form').then($form => {
+            cy.get('[data-test-hook=within-form] form').then(($form) => {
               $form.submit(() => {
                 // this will fail the test if the form submits
                 throw new Error('Form submitted');
@@ -900,14 +890,12 @@ describe('Choices - select one', () => {
               .find('.choices__input--cloned')
               .type('{enter}');
 
-            cy.get('[data-test-hook=within-form]')
-              .find('.choices')
-              .click();
+            cy.get('[data-test-hook=within-form]').find('.choices').click();
 
             cy.get('[data-test-hook=within-form]')
               .find('.choices__list--single .choices__item')
               .last()
-              .should($item => {
+              .should(($item) => {
                 expect($item).to.contain('Choice 1');
               });
           });
@@ -922,7 +910,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=set-choice-by-value]')
           .find('.choices__list--single .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal(
               dynamicallySelectedChoiceValue,
             );
@@ -932,7 +920,7 @@ describe('Choices - select one', () => {
       it('does not remove choice from dropdown list', () => {
         cy.get('[data-test-hook=set-choice-by-value]')
           .find('.choices__list--dropdown .choices__list')
-          .then($choicesList => {
+          .then(($choicesList) => {
             expect($choicesList).to.contain(dynamicallySelectedChoiceValue);
           });
       });
@@ -940,7 +928,7 @@ describe('Choices - select one', () => {
       it('updates the value of the original input', () => {
         cy.get('[data-test-hook=set-choice-by-value]')
           .find('.choices__input[hidden]')
-          .should($select => {
+          .should(($select) => {
             const val = $select.val() || [];
             expect(val).to.contain(dynamicallySelectedChoiceValue);
           });
@@ -949,9 +937,7 @@ describe('Choices - select one', () => {
 
     describe('searching by label only', () => {
       beforeEach(() => {
-        cy.get('[data-test-hook=search-by-label]')
-          .find('.choices')
-          .click();
+        cy.get('[data-test-hook=search-by-label]').find('.choices').click();
       });
 
       it('gets zero results when searching by value', () => {
@@ -963,7 +949,7 @@ describe('Choices - select one', () => {
           .find('.choices__list--dropdown .choices__list')
           .children()
           .first()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal('No results found');
           });
       });
@@ -977,7 +963,7 @@ describe('Choices - select one', () => {
           .find('.choices__list--dropdown .choices__list')
           .children()
           .first()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal('label1');
           });
       });
@@ -998,7 +984,7 @@ describe('Choices - select one', () => {
           .children()
           .first()
           .should('have.class', 'choices__item--disabled')
-          .then($choice => {
+          .then(($choice) => {
             disabledValue = $choice.val();
           });
       });
@@ -1006,16 +992,61 @@ describe('Choices - select one', () => {
       it('selects the first enabled choice', () => {
         cy.get('[data-test-hook=disabled-first-choice-via-options]')
           .find('.choices__input[hidden]')
-          .then($option => {
+          .then(($option) => {
             expect($option.text().trim()).to.not.equal(disabledValue);
           });
 
         cy.get('[data-test-hook=disabled-first-choice-via-options]')
           .find('.choices__item.choices__item--selectable')
           .first()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.not.equal(disabledValue);
           });
+      });
+    });
+
+    describe('allow html', () => {
+      describe('is undefined', () => {
+        it('logs a deprecation warning', () => {
+          cy.get('@consoleWarn').should(
+            'be.calledOnceWithExactly',
+            'Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.',
+          );
+        });
+
+        it('does not show html as text', () => {
+          cy.get('[data-test-hook=allowhtml-undefined]')
+            .find('.choices__list--dropdown .choices__list')
+            .children()
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('Choice 1');
+            });
+        });
+      });
+
+      describe('set to true', () => {
+        it('does not show html as text', () => {
+          cy.get('[data-test-hook=allowhtml-true]')
+            .find('.choices__list--dropdown .choices__list')
+            .children()
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('Choice 1');
+            });
+        });
+      });
+
+      describe('set to false', () => {
+        it('shows html as text', () => {
+          cy.get('[data-test-hook=allowhtml-false]')
+            .find('.choices__list--dropdown .choices__list')
+            .children()
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('<b>Choice 1</b>');
+            });
+        });
       });
     });
 
@@ -1029,9 +1060,7 @@ describe('Choices - select one', () => {
         cy.get('[data-test-hook=new-destroy-init]')
           .find('button.destroy')
           .click();
-        cy.get('[data-test-hook=new-destroy-init]')
-          .find('button.init')
-          .click();
+        cy.get('[data-test-hook=new-destroy-init]').find('button.init').click();
 
         cy.get('[data-test-hook=new-destroy-init]')
           .find('.choices__list--dropdown .choices__list')

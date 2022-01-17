@@ -1,6 +1,6 @@
-/*=============================================
+/* =============================================
 =            Generic styling                  =
-=============================================*/
+============================================= */
 
 $global-guttering: 24px;
 $global-font-size-h1: 32px;
@@ -16,8 +16,8 @@ $global-font-size-h6: 14px;
 }
 
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -30,10 +30,10 @@ body {
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 16px;
   line-height: 1.4;
-  color: #ffffff;
+  color: #fff;
   background-color: #333;
   overflow-x: hidden;
 }
@@ -48,6 +48,7 @@ label {
 
 p {
   margin-top: 0;
+  margin-bottom: 8px;
 }
 
 hr {
@@ -65,7 +66,7 @@ h4,
 h5,
 h6 {
   margin-top: 0;
-  margin-bottom: $global-guttering/2;
+  margin-bottom: $global-guttering * 0.5;
   font-weight: 400;
   line-height: 1.2;
 }
@@ -73,7 +74,7 @@ h6 {
 a,
 a:visited,
 a:focus {
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
 }
@@ -86,7 +87,6 @@ a:focus {
   border: 1px solid #ddd;
   border-radius: 2.5px;
   font-size: 14px;
-  -webkit-appearance: none;
   appearance: none;
   margin-bottom: $global-guttering;
 }
@@ -121,10 +121,6 @@ h6,
   font-size: $global-font-size-h6;
 }
 
-p {
-  margin-bottom: 8px;
-}
-
 label + p {
   margin-top: -4px;
 }
@@ -134,15 +130,17 @@ label + p {
   margin: auto;
   max-width: 40em;
   padding: $global-guttering * 2;
+
   @media (max-width: 620px) {
     padding: 0;
   }
 }
 
 .section {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: $global-guttering;
   color: #333;
+
   a,
   a:visited,
   a:focus {
@@ -152,16 +150,16 @@ label + p {
 
 .logo {
   display: block;
-  margin-bottom: $global-guttering/2;
+  margin-bottom: $global-guttering * 0.5;
 }
 
-.logo__img {
+.logo-img {
   width: 100%;
   height: auto;
   display: inline-block;
   max-width: 100%;
   vertical-align: top;
-  padding: $global-guttering/4 0;
+  padding: $global-guttering * 0.25 0;
 }
 
 .visible-ie {
@@ -188,4 +186,4 @@ label + p {
   margin-bottom: $global-guttering;
 }
 
-/*=====  End of Section comment block  ======*/
+/* =====  End of Section comment block  ====== */

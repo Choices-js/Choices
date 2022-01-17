@@ -1,9 +1,12 @@
+import { ClassNames } from '../interfaces/class-names';
+import { EventType } from '../interfaces/event-type';
 import { dispatchEvent } from '../lib/utils';
-import { ClassNames, EventMap } from '../interfaces';
 
 export default class WrappedElement {
   element: HTMLInputElement | HTMLSelectElement;
+
   classNames: ClassNames;
+
   isDisabled: boolean;
 
   constructor({ element, classNames }) {
@@ -89,7 +92,7 @@ export default class WrappedElement {
     this.isDisabled = true;
   }
 
-  triggerEvent<K extends keyof EventMap>(eventType: K, data?: object): void {
+  triggerEvent(eventType: EventType, data?: object): void {
     dispatchEvent(this.element, eventType, data);
   }
 }

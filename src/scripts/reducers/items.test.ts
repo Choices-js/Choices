@@ -57,7 +57,7 @@ describe('reducers/items', () => {
         });
 
         it('unhighlights all highlighted items', () => {
-          actualResponse.forEach(item => {
+          actualResponse.forEach((item) => {
             expect(item.highlighted).to.equal(false);
           });
         });

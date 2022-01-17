@@ -1,16 +1,26 @@
 import { wrap } from '../lib/utils';
 import { SELECT_ONE_TYPE } from '../constants';
-import { PassedElement, ClassNames, Options } from '../interfaces';
+import { ClassNames } from '../interfaces/class-names';
+import { PositionOptionsType } from '../interfaces/position-options-type';
+import { PassedElementType } from '../interfaces/passed-element-type';
 
 export default class Container {
   element: HTMLElement;
-  type: PassedElement['type'];
+
+  type: PassedElementType;
+
   classNames: ClassNames;
-  position: Options['position'];
+
+  position: PositionOptionsType;
+
   isOpen: boolean;
+
   isFlipped: boolean;
+
   isFocussed: boolean;
+
   isDisabled: boolean;
+
   isLoading: boolean;
 
   constructor({
@@ -20,9 +30,9 @@ export default class Container {
     position,
   }: {
     element: HTMLElement;
-    type: PassedElement['type'];
+    type: PassedElementType;
     classNames: ClassNames;
-    position: Options['position'];
+    position: PositionOptionsType;
   }) {
     this.element = element;
     this.classNames = classNames;

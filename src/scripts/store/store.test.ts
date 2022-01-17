@@ -161,7 +161,7 @@ describe('reducers/store', () => {
 
     describe('activeItems getter', () => {
       it('returns items that are active', () => {
-        const expectedResponse = state.items.filter(item => item.active);
+        const expectedResponse = state.items.filter((item) => item.active);
         expect(instance.activeItems).to.eql(expectedResponse);
       });
     });
@@ -169,7 +169,7 @@ describe('reducers/store', () => {
     describe('highlightedActiveItems getter', () => {
       it('returns items that are active and highlighted', () => {
         const expectedResponse = state.items.filter(
-          item => item.highlighted && item.active,
+          (item) => item.highlighted && item.active,
         );
         expect(instance.highlightedActiveItems).to.eql(expectedResponse);
       });
@@ -184,7 +184,9 @@ describe('reducers/store', () => {
 
     describe('activeChoices getter', () => {
       it('returns choices that are active', () => {
-        const expectedResponse = state.choices.filter(choice => choice.active);
+        const expectedResponse = state.choices.filter(
+          (choice) => choice.active,
+        );
         expect(instance.activeChoices).to.eql(expectedResponse);
       });
     });
@@ -192,7 +194,7 @@ describe('reducers/store', () => {
     describe('selectableChoices getter', () => {
       it('returns choices that are not disabled', () => {
         const expectedResponse = state.choices.filter(
-          choice => !choice.disabled,
+          (choice) => !choice.disabled,
         );
         expect(instance.selectableChoices).to.eql(expectedResponse);
       });
@@ -201,7 +203,7 @@ describe('reducers/store', () => {
     describe('searchableChoices getter', () => {
       it('returns choices that are not placeholders and are selectable', () => {
         const expectedResponse = state.choices.filter(
-          choice => !choice.disabled && !choice.placeholder,
+          (choice) => !choice.disabled && !choice.placeholder,
         );
         expect(instance.searchableChoices).to.eql(expectedResponse);
       });
@@ -212,7 +214,7 @@ describe('reducers/store', () => {
         it('returns active choice by passed id', () => {
           const id = '1';
           const expectedResponse = state.choices.find(
-            choice => choice.id === parseInt(id, 10),
+            (choice) => choice.id === parseInt(id, 10),
           );
           const actualResponse = instance.getChoiceById(id);
           expect(actualResponse).to.eql(expectedResponse);
@@ -224,7 +226,7 @@ describe('reducers/store', () => {
       it('returns placeholder choice', () => {
         const expectedResponse = state.choices
           .reverse()
-          .find(choice => choice.placeholder);
+          .find((choice) => choice.placeholder);
         expect(instance.getPlaceholderChoice).to.eql(expectedResponse);
       });
     });
@@ -238,7 +240,7 @@ describe('reducers/store', () => {
 
     describe('activeGroups getter', () => {
       it('returns active groups', () => {
-        const expectedResponse = state.groups.filter(group => group.active);
+        const expectedResponse = state.groups.filter((group) => group.active);
         expect(instance.activeGroups).to.eql(expectedResponse);
       });
     });
@@ -246,7 +248,7 @@ describe('reducers/store', () => {
     describe('getGroupById', () => {
       it('returns group by id', () => {
         const id = 1;
-        const expectedResponse = state.groups.find(group => group.id === id);
+        const expectedResponse = state.groups.find((group) => group.id === id);
         const actualResponse = instance.getGroupById(id);
         expect(actualResponse).to.eql(expectedResponse);
       });

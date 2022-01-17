@@ -1,6 +1,6 @@
 import { expect } from 'chai';
+import { Choice } from '../interfaces/choice';
 import choices, { defaultState } from './choices';
-import { Choice } from '../interfaces';
 
 describe('reducers/choices', () => {
   it('should return same state when no action matches', () => {
@@ -178,7 +178,7 @@ describe('reducers/choices', () => {
               score,
             },
           ],
-        }).find(choice => choice.id === id);
+        }).find((choice) => choice.id === id);
 
         expect(actualResponse).to.eql(expectedResponse);
       });

@@ -1,6 +1,7 @@
-import { EventMap, Choice } from '../interfaces';
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { Choice } from '../interfaces/choice';
+import { EventType } from '../interfaces/event-type';
 
 export const getRandomNumber = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min) + min);
@@ -32,11 +33,12 @@ export const wrap = (
   element: HTMLElement,
   wrapper: HTMLElement = document.createElement('div'),
 ): HTMLElement => {
-  if (element.nextSibling) {
-    element.parentNode &&
+  if (element.parentNode) {
+    if (element.nextSibling) {
       element.parentNode.insertBefore(wrapper, element.nextSibling);
-  } else {
-    element.parentNode && element.parentNode.appendChild(wrapper);
+    } else {
+      element.parentNode.appendChild(wrapper);
+    }
   }
 
   return wrapper.appendChild(element);
@@ -91,7 +93,7 @@ export const sanitise = <T>(value: T | string): T | string => {
 
   return value
     .replace(/&/g, '&amp;')
-    .replace(/>/g, '&rt;')
+    .replace(/>/g, '&gt;')
     .replace(/</g, '&lt;')
     .replace(/"/g, '&quot;');
 };
@@ -138,7 +140,7 @@ export const sortByScore = (
 
 export const dispatchEvent = (
   element: HTMLElement,
-  type: keyof EventMap,
+  type: EventType,
   customArgs: object | null = null,
 ): boolean => {
   const event = new CustomEvent(type, {
@@ -155,7 +157,7 @@ export const existsInArray = (
   value: string,
   key = 'value',
 ): boolean =>
-  array.some(item => {
+  array.some((item) => {
     if (typeof value === 'string') {
       return item[key] === value.trim();
     }
@@ -176,5 +178,5 @@ export const diff = (
   const aKeys = Object.keys(a).sort();
   const bKeys = Object.keys(b).sort();
 
-  return aKeys.filter(i => bKeys.indexOf(i) < 0);
+  return aKeys.filter((i) => bKeys.indexOf(i) < 0);
 };

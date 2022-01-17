@@ -1,56 +1,55 @@
+import merge from 'deepmerge';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Fuse from 'fuse.js';
-import merge from 'deepmerge';
 
-import Store from './store/store';
 import {
-  Dropdown,
+  activateChoices,
+  addChoice,
+  clearChoices,
+  filterChoices,
+  Result,
+} from './actions/choices';
+import { addGroup } from './actions/groups';
+import { addItem, highlightItem, removeItem } from './actions/items';
+import { clearAll, resetTo, setIsLoading } from './actions/misc';
+import {
   Container,
+  Dropdown,
   Input,
   List,
   WrappedInput,
   WrappedSelect,
 } from './components';
 import {
-  DEFAULT_CONFIG,
   EVENTS,
   KEY_CODES,
-  TEXT_TYPE,
-  SELECT_ONE_TYPE,
   SELECT_MULTIPLE_TYPE,
+  SELECT_ONE_TYPE,
+  TEXT_TYPE,
 } from './constants';
-import templates from './templates';
+import { DEFAULT_CONFIG } from './defaults';
+import { Choice } from './interfaces/choice';
+import { Group } from './interfaces/group';
+import { Item } from './interfaces/item';
+import { Notice } from './interfaces/notice';
+import { Options } from './interfaces/options';
+import { PassedElement } from './interfaces/passed-element';
+import { State } from './interfaces/state';
+
 import {
-  addChoice,
-  filterChoices,
-  activateChoices,
-  clearChoices,
-  Result,
-} from './actions/choices';
-import { addItem, removeItem, highlightItem } from './actions/items';
-import { addGroup } from './actions/groups';
-import { clearAll, resetTo, setIsLoading } from './actions/misc';
-import {
-  isScrolledIntoView,
+  diff,
+  existsInArray,
+  generateId,
   getAdjacentEl,
   getType,
+  isScrolledIntoView,
   isType,
-  strToEl,
   sortByScore,
-  generateId,
-  existsInArray,
-  diff,
+  strToEl,
 } from './lib/utils';
-import {
-  Options,
-  Choice,
-  Item,
-  Group,
-  Notice,
-  State,
-  PassedElement,
-} from './interfaces';
 import { defaultState } from './reducers';
+import Store from './store/store';
+import templates from './templates';
 
 /** @see {@link http://browserhacks.com/#hack-acea075d0ac6954f275a70023906050c} */
 const IS_IE11 =
@@ -63,7 +62,7 @@ const USER_DEFAULTS: Partial<Options> = {};
  * Choices
  * @author Josh Johnson<josh@joshuajohnson.co.uk>
  */
-class Choices {
+class Choices implements Choices {
   static get defaults(): {
     options: Partial<Options>;
     templates: typeof templates;
@@ -79,39 +78,69 @@ class Choices {
   }
 
   initialised: boolean;
+
   config: Options;
+
   passedElement: WrappedInput | WrappedSelect;
+
   containerOuter: Container;
+
   containerInner: Container;
+
   choiceList: List;
+
   itemList: List;
+
   input: Input;
+
   dropdown: Dropdown;
 
   _isTextElement: boolean;
+
   _isSelectOneElement: boolean;
+
   _isSelectMultipleElement: boolean;
+
   _isSelectElement: boolean;
+
   _store: Store;
+
   _templates: typeof templates;
+
   _initialState: State;
+
   _currentState: State;
+
   _prevState: State;
+
   _currentValue: string;
+
   _canSearch: boolean;
+
   _isScrollingOnIe: boolean;
+
   _highlightPosition: number;
+
   _wasTap: boolean;
+
   _isSearching: boolean;
+
   _placeholderValue: string | null;
+
   _baseId: string;
+
   _direction: HTMLElement['dir'];
+
   _idNames: {
     itemChoice: string;
   };
+
   _presetGroups: Group[] | HTMLOptGroupElement[] | Element[];
+
   _presetOptions: Item[] | HTMLOptionElement[];
+
   _presetChoices: Partial<Choice>[];
+
   _presetItems: Item[] | string[];
 
   constructor(
@@ -122,6 +151,12 @@ class Choices {
       | HTMLSelectElement = '[data-choice]',
     userConfig: Partial<Options> = {},
   ) {
+    if (userConfig.allowHTML === undefined) {
+      console.warn(
+        'Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.',
+      );
+    }
+
     this.config = merge.all<Options>(
       [DEFAULT_CONFIG, Choices.defaults.options, userConfig],
       // When merging array configs, replace with a copy of the userConfig array,
@@ -247,7 +282,7 @@ class Choices {
     }
     // Create array of choices from option elements
     if ((this.passedElement as WrappedSelect).options) {
-      (this.passedElement as WrappedSelect).options.forEach(option => {
+      (this.passedElement as WrappedSelect).options.forEach((option) => {
         this._presetChoices.push({
           value: option.value,
           label: option.innerHTML,
@@ -415,21 +450,21 @@ class Choices {
   }
 
   highlightAll(): this {
-    this._store.items.forEach(item => this.highlightItem(item));
+    this._store.items.forEach((item) => this.highlightItem(item));
 
     return this;
   }
 
   unhighlightAll(): this {
-    this._store.items.forEach(item => this.unhighlightItem(item));
+    this._store.items.forEach((item) => this.unhighlightItem(item));
 
     return this;
   }
 
   removeActiveItemsByValue(value: string): this {
     this._store.activeItems
-      .filter(item => item.value === value)
-      .forEach(item => this._removeItem(item));
+      .filter((item) => item.value === value)
+      .forEach((item) => this._removeItem(item));
 
     return this;
   }
@@ -437,13 +472,13 @@ class Choices {
   removeActiveItems(excludedId: number): this {
     this._store.activeItems
       .filter(({ id }) => id !== excludedId)
-      .forEach(item => this._removeItem(item));
+      .forEach((item) => this._removeItem(item));
 
     return this;
   }
 
   removeHighlightedItems(runEvent = false): this {
-    this._store.highlightedActiveItems.forEach(item => {
+    this._store.highlightedActiveItems.forEach((item) => {
       this._removeItem(item);
       // If this action was performed by the user
       // trigger the event
@@ -513,7 +548,7 @@ class Choices {
       return this;
     }
 
-    items.forEach(value => this._setChoiceOrItem(value));
+    items.forEach((value) => this._setChoiceOrItem(value));
 
     return this;
   }
@@ -527,7 +562,7 @@ class Choices {
     const choiceValue = Array.isArray(value) ? value : [value];
 
     // Loop through each value and
-    choiceValue.forEach(val => this._findAndSelectChoiceByValue(val));
+    choiceValue.forEach((val) => this._findAndSelectChoiceByValue(val));
 
     return this;
   }
@@ -630,14 +665,14 @@ class Choices {
 
       if (typeof Promise === 'function' && fetcher instanceof Promise) {
         // that's a promise
-        // eslint-disable-next-line compat/compat
-        return new Promise(resolve => requestAnimationFrame(resolve)) // eslint-disable-line compat/compat
+        // eslint-disable-next-line no-promise-executor-return
+        return new Promise((resolve) => requestAnimationFrame(resolve))
           .then(() => this._handleLoadingState(true))
           .then(() => fetcher)
           .then((data: Choice[]) =>
             this.setChoices(data, value, label, replaceChoices),
           )
-          .catch(err => {
+          .catch((err) => {
             if (!this.config.silent) {
               console.error(err);
             }
@@ -766,7 +801,7 @@ class Choices {
     if (activeGroups.length >= 1 && !this._isSearching) {
       // If we have a placeholder choice along with groups
       const activePlaceholders = activeChoices.filter(
-        activeChoice =>
+        (activeChoice) =>
           activeChoice.placeholder === true && activeChoice.groupId === -1,
       );
       if (activePlaceholders.length >= 1) {
@@ -849,7 +884,7 @@ class Choices {
     fragment: DocumentFragment = document.createDocumentFragment(),
   ): DocumentFragment {
     const getGroupChoices = (group): Choice[] =>
-      choices.filter(choice => {
+      choices.filter((choice) => {
         if (this._isSelectOneElement) {
           return choice.groupId === group.id;
         }
@@ -865,7 +900,7 @@ class Choices {
       groups.sort(this.config.sorter);
     }
 
-    groups.forEach(group => {
+    groups.forEach((group) => {
       const groupChoices = getGroupChoices(group);
       if (groupChoices.length >= 1) {
         const dropdownGroup = this._getTemplate('choiceGroup', group);
@@ -883,11 +918,8 @@ class Choices {
     withinGroup = false,
   ): DocumentFragment {
     // Create a fragment to store our list items (so we don't have to update the DOM for each item)
-    const {
-      renderSelectedChoices,
-      searchResultLimit,
-      renderChoiceLimit,
-    } = this.config;
+    const { renderSelectedChoices, searchResultLimit, renderChoiceLimit } =
+      this.config;
     const filter = this._isSearching ? sortByScore : this.config.sorter;
     const appendChoice = (choice: Choice): void => {
       const shouldRender =
@@ -909,7 +941,7 @@ class Choices {
     let rendererableChoices = choices;
 
     if (renderSelectedChoices === 'auto' && !this._isSelectOneElement) {
-      rendererableChoices = choices.filter(choice => !choice.selected);
+      rendererableChoices = choices.filter((choice) => !choice.selected);
     }
 
     // Split array into placeholders and "normal" choices
@@ -1027,7 +1059,7 @@ class Choices {
     const itemId =
       element.parentNode && (element.parentNode as HTMLElement).dataset.id;
     const itemToRemove =
-      itemId && activeItems.find(item => item.id === parseInt(itemId, 10));
+      itemId && activeItems.find((item) => item.id === parseInt(itemId, 10));
 
     if (!itemToRemove) {
       return;
@@ -1061,7 +1093,7 @@ class Choices {
     // We only want to select one item with a click
     // so we deselect any items that aren't the target
     // unless shift is being pressed
-    activeItems.forEach(item => {
+    activeItems.forEach((item) => {
       if (item.id === parseInt(`${passedId}`, 10) && !item.highlighted) {
         this.highlightItem(item);
       } else if (!hasShiftKey && item.highlighted) {
@@ -1132,7 +1164,7 @@ class Choices {
     }
 
     const lastItem = activeItems[activeItems.length - 1];
-    const hasHighlightedItems = activeItems.some(item => item.highlighted);
+    const hasHighlightedItems = activeItems.some((item) => item.highlighted);
 
     // If editing the last item is allowed and there are not other selected items,
     // we can edit the item value. Otherwise if we can remove items, remove all selected items
@@ -1198,16 +1230,20 @@ class Choices {
   }
 
   _handleSearch(value: string): void {
-    if (!value || !this.input.isFocussed) {
+    if (!this.input.isFocussed) {
       return;
     }
 
     const { choices } = this._store;
     const { searchFloor, searchChoices } = this.config;
-    const hasUnactiveChoices = choices.some(option => !option.active);
+    const hasUnactiveChoices = choices.some((option) => !option.active);
 
     // Check that we have a value to search and the input was an alphanumeric character
-    if (value && value.length >= searchFloor) {
+    if (
+      value !== null &&
+      typeof value !== 'undefined' &&
+      value.length >= searchFloor
+    ) {
       const resultCount = searchChoices ? this._searchChoices(value) : 0;
       // Trigger search event
       this.passedElement.triggerEvent(EVENTS.search, {
@@ -1291,11 +1327,10 @@ class Choices {
     // If new value matches the desired length and is not the same as the current value with a space
     const haystack = this._store.searchableChoices;
     const needle = newValue;
-    const keys = [...this.config.searchFields];
     const options = Object.assign(this.config.fuseOptions, {
-      keys,
+      keys: [...this.config.searchFields],
       includeMatches: true,
-    });
+    }) as Fuse.IFuseOptions<Choice>;
     const fuse = new Fuse(haystack, options);
     const results: Result<Choice>[] = fuse.search(needle) as any[]; // see https://github.com/krisk/Fuse/issues/303
 
@@ -1481,7 +1516,7 @@ class Choices {
         this._isSearching = false;
         this._store.dispatch(activateChoices(true));
       } else if (canSearch) {
-        this._handleSearch(this.input.value);
+        this._handleSearch(this.input.rawValue);
       }
     }
 
@@ -1800,7 +1835,7 @@ class Choices {
 
     if (blurWasWithinContainer && !this._isScrollingOnIe) {
       const { activeItems } = this._store;
-      const hasHighlightedItems = activeItems.some(item => item.highlighted);
+      const hasHighlightedItems = activeItems.some((item) => item.highlighted);
       const blurActions = {
         [TEXT_TYPE]: (): void => {
           if (target === this.input.element) {
@@ -1862,7 +1897,7 @@ class Choices {
     );
 
     // Remove any highlighted choices
-    highlightedChoices.forEach(choice => {
+    highlightedChoices.forEach((choice) => {
       choice.classList.remove(this.config.classNames.highlightedState);
       choice.setAttribute('aria-selected', 'false');
     });
@@ -2079,9 +2114,7 @@ class Choices {
   }
 
   _getTemplate(template: string, ...args: any): any {
-    const { classNames } = this.config;
-
-    return this._templates[template].call(this, classNames, ...args);
+    return this._templates[template].call(this, this.config, ...args);
   }
 
   _createTemplates(): void {
@@ -2215,7 +2248,7 @@ class Choices {
       });
     }
 
-    groups.forEach(group =>
+    groups.forEach((group) =>
       this._addGroup({
         group,
         id: group.id || null,
@@ -2229,9 +2262,9 @@ class Choices {
       choices.sort(this.config.sorter);
     }
 
-    const hasSelectedChoice = choices.some(choice => choice.selected);
+    const hasSelectedChoice = choices.some((choice) => choice.selected);
     const firstEnabledChoiceIndex = choices.findIndex(
-      choice => choice.disabled === undefined || !choice.disabled,
+      (choice) => choice.disabled === undefined || !choice.disabled,
     );
 
     choices.forEach((choice, index) => {
@@ -2282,7 +2315,7 @@ class Choices {
   }
 
   _addPredefinedItems(items: Item[] | string[]): void {
-    items.forEach(item => {
+    items.forEach((item) => {
       if (typeof item === 'object' && item.value) {
         this._addItem({
           value: item.value,
@@ -2352,7 +2385,7 @@ class Choices {
   _findAndSelectChoiceByValue(value: string): void {
     const { choices } = this._store;
     // Check 'value' property exists and the choice isn't already selected
-    const foundChoice = choices.find(choice =>
+    const foundChoice = choices.find((choice) =>
       this.config.valueComparer(choice.value, value),
     );
 

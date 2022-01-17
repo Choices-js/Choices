@@ -1,19 +1,20 @@
 /* eslint-disable no-new-wrappers */
 import { expect } from 'chai';
 import { stub } from 'sinon';
+
 import {
-  getRandomNumber,
+  cloneObject,
+  diff,
+  dispatchEvent,
+  existsInArray,
   generateChars,
   generateId,
+  getRandomNumber,
   getType,
   isType,
   sanitise,
   sortByAlpha,
   sortByScore,
-  existsInArray,
-  cloneObject,
-  dispatchEvent,
-  diff,
 } from './utils';
 
 describe('utils', () => {
@@ -84,7 +85,7 @@ describe('utils', () => {
       expect(getType([])).to.equal('Array');
       expect(getType(() => {})).to.equal('Function');
       expect(getType(new Error())).to.equal('Error');
-      expect(getType(new RegExp(/''/g))).to.equal('RegExp');
+      expect(getType(/''/g)).to.equal('RegExp');
       expect(getType(new String())).to.equal('String'); // eslint-disable-line
       expect(getType('')).to.equal('String');
     });
@@ -113,7 +114,7 @@ describe('utils', () => {
         const value = '<script>somethingMalicious();</script>';
         const output = sanitise(value);
         expect(output).to.equal(
-          '&lt;script&rt;somethingMalicious();&lt;/script&rt;',
+          '&lt;script&gt;somethingMalicious();&lt;/script&gt;',
         );
       });
     });

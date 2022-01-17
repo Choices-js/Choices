@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/scripts/**'
+      - 'src/styles/**'
       - package-lock.json
       - '.browserslistrc'
 
@@ -11,28 +12,30 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 10
+          node-version: 12
 
       - name: Install dependencies
-        run: npm install --no-optional --no-audit --ignore-scripts
+        run: npm ci
         env:
           CYPRESS_INSTALL_BINARY: 0
           HUSKY_SKIP_INSTALL: true
 
       - name: run eslint
-        run: |
-          CHANGED_TS=$(git --no-pager diff --name-only ..origin/master | grep '^src\/scripts\/.*\.ts$' | xargs ls -d 2>/dev/null | paste -sd " " -)
-          if [[ -z $(sed -e 's/[[:space:]]*$//' <<<${CHANGED_TS}) ]]; then CHANGED_TS="src/scripts"; fi
-          echo $CHANGED_TS
-          node node_modules/eslint/bin/eslint.js $CHANGED_TS
+        run: npm run lint:js
 
-      - name: Lint JS bundle
-        run: |
-          npm run js:build
-          npx eslint --no-ignore ./public/assets/scripts/*.js
+      ## Can't use same eslint config for TypeScript and JavaScript
+      ## TypeScript rules cause rule definition not found errors
+      ## Can be re-enabled if this is resolved: https://github.com/eslint/eslint/issues/14851
+      # - name: Lint JS bundle
+      #   run: |
+      #     npm run js:build
+      #     npx eslint --no-ignore ./public/assets/scripts/*.js
+
+      - name: run stylelint
+        run: npm run lint:scss

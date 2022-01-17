@@ -1,14 +1,14 @@
-/*=============================================
+/* =============================================
 =            Generic styling                  =
-=============================================*/
+============================================= */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -21,10 +21,10 @@ body {
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-size: 16px;
   line-height: 1.4;
-  color: #ffffff;
+  color: #fff;
   background-color: #333;
   overflow-x: hidden;
 }
@@ -39,6 +39,7 @@ label {
 
 p {
   margin-top: 0;
+  margin-bottom: 8px;
 }
 
 hr {
@@ -64,7 +65,7 @@ h6 {
 a,
 a:visited,
 a:focus {
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
 }
@@ -78,8 +79,7 @@ a:focus {
   border-radius: 2.5px;
   font-size: 14px;
   -webkit-appearance: none;
-  -moz-appearance: none;
-       appearance: none;
+          appearance: none;
   margin-bottom: 24px;
 }
 
@@ -113,10 +113,6 @@ h6,
   font-size: 14px;
 }
 
-p {
-  margin-bottom: 8px;
-}
-
 label + p {
   margin-top: -4px;
 }
@@ -127,7 +123,6 @@ label + p {
   max-width: 40em;
   padding: 48px;
 }
-
 @media (max-width: 620px) {
   .container {
     padding: 0;
@@ -135,11 +130,10 @@ label + p {
 }
 
 .section {
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 24px;
   color: #333;
 }
-
 .section a,
 .section a:visited,
 .section a:focus {
@@ -151,7 +145,7 @@ label + p {
   margin-bottom: 12px;
 }
 
-.logo__img {
+.logo-img {
   width: 100%;
   height: auto;
   display: inline-block;
@@ -184,4 +178,4 @@ label + p {
   margin-bottom: 24px;
 }
 
-/*=====  End of Section comment block  ======*/
+/* =====  End of Section comment block  ====== */

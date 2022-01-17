@@ -1,13 +1,19 @@
 import { sanitise } from '../lib/utils';
 import { SELECT_ONE_TYPE } from '../constants';
-import { PassedElement, ClassNames } from '../interfaces';
+import { ClassNames } from '../interfaces/class-names';
+import { PassedElementType } from '../interfaces/passed-element-type';
 
 export default class Input {
   element: HTMLInputElement;
-  type: PassedElement['type'];
+
+  type: PassedElementType;
+
   classNames: ClassNames;
+
   preventPaste: boolean;
+
   isFocussed: boolean;
+
   isDisabled: boolean;
 
   constructor({
@@ -17,7 +23,7 @@ export default class Input {
     preventPaste,
   }: {
     element: HTMLInputElement;
-    type: PassedElement['type'];
+    type: PassedElementType;
     classNames: ClassNames;
     preventPaste: boolean;
   }) {
@@ -44,6 +50,10 @@ export default class Input {
 
   set value(value: string) {
     this.element.value = value;
+  }
+
+  get rawValue(): string {
+    return this.element.value;
   }
 
   addEventListeners(): void {

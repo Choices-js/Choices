@@ -3,6 +3,7 @@
   "plugins": ["@typescript-eslint", "prettier", "sort-class-members"],
   "extends": [
     "airbnb-base",
+    "airbnb-typescript",
     "plugin:prettier/recommended",
     "plugin:compat/recommended",
     "plugin:@typescript-eslint/recommended"
@@ -61,7 +62,8 @@
       }
     ],
     "lines-between-class-members": "off",
-    "@typescript-eslint/no-namespace": "off"
+    "@typescript-eslint/no-namespace": "off",
+    "react/jsx-filename-extension": [0]
   },
   "overrides": [
     {
@@ -75,7 +77,16 @@
         "no-new": "off",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "default",
+            "format": ["camelCase", "PascalCase", "UPPER_CASE"],
+            "leadingUnderscore": "allow"
+          }
+        ]
       }
     },
     {

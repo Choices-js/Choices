@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 import WrappedElement from './wrapped-element';
 import WrappedInput from './wrapped-input';
-import { DEFAULT_CLASSNAMES } from '../constants';
 
 describe('components/wrappedInput', () => {
   let instance;
@@ -36,7 +36,7 @@ describe('components/wrappedInput', () => {
   describe('inherited methods', () => {
     const methods: string[] = ['conceal', 'reveal', 'enable', 'disable'];
 
-    methods.forEach(method => {
+    methods.forEach((method) => {
       describe(method, () => {
         beforeEach(() => {
           stub(WrappedElement.prototype, method as keyof WrappedElement);

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 import Container from './container';
-import { DEFAULT_CLASSNAMES } from '../constants';
 
 describe('components/container', () => {
   let instance;

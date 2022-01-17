@@ -74,7 +74,7 @@
           <img
             src="assets/images/logo.svg"
             alt="Choices.js logo"
-            class="logo__img hidden-ie"
+            class="logo-img hidden-ie"
           />
           <h1 class="visible-ie">Choices.js</h1>
         </a>
@@ -540,6 +540,7 @@
         for (i = 0; i < genericExamples.length; ++i) {
           var element = genericExamples[i];
           new Choices(element, {
+            allowHTML: true,
             placeholderValue: 'This is a placeholder set in the config',
             searchPlaceholderValue: 'This is a search placeholder',
           });
@@ -548,6 +549,7 @@
         var textRemove = new Choices(
           document.getElementById('choices-text-remove-button'),
           {
+            allowHTML: true,
             delimiter: ',',
             editItems: true,
             maxItemCount: 5,
@@ -556,12 +558,14 @@
         );
 
         var textUniqueVals = new Choices('#choices-text-unique-values', {
+          allowHTML: true,
           paste: false,
           duplicateItemsAllowed: false,
           editItems: true,
         });
 
         var texti18n = new Choices('#choices-text-i18n', {
+          allowHTML: true,
           paste: false,
           duplicateItemsAllowed: false,
           editItems: true,
@@ -578,6 +582,7 @@
         });
 
         var textEmailFilter = new Choices('#choices-text-email-filter', {
+          allowHTML: true,
           editItems: true,
           addItemFilter: function(value) {
             if (!value) {
@@ -591,6 +596,7 @@
         }).setValue(['joe@bloggs.com']);
 
         var textDisabled = new Choices('#choices-text-disabled', {
+          allowHTML: true,
           addItems: false,
           removeItems: false,
         }).disable();
@@ -598,12 +604,14 @@
         var textPrependAppendVal = new Choices(
           '#choices-text-prepend-append-value',
           {
+            allowHTML: true,
             prependValue: 'item-',
             appendValue: '-' + Date.now(),
           }
         ).removeActiveItems();
 
         var textPresetVal = new Choices('#choices-text-preset-values', {
+          allowHTML: true,
           items: [
             'Josh Johnson',
             {
@@ -617,10 +625,12 @@
         });
 
         var multipleDefault = new Choices(
-          document.getElementById('choices-multiple-groups')
+          document.getElementById('choices-multiple-groups'),
+          { allowHTML: true }
         );
 
         var multipleFetch = new Choices('#choices-multiple-remote-fetch', {
+          allowHTML: false,
           placeholder: true,
           placeholderValue: 'Pick an Strokes record',
           maxItemCount: 5,
@@ -641,12 +651,14 @@
         var multipleCancelButton = new Choices(
           '#choices-multiple-remove-button',
           {
+            allowHTML: true,
             removeItemButton: true,
           }
         );
 
         /* Use label on event */
         var choicesSelect = new Choices('#choices-multiple-labels', {
+          allowHTML: true,
           removeItemButton: true,
           choices: [
             { value: 'One', label: 'Label One' },
@@ -681,6 +693,7 @@
         );
 
         var singleFetch = new Choices('#choices-single-remote-fetch', {
+          allowHTML: false,
           searchPlaceholderValue: 'Search for an Arctic Monkeys record',
         })
           .setChoices(function() {
@@ -701,6 +714,7 @@
           });
 
         var singleXhrRemove = new Choices('#choices-single-remove-xhr', {
+          allowHTML: true,
           removeItemButton: true,
           searchPlaceholderValue: "Search for a Smiths' record",
         }).setChoices(function(callback) {
@@ -718,6 +732,7 @@
         });
 
         var singleNoSearch = new Choices('#choices-single-no-search', {
+          allowHTML: true,
           searchEnabled: false,
           removeItemButton: true,
           choices: [
@@ -737,6 +752,7 @@
         );
 
         var singlePresetOpts = new Choices('#choices-single-preset-options', {
+          allowHTML: true,
           placeholder: true,
         }).setChoices(
           [
@@ -766,6 +782,7 @@
         );
 
         var singleSelectedOpt = new Choices('#choices-single-selected-option', {
+          allowHTML: true,
           searchFields: ['label', 'value', 'customProperties.description'],
           choices: [
             { value: 'One', label: 'Label One', selected: true },
@@ -783,18 +800,21 @@
         var customChoicesPropertiesViaDataAttributes = new Choices(
           '#choices-with-custom-props-via-html',
           {
+            allowHTML: true,
             searchFields: ['label', 'value', 'customProperties'],
           }
         );
 
         var singleNoSorting = new Choices('#choices-single-no-sorting', {
+          allowHTML: true,
           shouldSort: false,
           labelId: 'choices-single-no-sorting-label',
         });
 
-        var cities = new Choices(document.getElementById('cities'));
+        var cities = new Choices(document.getElementById('cities'), { allowHTML: true });
         var tubeStations = new Choices(
-          document.getElementById('tube-stations')
+          document.getElementById('tube-stations'),
+          { allowHTML: true }
         ).disable();
 
         cities.passedElement.element.addEventListener('change', function(e) {
@@ -808,11 +828,12 @@
         var customTemplates = new Choices(
           document.getElementById('choices-single-custom-templates'),
           {
+            allowHTML: true,
             callbackOnCreateTemplates: function(strToEl) {
               var classNames = this.config.classNames;
               var itemSelectText = this.config.itemSelectText;
               return {
-                item: function(classNames, data) {
+                item: function({ classNames }, data) {
                   return strToEl(
                     '\
                 <div\
@@ -846,7 +867,7 @@
               '
                   );
                 },
-                choice: function(classNames, data) {
+                choice: function({ classNames }, data) {
                   return strToEl(
                     '\
                 <div\
@@ -896,9 +917,12 @@
           }
         );
 
-        var resetSimple = new Choices(document.getElementById('reset-simple'));
+        var resetSimple = new Choices(document.getElementById('reset-simple'), {
+          allowHTML: true,
+        });
 
         var resetMultiple = new Choices('#reset-multiple', {
+          allowHTML: true,
           removeItemButton: true,
         });
       });

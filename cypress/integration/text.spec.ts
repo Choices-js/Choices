@@ -1,6 +1,10 @@
 describe('Choices - text element', () => {
   beforeEach(() => {
-    cy.visit('/text');
+    cy.visit('/text', {
+      onBeforeLoad(win) {
+        cy.stub(win.console, 'warn').as('consoleWarn');
+      },
+    });
   });
 
   describe('scenarios', () => {
@@ -17,7 +21,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=basic]')
             .find('.choices__list--multiple .choices__item')
             .last()
-            .should($el => {
+            .should(($el) => {
               expect($el).to.contain(textInput);
             });
         });
@@ -42,7 +46,7 @@ describe('Choices - text element', () => {
             cy.get('[data-test-hook=basic]')
               .find('.choices__list--dropdown')
               .should('be.visible')
-              .should($dropdown => {
+              .should(($dropdown) => {
                 const dropdownText = $dropdown.text().trim();
                 expect(dropdownText).to.equal(
                   `Press Enter to add "${textInput}"`,
@@ -74,7 +78,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=edit-items]')
             .find('.choices__list--multiple .choices__item')
             .last()
-            .should($choice => {
+            .should(($choice) => {
               expect($choice.data('value')).to.equal(`${textInput}-edited`);
             });
         });
@@ -90,7 +94,7 @@ describe('Choices - text element', () => {
         it('highlights all items', () => {
           cy.get('[data-test-hook=edit-items]')
             .find('.choices__list--multiple .choices__item')
-            .each($choice => {
+            .each(($choice) => {
               expect($choice.hasClass('is-highlighted')).to.equal(true);
             });
         });
@@ -124,7 +128,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=remove-button]')
             .find('.choices__list--multiple')
             .children()
-            .should($items => {
+            .should(($items) => {
               expect($items.length).to.equal(1);
             });
 
@@ -137,7 +141,7 @@ describe('Choices - text element', () => {
 
           cy.get('[data-test-hook=remove-button]')
             .find('.choices__list--multiple .choices__item')
-            .should($items => {
+            .should(($items) => {
               expect($items.length).to.equal(0);
             });
         });
@@ -152,7 +156,7 @@ describe('Choices - text element', () => {
 
           cy.get('[data-test-hook=remove-button]')
             .find('.choices__input[hidden]')
-            .then($input => {
+            .then(($input) => {
               expect($input.val()).to.not.contain(textInput);
             });
         });
@@ -175,7 +179,7 @@ describe('Choices - text element', () => {
             .find('.choices__list--multiple')
             .first()
             .children()
-            .should($items => {
+            .should(($items) => {
               expect($items.length).to.equal(1);
             });
         });
@@ -185,7 +189,7 @@ describe('Choices - text element', () => {
             cy.get('[data-test-hook=unique-values]')
               .find('.choices__list--dropdown')
               .should('be.visible')
-              .should($dropdown => {
+              .should(($dropdown) => {
                 const dropdownText = $dropdown.text().trim();
                 expect(dropdownText).to.equal(
                   'Only unique values can be added',
@@ -212,7 +216,7 @@ describe('Choices - text element', () => {
           .find('.choices__list--multiple')
           .first()
           .children()
-          .should($items => {
+          .should(($items) => {
             expect($items.length).to.equal(inputLimit);
           });
       });
@@ -222,7 +226,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=input-limit]')
             .find('.choices__list--dropdown')
             .should('be.visible')
-            .should($dropdown => {
+            .should(($dropdown) => {
               const dropdownText = $dropdown.text().trim();
               expect(dropdownText).to.equal(
                 `Only ${inputLimit} values can be added`,
@@ -245,7 +249,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=add-item-filter]')
             .find('.choices__list--multiple .choices__item')
             .last()
-            .should($choice => {
+            .should(($choice) => {
               expect($choice.text().trim()).to.equal(input);
             });
         });
@@ -261,7 +265,7 @@ describe('Choices - text element', () => {
           cy.get('[data-test-hook=add-item-filter]')
             .find('.choices__list--dropdown')
             .should('be.visible')
-            .should($dropdown => {
+            .should(($dropdown) => {
               const dropdownText = $dropdown.text().trim();
               expect(dropdownText).to.equal(
                 'Only values matching specific conditions can be added',
@@ -283,7 +287,7 @@ describe('Choices - text element', () => {
         cy.get('[data-test-hook=prepend-append]')
           .find('.choices__list--multiple .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.data('value')).to.equal(`before-${textInput}-after`);
           });
       });
@@ -292,7 +296,7 @@ describe('Choices - text element', () => {
         cy.get('[data-test-hook=prepend-append]')
           .find('.choices__list--multiple .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text()).to.not.contain(`before-${textInput}-after`);
             expect($choice.text()).to.contain(textInput);
           });
@@ -319,21 +323,21 @@ describe('Choices - text element', () => {
       it('pre-populates choices', () => {
         cy.get('[data-test-hook=prepopulated]')
           .find('.choices__list--multiple .choices__item')
-          .should($choices => {
+          .should(($choices) => {
             expect($choices.length).to.equal(2);
           });
 
         cy.get('[data-test-hook=prepopulated]')
           .find('.choices__list--multiple .choices__item')
           .first()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal('Josh Johnson');
           });
 
         cy.get('[data-test-hook=prepopulated]')
           .find('.choices__list--multiple .choices__item')
           .last()
-          .should($choice => {
+          .should(($choice) => {
             expect($choice.text().trim()).to.equal('Joe Bloggs');
           });
       });
@@ -355,11 +359,53 @@ describe('Choices - text element', () => {
       });
     });
 
+    describe('allow html', () => {
+      describe('is undefined', () => {
+        it('logs a deprecation warning', () => {
+          cy.get('@consoleWarn').should(
+            'be.calledOnceWithExactly',
+            'Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.',
+          );
+        });
+
+        it('does not show html as text', () => {
+          cy.get('[data-test-hook=allowhtml-undefined]')
+            .find('.choices__list--multiple .choices__item')
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('Mason Rogers');
+            });
+        });
+      });
+
+      describe('set to true', () => {
+        it('does not show html as text', () => {
+          cy.get('[data-test-hook=allowhtml-true]')
+            .find('.choices__list--multiple .choices__item')
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('Mason Rogers');
+            });
+        });
+      });
+
+      describe('set to false', () => {
+        it('shows html as text', () => {
+          cy.get('[data-test-hook=allowhtml-false]')
+            .find('.choices__list--multiple .choices__item')
+            .first()
+            .should(($choice) => {
+              expect($choice.text().trim()).to.equal('<b>Mason Rogers</b>');
+            });
+        });
+      });
+    });
+
     describe('within form', () => {
       describe('inputting item', () => {
         describe('on enter key', () => {
           it('does not submit form', () => {
-            cy.get('[data-test-hook=within-form] form').then($form => {
+            cy.get('[data-test-hook=within-form] form').then(($form) => {
               $form.submit(() => {
                 // this will fail the test if the form submits
                 throw new Error('Form submitted');
@@ -374,7 +420,7 @@ describe('Choices - text element', () => {
             cy.get('[data-test-hook=within-form]')
               .find('.choices__list--multiple .choices__item')
               .last()
-              .should($el => {
+              .should(($el) => {
                 expect($el).to.contain(textInput);
               });
           });

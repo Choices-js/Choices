@@ -1,4 +1,4 @@
-name: Publish and deploy
+name: Publish to npm
 
 on:
   release:
@@ -8,12 +8,12 @@ jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 10
+          node-version: 12
           registry-url: https://registry.npmjs.org/
       - run: npm ci
         env:
@@ -22,29 +22,3 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
-  deploy-gh-pages:
-    needs: publish-npm
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 10
-          registry-url: https://registry.npmjs.org/
-      - name: Build
-        run: |
-          npm ci
-          npm run build
-          rm -rf public/test
-        env:
-          CYPRESS_INSTALL_BINARY: 0
-          HUSKY_SKIP_INSTALL: true
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v2.5.0
-        env:
-          ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          PUBLISH_BRANCH: gh-pages
-          PUBLISH_DIR: ./public

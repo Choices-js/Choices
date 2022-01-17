@@ -1,9 +1,12 @@
+import { ClassNames } from '../interfaces/class-names';
+import { Item } from '../interfaces/item';
 import WrappedElement from './wrapped-element';
-import { ClassNames, Item } from '../interfaces';
 
 export default class WrappedSelect extends WrappedElement {
   element: HTMLSelectElement;
+
   classNames: ClassNames;
+
   template: (data: object) => HTMLOptionElement;
 
   constructor({
@@ -45,7 +48,7 @@ export default class WrappedSelect extends WrappedElement {
     };
 
     // Add each list item to list
-    options.forEach(optionData => addOptionToFragment(optionData));
+    options.forEach((optionData) => addOptionToFragment(optionData));
 
     this.appendDocFragment(fragment);
   }

@@ -22,5 +22,7 @@
 <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
 - [ ] My code follows the code style of this project.
+- [ ] I have added new tests for the bug I fixed/the new feature I added.
+- [ ] I have modified existing tests for the bug I fixed/the new feature I added.
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.

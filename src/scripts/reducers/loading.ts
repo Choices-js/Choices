@@ -1,13 +1,13 @@
 import { SetIsLoadingAction } from '../actions/misc';
-import { State } from '../interfaces';
+import { State } from '../interfaces/state';
 
 export const defaultState = false;
 
-type ActionTypes = SetIsLoadingAction;
+type ActionTypes = SetIsLoadingAction | Record<string, never>;
 
 const general = (
   state = defaultState,
-  action: ActionTypes,
+  action: ActionTypes = {},
 ): State['loading'] => {
   switch (action.type) {
     case 'SET_IS_LOADING': {

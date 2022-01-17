@@ -354,6 +354,33 @@
           </select>
         </div>
 
+        <div data-test-hook="allowhtml-undefined">
+          <label for="choices-allowhtml-undefined">HTML allowed by default</label>
+          <select
+            class="form-control"
+            name="choices-allowhtml-undefined"
+            id="choices-allowhtml-undefined"
+          ></select>
+        </div>
+
+        <div data-test-hook="allowhtml-true">
+          <label for="choices-allowhtml-true">HTML allowed</label>
+          <select
+            class="form-control"
+            name="choices-allowhtml-true"
+            id="choices-allowhtml-true"
+          ></select>
+        </div>
+
+        <div data-test-hook="allowhtml-false">
+          <label for="choices-allowhtml-false">HTML disabled</label>
+          <select
+            class="form-control"
+            name="choices-allowhtml-false"
+            id="choices-allowhtml-false"
+          ></select>
+        </div>
+
         <div data-test-hook="new-destroy-init">
           <label for="choices-new-destroy-init">New, Destroy, Init</label>
           <select
@@ -372,7 +399,9 @@
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const choicesBasic = new Choices('#choices-basic');
+        const choicesBasic = new Choices('#choices-basic', {
+          allowHTML: true,
+        });
 
         document
           .querySelector('button.disable')
@@ -387,14 +416,17 @@
           });
 
         new Choices('#choices-remove-button', {
+          allowHTML: true,
           removeItemButton: true,
         });
 
         new Choices('#choices-disabled-choice', {
+          allowHTML: true,
           removeItemButton: true,
         });
 
         new Choices('#choices-disabled-choice-via-options', {
+          allowHTML: true,
           removeItemButton: true,
           choices: [
             {
@@ -418,33 +450,45 @@
         });
 
         new Choices('#choices-add-items-disabled', {
+          allowHTML: true,
           addItems: false,
         });
 
-        new Choices('#choices-disabled-via-attr');
+        new Choices('#choices-disabled-via-attr', {
+          allowHTML: true,
+        });
 
         new Choices('#choices-prepend-append', {
+          allowHTML: true,
           prependValue: 'before-',
           appendValue: '-after',
         });
 
         new Choices('#choices-render-choice-limit', {
+          allowHTML: true,
           renderChoiceLimit: 1,
         });
 
         new Choices('#choices-search-disabled', {
+          allowHTML: true,
           searchEnabled: false,
         });
 
         new Choices('#choices-search-floor', {
+          allowHTML: true,
           searchFloor: 5,
         });
 
-        new Choices('#choices-placeholder-via-option-value');
+        new Choices('#choices-placeholder-via-option-value', {
+          allowHTML: true,
+        });
 
-        new Choices('#choices-placeholder-via-option-attr');
+        new Choices('#choices-placeholder-via-option-attr', {
+          allowHTML: true,
+        });
 
         new Choices('#choices-remote-data', {
+          allowHTML: true,
           shouldSort: false,
         }).setChoices(async () => {
           const res = await fetch('/data');
@@ -452,13 +496,20 @@
         });
 
         new Choices('#choices-scrolling-dropdown', {
+          allowHTML: true,
           shouldSort: false,
         });
 
-        new Choices('#choices-groups');
+        new Choices('#choices-groups', {
+          allowHTML: true,
+        });
 
-        const parent = new Choices('#choices-parent');
-        const child = new Choices('#choices-child').disable();
+        const parent = new Choices('#choices-parent', {
+          allowHTML: true,
+        });
+        const child = new Choices('#choices-child', {
+          allowHTML: true,
+        }).disable();
 
         parent.passedElement.element.addEventListener('change', event => {
           if (event.detail.value === 'Parent choice 2') {
@@ -469,6 +520,7 @@
         });
 
         new Choices('#choices-custom-properties', {
+          allowHTML: true,
           searchFields: ['label', 'value', 'customProperties.country'],
           choices: [
             {
@@ -499,6 +551,7 @@
         });
 
         new Choices('#choices-non-string-values', {
+          allowHTML: true,
           choices: [
             {
               id: 1,
@@ -525,15 +578,69 @@
           ],
         });
 
-        new Choices('#choices-within-form');
+        new Choices('#choices-within-form', {
+          allowHTML: true,
+        });
 
-        new Choices('#choices-set-choice-by-value').setChoiceByValue(
-          'Choice 2',
-        );
+        new Choices('#choices-set-choice-by-value', {
+          allowHTML: true,
+        }).setChoiceByValue('Choice 2');
 
-        new Choices('#choices-search-by-label', { searchFields: ['label'] });
+        new Choices('#choices-search-by-label', {
+          allowHTML: true,
+          searchFields: ['label']
+        });
 
-        const newDestroyInitChoices = new Choices('#choices-new-destroy-init');
+        new Choices('#choices-allowhtml-undefined', {
+          choices: [
+            {
+              id: 1,
+              label: '<b>Choice 1</b>',
+              value: 'Choice 1',
+            },
+            {
+              id: 2,
+              label: 'Choice 2',
+              value: 'Choice 2',
+            },
+          ],
+        });
+
+        new Choices('#choices-allowhtml-true', {
+          allowHTML: true,
+          choices: [
+            {
+              id: 1,
+              label: '<b>Choice 1</b>',
+              value: 'Choice 1',
+            },
+            {
+              id: 2,
+              label: 'Choice 2',
+              value: 'Choice 2',
+            },
+          ],
+        });
+
+        new Choices('#choices-allowhtml-false', {
+          allowHTML: false,
+          choices: [
+            {
+              id: 1,
+              label: '<b>Choice 1</b>',
+              value: 'Choice 1',
+            },
+            {
+              id: 2,
+              label: 'Choice 2',
+              value: 'Choice 2',
+            },
+          ],
+        });
+
+        const newDestroyInitChoices = new Choices('#choices-new-destroy-init', {
+          allowHTML: true,
+        });
         document
           .querySelector('button.destroy')
           .addEventListener('click', () => {

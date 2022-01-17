@@ -1,17 +1,22 @@
-import { Item, State } from '../interfaces';
 import {
   AddItemAction,
   RemoveItemAction,
   HighlightItemAction,
 } from '../actions/items';
+import { Item } from '../interfaces/item';
+import { State } from '../interfaces/state';
 
 export const defaultState = [];
 
-type ActionTypes = AddItemAction | RemoveItemAction | HighlightItemAction;
+type ActionTypes =
+  | AddItemAction
+  | RemoveItemAction
+  | HighlightItemAction
+  | Record<string, never>;
 
 export default function items(
   state: Item[] = defaultState,
-  action: ActionTypes,
+  action: ActionTypes = {},
 ): State['items'] {
   switch (action.type) {
     case 'ADD_ITEM': {
@@ -43,7 +48,7 @@ export default function items(
 
     case 'REMOVE_ITEM': {
       // Set item to inactive
-      return state.map(obj => {
+      return state.map((obj) => {
         const item = obj;
         if (item.id === action.id) {
           item.active = false;
@@ -56,7 +61,7 @@ export default function items(
     case 'HIGHLIGHT_ITEM': {
       const highlightItemAction = action as HighlightItemAction;
 
-      return state.map(obj => {
+      return state.map((obj) => {
         const item = obj;
         if (item.id === highlightItemAction.id) {
           item.highlighted = highlightItemAction.highlighted;

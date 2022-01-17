@@ -9,12 +9,12 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 10
+          node-version: 12
       - name: Build and run all tests
         run: |
           npm ci
@@ -32,15 +32,20 @@ jobs:
           BUNDLESIZE_GITHUB_TOKEN: ${{secrets.BUNDLESIZE_GITHUB_TOKEN}}
           FORCE_COLOR: 2
           HUSKY_SKIP_INSTALL: true
-      - name: Commit built files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "Update build files 🏗" -a || echo "No changes to commit" && exit 0
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      ## 
+      ## Disabling for now. There does not appear to be a secure way to do this
+      ## with protected branches. See discussion:
+      ## https://github.community/t/how-to-push-to-protected-branches-in-a-github-action/16101
+      ##
+      # - name: Commit built files
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git commit -m "Update build files 🏗" -a || echo "No changes to commit" && exit 0
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload coverage to Codecov
         run: bash <(curl -s https://codecov.io/bash)

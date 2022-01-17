@@ -1,4 +1,4 @@
-/*! choices.js v9.0.1 | © 2021 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v10.0.0 | © 2022 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -9,1320 +9,221 @@
 	else
 		root["Choices"] = factory();
 })(window, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/public/assets/scripts/";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+return /******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
-"use strict";
+/***/ 282:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-Object.defineProperty(exports, "__esModule", {
+
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
+exports.clearChoices = exports.activateChoices = exports.filterChoices = exports.addChoice = void 0;
 
-var utils_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(883);
 
-exports.DEFAULT_CLASSNAMES = {
-  containerOuter: 'choices',
-  containerInner: 'choices__inner',
-  input: 'choices__input',
-  inputCloned: 'choices__input--cloned',
-  list: 'choices__list',
-  listItems: 'choices__list--multiple',
-  listSingle: 'choices__list--single',
-  listDropdown: 'choices__list--dropdown',
-  item: 'choices__item',
-  itemSelectable: 'choices__item--selectable',
-  itemDisabled: 'choices__item--disabled',
-  itemChoice: 'choices__item--choice',
-  placeholder: 'choices__placeholder',
-  group: 'choices__group',
-  groupHeading: 'choices__heading',
-  button: 'choices__button',
-  activeState: 'is-active',
-  focusState: 'is-focused',
-  openState: 'is-open',
-  disabledState: 'is-disabled',
-  highlightedState: 'is-highlighted',
-  selectedState: 'is-selected',
-  flippedState: 'is-flipped',
-  loadingState: 'is-loading',
-  noResults: 'has-no-results',
-  noChoices: 'has-no-choices'
-};
-exports.DEFAULT_CONFIG = {
-  items: [],
-  choices: [],
-  silent: false,
-  renderChoiceLimit: -1,
-  maxItemCount: -1,
-  addItems: true,
-  addItemFilter: null,
-  removeItems: true,
-  removeItemButton: false,
-  editItems: false,
-  duplicateItemsAllowed: true,
-  delimiter: ',',
-  paste: true,
-  searchEnabled: true,
-  searchChoices: true,
-  searchFloor: 1,
-  searchResultLimit: 4,
-  searchFields: ['label', 'value'],
-  position: 'auto',
-  resetScrollPosition: true,
-  shouldSort: true,
-  shouldSortItems: false,
-  sorter: utils_1.sortByAlpha,
-  placeholder: true,
-  placeholderValue: null,
-  searchPlaceholderValue: null,
-  prependValue: null,
-  appendValue: null,
-  renderSelectedChoices: 'auto',
-  loadingText: 'Loading...',
-  noResultsText: 'No results found',
-  noChoicesText: 'No choices to choose from',
-  itemSelectText: 'Press to select',
-  uniqueItemText: 'Only unique values can be added',
-  customAddItemText: 'Only values matching specific conditions can be added',
-  addItemText: function addItemText(value) {
-    return "Press Enter to add <b>\"" + utils_1.sanitise(value) + "\"</b>";
-  },
-  maxItemText: function maxItemText(maxItemCount) {
-    return "Only " + maxItemCount + " values can be added";
-  },
-  valueComparer: function valueComparer(value1, value2) {
-    return value1 === value2;
-  },
-  fuseOptions: {
-    includeScore: true
-  },
-  labelId: '',
-  callbackOnInit: null,
-  callbackOnCreateTemplates: null,
-  classNames: exports.DEFAULT_CLASSNAMES
-};
-exports.EVENTS = {
-  showDropdown: 'showDropdown',
-  hideDropdown: 'hideDropdown',
-  change: 'change',
-  choice: 'choice',
-  search: 'search',
-  addItem: 'addItem',
-  removeItem: 'removeItem',
-  highlightItem: 'highlightItem',
-  highlightChoice: 'highlightChoice',
-  unhighlightItem: 'unhighlightItem'
-};
-exports.ACTION_TYPES = {
-  ADD_CHOICE: 'ADD_CHOICE',
-  FILTER_CHOICES: 'FILTER_CHOICES',
-  ACTIVATE_CHOICES: 'ACTIVATE_CHOICES',
-  CLEAR_CHOICES: 'CLEAR_CHOICES',
-  ADD_GROUP: 'ADD_GROUP',
-  ADD_ITEM: 'ADD_ITEM',
-  REMOVE_ITEM: 'REMOVE_ITEM',
-  HIGHLIGHT_ITEM: 'HIGHLIGHT_ITEM',
-  CLEAR_ALL: 'CLEAR_ALL',
-  RESET_TO: 'RESET_TO',
-  SET_IS_LOADING: 'SET_IS_LOADING'
-};
-exports.KEY_CODES = {
-  BACK_KEY: 46,
-  DELETE_KEY: 8,
-  ENTER_KEY: 13,
-  A_KEY: 65,
-  ESC_KEY: 27,
-  UP_KEY: 38,
-  DOWN_KEY: 40,
-  PAGE_UP_KEY: 33,
-  PAGE_DOWN_KEY: 34
-};
-exports.TEXT_TYPE = 'text';
-exports.SELECT_ONE_TYPE = 'select-one';
-exports.SELECT_MULTIPLE_TYPE = 'select-multiple';
-exports.SCROLLING_SPEED = 4;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-exports.getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-};
-
-exports.generateChars = function (length) {
-  return Array.from({
-    length: length
-  }, function () {
-    return exports.getRandomNumber(0, 36).toString(36);
-  }).join('');
-};
-
-exports.generateId = function (element, prefix) {
-  var id = element.id || element.name && element.name + "-" + exports.generateChars(2) || exports.generateChars(4);
-  id = id.replace(/(:|\.|\[|\]|,)/g, '');
-  id = prefix + "-" + id;
-  return id;
-};
-
-exports.getType = function (obj) {
-  return Object.prototype.toString.call(obj).slice(8, -1);
-};
-
-exports.isType = function (type, obj) {
-  return obj !== undefined && obj !== null && exports.getType(obj) === type;
-};
-
-exports.wrap = function (element, wrapper) {
-  if (wrapper === void 0) {
-    wrapper = document.createElement('div');
-  }
-
-  if (element.nextSibling) {
-    element.parentNode && element.parentNode.insertBefore(wrapper, element.nextSibling);
-  } else {
-    element.parentNode && element.parentNode.appendChild(wrapper);
-  }
-
-  return wrapper.appendChild(element);
-};
-
-exports.getAdjacentEl = function (startEl, selector, direction) {
-  if (direction === void 0) {
-    direction = 1;
-  }
-
-  var prop = (direction > 0 ? 'next' : 'previous') + "ElementSibling";
-  var sibling = startEl[prop];
-
-  while (sibling) {
-    if (sibling.matches(selector)) {
-      return sibling;
-    }
-
-    sibling = sibling[prop];
-  }
-
-  return sibling;
-};
-
-exports.isScrolledIntoView = function (element, parent, direction) {
-  if (direction === void 0) {
-    direction = 1;
-  }
-
-  if (!element) {
-    return false;
-  }
-
-  var isVisible;
-
-  if (direction > 0) {
-    // In view from bottom
-    isVisible = parent.scrollTop + parent.offsetHeight >= element.offsetTop + element.offsetHeight;
-  } else {
-    // In view from top
-    isVisible = element.offsetTop >= parent.scrollTop;
-  }
-
-  return isVisible;
-};
-
-exports.sanitise = function (value) {
-  if (typeof value !== 'string') {
-    return value;
-  }
-
-  return value.replace(/&/g, '&amp;').replace(/>/g, '&rt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-};
-
-exports.strToEl = function () {
-  var tmpEl = document.createElement('div');
-  return function (str) {
-    var cleanedInput = str.trim();
-    tmpEl.innerHTML = cleanedInput;
-    var firldChild = tmpEl.children[0];
-
-    while (tmpEl.firstChild) {
-      tmpEl.removeChild(tmpEl.firstChild);
-    }
-
-    return firldChild;
-  };
-}();
-
-exports.sortByAlpha = function (_a, _b) {
+var addChoice = function (_a) {
   var value = _a.value,
-      _c = _a.label,
-      label = _c === void 0 ? value : _c;
-  var value2 = _b.value,
-      _d = _b.label,
-      label2 = _d === void 0 ? value2 : _d;
-  return label.localeCompare(label2, [], {
-    sensitivity: 'base',
-    ignorePunctuation: true,
-    numeric: true
-  });
+      label = _a.label,
+      id = _a.id,
+      groupId = _a.groupId,
+      disabled = _a.disabled,
+      elementId = _a.elementId,
+      customProperties = _a.customProperties,
+      placeholder = _a.placeholder,
+      keyCode = _a.keyCode;
+  return {
+    type: constants_1.ACTION_TYPES.ADD_CHOICE,
+    value: value,
+    label: label,
+    id: id,
+    groupId: groupId,
+    disabled: disabled,
+    elementId: elementId,
+    customProperties: customProperties,
+    placeholder: placeholder,
+    keyCode: keyCode
+  };
 };
 
-exports.sortByScore = function (a, b) {
-  var _a = a.score,
-      scoreA = _a === void 0 ? 0 : _a;
-  var _b = b.score,
-      scoreB = _b === void 0 ? 0 : _b;
-  return scoreA - scoreB;
+exports.addChoice = addChoice;
+
+var filterChoices = function (results) {
+  return {
+    type: constants_1.ACTION_TYPES.FILTER_CHOICES,
+    results: results
+  };
 };
 
-exports.dispatchEvent = function (element, type, customArgs) {
-  if (customArgs === void 0) {
-    customArgs = null;
+exports.filterChoices = filterChoices;
+
+var activateChoices = function (active) {
+  if (active === void 0) {
+    active = true;
   }
 
-  var event = new CustomEvent(type, {
-    detail: customArgs,
-    bubbles: true,
-    cancelable: true
-  });
-  return element.dispatchEvent(event);
+  return {
+    type: constants_1.ACTION_TYPES.ACTIVATE_CHOICES,
+    active: active
+  };
 };
 
-exports.existsInArray = function (array, value, key) {
-  if (key === void 0) {
-    key = 'value';
-  }
+exports.activateChoices = activateChoices;
 
-  return array.some(function (item) {
-    if (typeof value === 'string') {
-      return item[key] === value.trim();
-    }
-
-    return item[key] === value;
-  });
+var clearChoices = function () {
+  return {
+    type: constants_1.ACTION_TYPES.CLEAR_CHOICES
+  };
 };
 
-exports.cloneObject = function (obj) {
-  return JSON.parse(JSON.stringify(obj));
-};
-/**
- * Returns an array of keys present on the first but missing on the second object
- */
-
-
-exports.diff = function (a, b) {
-  var aKeys = Object.keys(a).sort();
-  var bKeys = Object.keys(b).sort();
-  return aKeys.filter(function (i) {
-    return bKeys.indexOf(i) < 0;
-  });
-};
+exports.clearChoices = clearChoices;
 
 /***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-"use strict";
-/* WEBPACK VAR INJECTION */(function(global, module) {/* harmony import */ var _ponyfill_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
-/* global window */
+/***/ 783:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-var root;
 
-if (typeof self !== 'undefined') {
-  root = self;
-} else if (typeof window !== 'undefined') {
-  root = window;
-} else if (typeof global !== 'undefined') {
-  root = global;
-} else if (true) {
-  root = module;
-} else {}
-
-var result = Object(_ponyfill_js__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(root);
-/* harmony default export */ __webpack_exports__["a"] = (result);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(12), __webpack_require__(13)(module)))
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__DO_NOT_USE__ActionTypes", function() { return ActionTypes; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyMiddleware", function() { return applyMiddleware; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return bindActionCreators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return combineReducers; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return compose; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return createStore; });
-/* harmony import */ var symbol_observable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-
-
-/**
- * These are private action types reserved by Redux.
- * For any unknown actions, you must return the current state.
- * If the current state is undefined, you must return the initial state.
- * Do not reference these action types directly in your code.
- */
-var randomString = function randomString() {
-  return Math.random().toString(36).substring(7).split('').join('.');
-};
-
-var ActionTypes = {
-  INIT: "@@redux/INIT" + randomString(),
-  REPLACE: "@@redux/REPLACE" + randomString(),
-  PROBE_UNKNOWN_ACTION: function PROBE_UNKNOWN_ACTION() {
-    return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
-  }
-};
-
-/**
- * @param {any} obj The object to inspect.
- * @returns {boolean} True if the argument appears to be a plain object.
- */
-function isPlainObject(obj) {
-  if (typeof obj !== 'object' || obj === null) return false;
-  var proto = obj;
-
-  while (Object.getPrototypeOf(proto) !== null) {
-    proto = Object.getPrototypeOf(proto);
-  }
-
-  return Object.getPrototypeOf(obj) === proto;
-}
-
-/**
- * Creates a Redux store that holds the state tree.
- * The only way to change the data in the store is to call `dispatch()` on it.
- *
- * There should only be a single store in your app. To specify how different
- * parts of the state tree respond to actions, you may combine several reducers
- * into a single reducer function by using `combineReducers`.
- *
- * @param {Function} reducer A function that returns the next state tree, given
- * the current state tree and the action to handle.
- *
- * @param {any} [preloadedState] The initial state. You may optionally specify it
- * to hydrate the state from the server in universal apps, or to restore a
- * previously serialized user session.
- * If you use `combineReducers` to produce the root reducer function, this must be
- * an object with the same shape as `combineReducers` keys.
- *
- * @param {Function} [enhancer] The store enhancer. You may optionally specify it
- * to enhance the store with third-party capabilities such as middleware,
- * time travel, persistence, etc. The only store enhancer that ships with Redux
- * is `applyMiddleware()`.
- *
- * @returns {Store} A Redux store that lets you read the state, dispatch actions
- * and subscribe to changes.
- */
-
-function createStore(reducer, preloadedState, enhancer) {
-  var _ref2;
-
-  if (typeof preloadedState === 'function' && typeof enhancer === 'function' || typeof enhancer === 'function' && typeof arguments[3] === 'function') {
-    throw new Error('It looks like you are passing several store enhancers to ' + 'createStore(). This is not supported. Instead, compose them ' + 'together to a single function.');
-  }
-
-  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
-    enhancer = preloadedState;
-    preloadedState = undefined;
-  }
-
-  if (typeof enhancer !== 'undefined') {
-    if (typeof enhancer !== 'function') {
-      throw new Error('Expected the enhancer to be a function.');
-    }
-
-    return enhancer(createStore)(reducer, preloadedState);
-  }
-
-  if (typeof reducer !== 'function') {
-    throw new Error('Expected the reducer to be a function.');
-  }
-
-  var currentReducer = reducer;
-  var currentState = preloadedState;
-  var currentListeners = [];
-  var nextListeners = currentListeners;
-  var isDispatching = false;
-  /**
-   * This makes a shallow copy of currentListeners so we can use
-   * nextListeners as a temporary list while dispatching.
-   *
-   * This prevents any bugs around consumers calling
-   * subscribe/unsubscribe in the middle of a dispatch.
-   */
-
-  function ensureCanMutateNextListeners() {
-    if (nextListeners === currentListeners) {
-      nextListeners = currentListeners.slice();
-    }
-  }
-  /**
-   * Reads the state tree managed by the store.
-   *
-   * @returns {any} The current state tree of your application.
-   */
-
-
-  function getState() {
-    if (isDispatching) {
-      throw new Error('You may not call store.getState() while the reducer is executing. ' + 'The reducer has already received the state as an argument. ' + 'Pass it down from the top reducer instead of reading it from the store.');
-    }
-
-    return currentState;
-  }
-  /**
-   * Adds a change listener. It will be called any time an action is dispatched,
-   * and some part of the state tree may potentially have changed. You may then
-   * call `getState()` to read the current state tree inside the callback.
-   *
-   * You may call `dispatch()` from a change listener, with the following
-   * caveats:
-   *
-   * 1. The subscriptions are snapshotted just before every `dispatch()` call.
-   * If you subscribe or unsubscribe while the listeners are being invoked, this
-   * will not have any effect on the `dispatch()` that is currently in progress.
-   * However, the next `dispatch()` call, whether nested or not, will use a more
-   * recent snapshot of the subscription list.
-   *
-   * 2. The listener should not expect to see all state changes, as the state
-   * might have been updated multiple times during a nested `dispatch()` before
-   * the listener is called. It is, however, guaranteed that all subscribers
-   * registered before the `dispatch()` started will be called with the latest
-   * state by the time it exits.
-   *
-   * @param {Function} listener A callback to be invoked on every dispatch.
-   * @returns {Function} A function to remove this change listener.
-   */
-
-
-  function subscribe(listener) {
-    if (typeof listener !== 'function') {
-      throw new Error('Expected the listener to be a function.');
-    }
-
-    if (isDispatching) {
-      throw new Error('You may not call store.subscribe() while the reducer is executing. ' + 'If you would like to be notified after the store has been updated, subscribe from a ' + 'component and invoke store.getState() in the callback to access the latest state. ' + 'See https://redux.js.org/api-reference/store#subscribe(listener) for more details.');
-    }
-
-    var isSubscribed = true;
-    ensureCanMutateNextListeners();
-    nextListeners.push(listener);
-    return function unsubscribe() {
-      if (!isSubscribed) {
-        return;
-      }
-
-      if (isDispatching) {
-        throw new Error('You may not unsubscribe from a store listener while the reducer is executing. ' + 'See https://redux.js.org/api-reference/store#subscribe(listener) for more details.');
-      }
-
-      isSubscribed = false;
-      ensureCanMutateNextListeners();
-      var index = nextListeners.indexOf(listener);
-      nextListeners.splice(index, 1);
-    };
-  }
-  /**
-   * Dispatches an action. It is the only way to trigger a state change.
-   *
-   * The `reducer` function, used to create the store, will be called with the
-   * current state tree and the given `action`. Its return value will
-   * be considered the **next** state of the tree, and the change listeners
-   * will be notified.
-   *
-   * The base implementation only supports plain object actions. If you want to
-   * dispatch a Promise, an Observable, a thunk, or something else, you need to
-   * wrap your store creating function into the corresponding middleware. For
-   * example, see the documentation for the `redux-thunk` package. Even the
-   * middleware will eventually dispatch plain object actions using this method.
-   *
-   * @param {Object} action A plain object representing “what changed”. It is
-   * a good idea to keep actions serializable so you can record and replay user
-   * sessions, or use the time travelling `redux-devtools`. An action must have
-   * a `type` property which may not be `undefined`. It is a good idea to use
-   * string constants for action types.
-   *
-   * @returns {Object} For convenience, the same action object you dispatched.
-   *
-   * Note that, if you use a custom middleware, it may wrap `dispatch()` to
-   * return something else (for example, a Promise you can await).
-   */
-
-
-  function dispatch(action) {
-    if (!isPlainObject(action)) {
-      throw new Error('Actions must be plain objects. ' + 'Use custom middleware for async actions.');
-    }
-
-    if (typeof action.type === 'undefined') {
-      throw new Error('Actions may not have an undefined "type" property. ' + 'Have you misspelled a constant?');
-    }
-
-    if (isDispatching) {
-      throw new Error('Reducers may not dispatch actions.');
-    }
-
-    try {
-      isDispatching = true;
-      currentState = currentReducer(currentState, action);
-    } finally {
-      isDispatching = false;
-    }
-
-    var listeners = currentListeners = nextListeners;
-
-    for (var i = 0; i < listeners.length; i++) {
-      var listener = listeners[i];
-      listener();
-    }
-
-    return action;
-  }
-  /**
-   * Replaces the reducer currently used by the store to calculate the state.
-   *
-   * You might need this if your app implements code splitting and you want to
-   * load some of the reducers dynamically. You might also need this if you
-   * implement a hot reloading mechanism for Redux.
-   *
-   * @param {Function} nextReducer The reducer for the store to use instead.
-   * @returns {void}
-   */
-
-
-  function replaceReducer(nextReducer) {
-    if (typeof nextReducer !== 'function') {
-      throw new Error('Expected the nextReducer to be a function.');
-    }
-
-    currentReducer = nextReducer; // This action has a similiar effect to ActionTypes.INIT.
-    // Any reducers that existed in both the new and old rootReducer
-    // will receive the previous state. This effectively populates
-    // the new state tree with any relevant data from the old one.
-
-    dispatch({
-      type: ActionTypes.REPLACE
-    });
-  }
-  /**
-   * Interoperability point for observable/reactive libraries.
-   * @returns {observable} A minimal observable of state changes.
-   * For more information, see the observable proposal:
-   * https://github.com/tc39/proposal-observable
-   */
-
-
-  function observable() {
-    var _ref;
-
-    var outerSubscribe = subscribe;
-    return _ref = {
-      /**
-       * The minimal observable subscription method.
-       * @param {Object} observer Any object that can be used as an observer.
-       * The observer object should have a `next` method.
-       * @returns {subscription} An object with an `unsubscribe` method that can
-       * be used to unsubscribe the observable from the store, and prevent further
-       * emission of values from the observable.
-       */
-      subscribe: function subscribe(observer) {
-        if (typeof observer !== 'object' || observer === null) {
-          throw new TypeError('Expected the observer to be an object.');
-        }
-
-        function observeState() {
-          if (observer.next) {
-            observer.next(getState());
-          }
-        }
-
-        observeState();
-        var unsubscribe = outerSubscribe(observeState);
-        return {
-          unsubscribe: unsubscribe
-        };
-      }
-    }, _ref[symbol_observable__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"]] = function () {
-      return this;
-    }, _ref;
-  } // When a store is created, an "INIT" action is dispatched so that every
-  // reducer returns their initial state. This effectively populates
-  // the initial state tree.
-
-
-  dispatch({
-    type: ActionTypes.INIT
-  });
-  return _ref2 = {
-    dispatch: dispatch,
-    subscribe: subscribe,
-    getState: getState,
-    replaceReducer: replaceReducer
-  }, _ref2[symbol_observable__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"]] = observable, _ref2;
-}
-
-/**
- * Prints a warning in the console if it exists.
- *
- * @param {String} message The warning message.
- * @returns {void}
- */
-function warning(message) {
-  /* eslint-disable no-console */
-  if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    console.error(message);
-  }
-  /* eslint-enable no-console */
-
-
-  try {
-    // This error was thrown as a convenience so that if you enable
-    // "break on all exceptions" in your console,
-    // it would pause the execution at this line.
-    throw new Error(message);
-  } catch (e) {} // eslint-disable-line no-empty
-
-}
-
-function getUndefinedStateErrorMessage(key, action) {
-  var actionType = action && action.type;
-  var actionDescription = actionType && "action \"" + String(actionType) + "\"" || 'an action';
-  return "Given " + actionDescription + ", reducer \"" + key + "\" returned undefined. " + "To ignore an action, you must explicitly return the previous state. " + "If you want this reducer to hold no value, you can return null instead of undefined.";
-}
-
-function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
-  var reducerKeys = Object.keys(reducers);
-  var argumentName = action && action.type === ActionTypes.INIT ? 'preloadedState argument passed to createStore' : 'previous state received by the reducer';
-
-  if (reducerKeys.length === 0) {
-    return 'Store does not have a valid reducer. Make sure the argument passed ' + 'to combineReducers is an object whose values are reducers.';
-  }
-
-  if (!isPlainObject(inputState)) {
-    return "The " + argumentName + " has unexpected type of \"" + {}.toString.call(inputState).match(/\s([a-z|A-Z]+)/)[1] + "\". Expected argument to be an object with the following " + ("keys: \"" + reducerKeys.join('", "') + "\"");
-  }
-
-  var unexpectedKeys = Object.keys(inputState).filter(function (key) {
-    return !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key];
-  });
-  unexpectedKeys.forEach(function (key) {
-    unexpectedKeyCache[key] = true;
-  });
-  if (action && action.type === ActionTypes.REPLACE) return;
-
-  if (unexpectedKeys.length > 0) {
-    return "Unexpected " + (unexpectedKeys.length > 1 ? 'keys' : 'key') + " " + ("\"" + unexpectedKeys.join('", "') + "\" found in " + argumentName + ". ") + "Expected to find one of the known reducer keys instead: " + ("\"" + reducerKeys.join('", "') + "\". Unexpected keys will be ignored.");
-  }
-}
-
-function assertReducerShape(reducers) {
-  Object.keys(reducers).forEach(function (key) {
-    var reducer = reducers[key];
-    var initialState = reducer(undefined, {
-      type: ActionTypes.INIT
-    });
-
-    if (typeof initialState === 'undefined') {
-      throw new Error("Reducer \"" + key + "\" returned undefined during initialization. " + "If the state passed to the reducer is undefined, you must " + "explicitly return the initial state. The initial state may " + "not be undefined. If you don't want to set a value for this reducer, " + "you can use null instead of undefined.");
-    }
-
-    if (typeof reducer(undefined, {
-      type: ActionTypes.PROBE_UNKNOWN_ACTION()
-    }) === 'undefined') {
-      throw new Error("Reducer \"" + key + "\" returned undefined when probed with a random type. " + ("Don't try to handle " + ActionTypes.INIT + " or other actions in \"redux/*\" ") + "namespace. They are considered private. Instead, you must return the " + "current state for any unknown actions, unless it is undefined, " + "in which case you must return the initial state, regardless of the " + "action type. The initial state may not be undefined, but can be null.");
-    }
-  });
-}
-/**
- * Turns an object whose values are different reducer functions, into a single
- * reducer function. It will call every child reducer, and gather their results
- * into a single state object, whose keys correspond to the keys of the passed
- * reducer functions.
- *
- * @param {Object} reducers An object whose values correspond to different
- * reducer functions that need to be combined into one. One handy way to obtain
- * it is to use ES6 `import * as reducers` syntax. The reducers may never return
- * undefined for any action. Instead, they should return their initial state
- * if the state passed to them was undefined, and the current state for any
- * unrecognized action.
- *
- * @returns {Function} A reducer function that invokes every reducer inside the
- * passed object, and builds a state object with the same shape.
- */
-
-
-function combineReducers(reducers) {
-  var reducerKeys = Object.keys(reducers);
-  var finalReducers = {};
-
-  for (var i = 0; i < reducerKeys.length; i++) {
-    var key = reducerKeys[i];
-
-    if (false) {}
-
-    if (typeof reducers[key] === 'function') {
-      finalReducers[key] = reducers[key];
-    }
-  }
-
-  var finalReducerKeys = Object.keys(finalReducers); // This is used to make sure we don't warn about the same
-  // keys multiple times.
-
-  var unexpectedKeyCache;
-
-  if (false) {}
-
-  var shapeAssertionError;
-
-  try {
-    assertReducerShape(finalReducers);
-  } catch (e) {
-    shapeAssertionError = e;
-  }
-
-  return function combination(state, action) {
-    if (state === void 0) {
-      state = {};
-    }
-
-    if (shapeAssertionError) {
-      throw shapeAssertionError;
-    }
-
-    if (false) { var warningMessage; }
-
-    var hasChanged = false;
-    var nextState = {};
-
-    for (var _i = 0; _i < finalReducerKeys.length; _i++) {
-      var _key = finalReducerKeys[_i];
-      var reducer = finalReducers[_key];
-      var previousStateForKey = state[_key];
-      var nextStateForKey = reducer(previousStateForKey, action);
-
-      if (typeof nextStateForKey === 'undefined') {
-        var errorMessage = getUndefinedStateErrorMessage(_key, action);
-        throw new Error(errorMessage);
-      }
-
-      nextState[_key] = nextStateForKey;
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-    }
-
-    return hasChanged ? nextState : state;
-  };
-}
-
-function bindActionCreator(actionCreator, dispatch) {
-  return function () {
-    return dispatch(actionCreator.apply(this, arguments));
-  };
-}
-/**
- * Turns an object whose values are action creators, into an object with the
- * same keys, but with every function wrapped into a `dispatch` call so they
- * may be invoked directly. This is just a convenience method, as you can call
- * `store.dispatch(MyActionCreators.doSomething())` yourself just fine.
- *
- * For convenience, you can also pass an action creator as the first argument,
- * and get a dispatch wrapped function in return.
- *
- * @param {Function|Object} actionCreators An object whose values are action
- * creator functions. One handy way to obtain it is to use ES6 `import * as`
- * syntax. You may also pass a single function.
- *
- * @param {Function} dispatch The `dispatch` function available on your Redux
- * store.
- *
- * @returns {Function|Object} The object mimicking the original object, but with
- * every action creator wrapped into the `dispatch` call. If you passed a
- * function as `actionCreators`, the return value will also be a single
- * function.
- */
-
-
-function bindActionCreators(actionCreators, dispatch) {
-  if (typeof actionCreators === 'function') {
-    return bindActionCreator(actionCreators, dispatch);
-  }
-
-  if (typeof actionCreators !== 'object' || actionCreators === null) {
-    throw new Error("bindActionCreators expected an object or a function, instead received " + (actionCreators === null ? 'null' : typeof actionCreators) + ". " + "Did you write \"import ActionCreators from\" instead of \"import * as ActionCreators from\"?");
-  }
-
-  var boundActionCreators = {};
-
-  for (var key in actionCreators) {
-    var actionCreator = actionCreators[key];
-
-    if (typeof actionCreator === 'function') {
-      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch);
-    }
-  }
-
-  return boundActionCreators;
-}
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    keys.push.apply(keys, Object.getOwnPropertySymbols(object));
-  }
-
-  if (enumerableOnly) keys = keys.filter(function (sym) {
-    return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-  });
-  return keys;
-}
-
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    if (i % 2) {
-      ownKeys(source, true).forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(source).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-  }
-
-  return target;
-}
-
-/**
- * Composes single-argument functions from right to left. The rightmost
- * function can take multiple arguments as it provides the signature for
- * the resulting composite function.
- *
- * @param {...Function} funcs The functions to compose.
- * @returns {Function} A function obtained by composing the argument functions
- * from right to left. For example, compose(f, g, h) is identical to doing
- * (...args) => f(g(h(...args))).
- */
-function compose() {
-  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
-    funcs[_key] = arguments[_key];
-  }
-
-  if (funcs.length === 0) {
-    return function (arg) {
-      return arg;
-    };
-  }
-
-  if (funcs.length === 1) {
-    return funcs[0];
-  }
-
-  return funcs.reduce(function (a, b) {
-    return function () {
-      return a(b.apply(void 0, arguments));
-    };
-  });
-}
-
-/**
- * Creates a store enhancer that applies middleware to the dispatch method
- * of the Redux store. This is handy for a variety of tasks, such as expressing
- * asynchronous actions in a concise manner, or logging every action payload.
- *
- * See `redux-thunk` package as an example of the Redux middleware.
- *
- * Because middleware is potentially asynchronous, this should be the first
- * store enhancer in the composition chain.
- *
- * Note that each middleware will be given the `dispatch` and `getState` functions
- * as named arguments.
- *
- * @param {...Function} middlewares The middleware chain to be applied.
- * @returns {Function} A store enhancer applying the middleware.
- */
-
-function applyMiddleware() {
-  for (var _len = arguments.length, middlewares = new Array(_len), _key = 0; _key < _len; _key++) {
-    middlewares[_key] = arguments[_key];
-  }
-
-  return function (createStore) {
-    return function () {
-      var store = createStore.apply(void 0, arguments);
-
-      var _dispatch = function dispatch() {
-        throw new Error('Dispatching while constructing your middleware is not allowed. ' + 'Other middleware would not be applied to this dispatch.');
-      };
-
-      var middlewareAPI = {
-        getState: store.getState,
-        dispatch: function dispatch() {
-          return _dispatch.apply(void 0, arguments);
-        }
-      };
-      var chain = middlewares.map(function (middleware) {
-        return middleware(middlewareAPI);
-      });
-      _dispatch = compose.apply(void 0, chain)(store.dispatch);
-      return _objectSpread2({}, store, {
-        dispatch: _dispatch
-      });
-    };
-  };
-}
-
-/*
- * This is a dummy function to check if the function name has been altered by minification.
- * If the function has been minified and NODE_ENV !== 'production', warn the user.
- */
-
-function isCrushed() {}
-
-if (false) {}
-
-
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
+exports.addGroup = void 0;
 
-var redux_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(883);
 
-var items_1 = __importDefault(__webpack_require__(14));
-
-var groups_1 = __importDefault(__webpack_require__(15));
-
-var choices_1 = __importDefault(__webpack_require__(16));
-
-var loading_1 = __importDefault(__webpack_require__(17));
-
-var utils_1 = __webpack_require__(1);
-
-exports.defaultState = {
-  groups: [],
-  items: [],
-  choices: [],
-  loading: false
-};
-var appReducer = redux_1.combineReducers({
-  items: items_1.default,
-  groups: groups_1.default,
-  choices: choices_1.default,
-  loading: loading_1.default
-});
-
-var rootReducer = function rootReducer(passedState, action) {
-  var state = passedState; // If we are clearing all items, groups and options we reassign
-  // state and then pass that state to our proper reducer. This isn't
-  // mutating our actual state
-  // See: http://stackoverflow.com/a/35641992
-
-  if (action.type === 'CLEAR_ALL') {
-    state = exports.defaultState;
-  } else if (action.type === 'RESET_TO') {
-    return utils_1.cloneObject(action.state);
-  }
-
-  return appReducer(state, action);
+var addGroup = function (_a) {
+  var value = _a.value,
+      id = _a.id,
+      active = _a.active,
+      disabled = _a.disabled;
+  return {
+    type: constants_1.ACTION_TYPES.ADD_GROUP,
+    value: value,
+    id: id,
+    active: active,
+    disabled: disabled
+  };
 };
 
-exports.default = rootReducer;
+exports.addGroup = addGroup;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 464:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-Object.defineProperty(exports, "__esModule", {
+
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
+exports.highlightItem = exports.removeItem = exports.addItem = void 0;
 
-var utils_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(883);
 
-var WrappedElement =
-/** @class */
-function () {
-  function WrappedElement(_a) {
-    var element = _a.element,
-        classNames = _a.classNames;
-    this.element = element;
-    this.classNames = classNames;
-
-    if (!(element instanceof HTMLInputElement) && !(element instanceof HTMLSelectElement)) {
-      throw new TypeError('Invalid element passed');
-    }
-
-    this.isDisabled = false;
-  }
-
-  Object.defineProperty(WrappedElement.prototype, "isActive", {
-    get: function get() {
-      return this.element.dataset.choice === 'active';
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(WrappedElement.prototype, "dir", {
-    get: function get() {
-      return this.element.dir;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(WrappedElement.prototype, "value", {
-    get: function get() {
-      return this.element.value;
-    },
-    set: function set(value) {
-      // you must define setter here otherwise it will be readonly property
-      this.element.value = value;
-    },
-    enumerable: true,
-    configurable: true
-  });
-
-  WrappedElement.prototype.conceal = function () {
-    // Hide passed input
-    this.element.classList.add(this.classNames.input);
-    this.element.hidden = true; // Remove element from tab index
-
-    this.element.tabIndex = -1; // Backup original styles if any
-
-    var origStyle = this.element.getAttribute('style');
-
-    if (origStyle) {
-      this.element.setAttribute('data-choice-orig-style', origStyle);
-    }
-
-    this.element.setAttribute('data-choice', 'active');
+var addItem = function (_a) {
+  var value = _a.value,
+      label = _a.label,
+      id = _a.id,
+      choiceId = _a.choiceId,
+      groupId = _a.groupId,
+      customProperties = _a.customProperties,
+      placeholder = _a.placeholder,
+      keyCode = _a.keyCode;
+  return {
+    type: constants_1.ACTION_TYPES.ADD_ITEM,
+    value: value,
+    label: label,
+    id: id,
+    choiceId: choiceId,
+    groupId: groupId,
+    customProperties: customProperties,
+    placeholder: placeholder,
+    keyCode: keyCode
   };
-
-  WrappedElement.prototype.reveal = function () {
-    // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
-    this.element.hidden = false;
-    this.element.removeAttribute('tabindex'); // Recover original styles if any
-
-    var origStyle = this.element.getAttribute('data-choice-orig-style');
-
-    if (origStyle) {
-      this.element.removeAttribute('data-choice-orig-style');
-      this.element.setAttribute('style', origStyle);
-    } else {
-      this.element.removeAttribute('style');
-    }
-
-    this.element.removeAttribute('data-choice'); // Re-assign values - this is weird, I know
-    // @todo Figure out why we need to do this
-
-    this.element.value = this.element.value; // eslint-disable-line no-self-assign
-  };
-
-  WrappedElement.prototype.enable = function () {
-    this.element.removeAttribute('disabled');
-    this.element.disabled = false;
-    this.isDisabled = false;
-  };
-
-  WrappedElement.prototype.disable = function () {
-    this.element.setAttribute('disabled', '');
-    this.element.disabled = true;
-    this.isDisabled = true;
-  };
-
-  WrappedElement.prototype.triggerEvent = function (eventType, data) {
-    utils_1.dispatchEvent(this.element, eventType, data);
-  };
-
-  return WrappedElement;
-}();
-
-exports.default = WrappedElement;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return symbolObservablePonyfill; });
-function symbolObservablePonyfill(root) {
-	var result;
-	var Symbol = root.Symbol;
-
-	if (typeof Symbol === 'function') {
-		if (Symbol.observable) {
-			result = Symbol.observable;
-		} else {
-			result = Symbol('observable');
-			Symbol.observable = result;
-		}
-	} else {
-		result = '@@observable';
-	}
-
-	return result;
 };
 
+exports.addItem = addItem;
+
+var removeItem = function (id, choiceId) {
+  return {
+    type: constants_1.ACTION_TYPES.REMOVE_ITEM,
+    id: id,
+    choiceId: choiceId
+  };
+};
+
+exports.removeItem = removeItem;
+
+var highlightItem = function (id, highlighted) {
+  return {
+    type: constants_1.ACTION_TYPES.HIGHLIGHT_ITEM,
+    id: id,
+    highlighted: highlighted
+  };
+};
+
+exports.highlightItem = highlightItem;
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(8);
+/***/ 137:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.setIsLoading = exports.resetTo = exports.clearAll = void 0;
+
+var constants_1 = __webpack_require__(883);
+
+var clearAll = function () {
+  return {
+    type: constants_1.ACTION_TYPES.CLEAR_ALL
+  };
+};
+
+exports.clearAll = clearAll;
+
+var resetTo = function (state) {
+  return {
+    type: constants_1.ACTION_TYPES.RESET_TO,
+    state: state
+  };
+};
+
+exports.resetTo = resetTo;
+
+var setIsLoading = function (isLoading) {
+  return {
+    type: constants_1.ACTION_TYPES.SET_IS_LOADING,
+    isLoading: isLoading
+  };
+};
+
+exports.setIsLoading = setIsLoading;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 373:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
-    s += arguments[i].length;
-  }
 
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
-    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
-      r[k] = a[j];
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
     }
   }
-
-  return r;
+  return to.concat(ar || Array.prototype.slice.call(from));
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -1331,34 +232,37 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
+
+var deepmerge_1 = __importDefault(__webpack_require__(996));
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-var fuse_js_1 = __importDefault(__webpack_require__(9));
 
-var deepmerge_1 = __importDefault(__webpack_require__(10));
+var fuse_js_1 = __importDefault(__webpack_require__(221));
 
-var store_1 = __importDefault(__webpack_require__(11));
+var choices_1 = __webpack_require__(282);
 
-var components_1 = __webpack_require__(18);
+var groups_1 = __webpack_require__(783);
 
-var constants_1 = __webpack_require__(0);
+var items_1 = __webpack_require__(464);
 
-var templates_1 = __importDefault(__webpack_require__(25));
+var misc_1 = __webpack_require__(137);
 
-var choices_1 = __webpack_require__(26);
+var components_1 = __webpack_require__(520);
 
-var items_1 = __webpack_require__(27);
+var constants_1 = __webpack_require__(883);
 
-var groups_1 = __webpack_require__(28);
+var defaults_1 = __webpack_require__(789);
 
-var misc_1 = __webpack_require__(29);
+var utils_1 = __webpack_require__(799);
 
-var utils_1 = __webpack_require__(1);
+var reducers_1 = __webpack_require__(655);
 
-var reducers_1 = __webpack_require__(4);
+var store_1 = __importDefault(__webpack_require__(744));
+
+var templates_1 = __importDefault(__webpack_require__(686));
 /** @see {@link http://browserhacks.com/#hack-acea075d0ac6954f275a70023906050c} */
 
 
@@ -1383,14 +287,18 @@ function () {
       userConfig = {};
     }
 
-    this.config = deepmerge_1.default.all([constants_1.DEFAULT_CONFIG, Choices.defaults.options, userConfig], // When merging array configs, replace with a copy of the userConfig array,
+    if (userConfig.allowHTML === undefined) {
+      console.warn('Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.');
+    }
+
+    this.config = deepmerge_1.default.all([defaults_1.DEFAULT_CONFIG, Choices.defaults.options, userConfig], // When merging array configs, replace with a copy of the userConfig array,
     // instead of concatenating with the default array
     {
-      arrayMerge: function arrayMerge(_, sourceArray) {
-        return __spreadArrays(sourceArray);
+      arrayMerge: function (_, sourceArray) {
+        return __spreadArray([], sourceArray, true);
       }
     });
-    var invalidConfigOptions = utils_1.diff(this.config, constants_1.DEFAULT_CONFIG);
+    var invalidConfigOptions = (0, utils_1.diff)(this.config, defaults_1.DEFAULT_CONFIG);
 
     if (invalidConfigOptions.length) {
       console.warn('Unknown config option(s) passed', invalidConfigOptions.join(', '));
@@ -1408,7 +316,7 @@ function () {
     this._isSelectElement = this._isSelectOneElement || this._isSelectMultipleElement;
     this.config.searchEnabled = this._isSelectMultipleElement || this.config.searchEnabled;
 
-    if (!['auto', 'always'].includes("" + this.config.renderSelectedChoices)) {
+    if (!['auto', 'always'].includes("".concat(this.config.renderSelectedChoices))) {
       this.config.renderSelectedChoices = 'auto';
     }
 
@@ -1427,7 +335,7 @@ function () {
       this.passedElement = new components_1.WrappedSelect({
         element: passedElement,
         classNames: this.config.classNames,
-        template: function template(data) {
+        template: function (data) {
           return _this._templates.option(data);
         }
       });
@@ -1444,7 +352,7 @@ function () {
     this._highlightPosition = 0;
     this._wasTap = true;
     this._placeholderValue = this._generatePlaceholderValue();
-    this._baseId = utils_1.generateId(this.passedElement.element, 'choices-');
+    this._baseId = (0, utils_1.generateId)(this.passedElement.element, 'choices-');
     /**
      * setting direction in cases where it's explicitly set on passedElement
      * or when calculated direction is different from the document
@@ -1529,7 +437,7 @@ function () {
   }
 
   Object.defineProperty(Choices, "defaults", {
-    get: function get() {
+    get: function () {
       return Object.preventExtensions({
         get options() {
           return USER_DEFAULTS;
@@ -1541,7 +449,7 @@ function () {
 
       });
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
 
@@ -1643,7 +551,7 @@ function () {
         label = _c === void 0 ? '' : _c;
     var group = groupId >= 0 ? this._store.getGroupById(groupId) : null;
 
-    this._store.dispatch(items_1.highlightItem(id, true));
+    this._store.dispatch((0, items_1.highlightItem)(id, true));
 
     if (runEvent) {
       this.passedElement.triggerEvent(constants_1.EVENTS.highlightItem, {
@@ -1671,7 +579,7 @@ function () {
         label = _c === void 0 ? '' : _c;
     var group = groupId >= 0 ? this._store.getGroupById(groupId) : null;
 
-    this._store.dispatch(items_1.highlightItem(id, false));
+    this._store.dispatch((0, items_1.highlightItem)(id, false));
 
     this.passedElement.triggerEvent(constants_1.EVENTS.highlightItem, {
       id: id,
@@ -1940,11 +848,10 @@ function () {
 
       if (typeof Promise === 'function' && fetcher_1 instanceof Promise) {
         // that's a promise
-        // eslint-disable-next-line compat/compat
+        // eslint-disable-next-line no-promise-executor-return
         return new Promise(function (resolve) {
           return requestAnimationFrame(resolve);
-        }) // eslint-disable-line compat/compat
-        .then(function () {
+        }).then(function () {
           return _this._handleLoadingState(true);
         }).then(function () {
           return fetcher_1;
@@ -1963,7 +870,7 @@ function () {
 
 
       if (!Array.isArray(fetcher_1)) {
-        throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: " + typeof fetcher_1);
+        throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: ".concat(typeof fetcher_1));
       } // recursion with results, it's sync and choices were cleared already
 
 
@@ -1981,7 +888,7 @@ function () {
     choicesArrayOrFetcher.forEach(function (groupOrChoice) {
       if (groupOrChoice.choices) {
         _this._addGroup({
-          id: groupOrChoice.id ? parseInt("" + groupOrChoice.id, 10) : null,
+          id: groupOrChoice.id ? parseInt("".concat(groupOrChoice.id), 10) : null,
           group: groupOrChoice,
           valueKey: value,
           labelKey: label
@@ -2006,13 +913,13 @@ function () {
   };
 
   Choices.prototype.clearChoices = function () {
-    this._store.dispatch(choices_1.clearChoices());
+    this._store.dispatch((0, choices_1.clearChoices)());
 
     return this;
   };
 
   Choices.prototype.clearStore = function () {
-    this._store.dispatch(misc_1.clearAll());
+    this._store.dispatch((0, misc_1.clearAll)());
 
     return this;
   };
@@ -2024,7 +931,7 @@ function () {
     if (!this._isTextElement && this._canSearch) {
       this._isSearching = false;
 
-      this._store.dispatch(choices_1.activateChoices(true));
+      this._store.dispatch((0, choices_1.activateChoices)(true));
     }
 
     return this;
@@ -2140,7 +1047,7 @@ function () {
       fragment = document.createDocumentFragment();
     }
 
-    var getGroupChoices = function getGroupChoices(group) {
+    var getGroupChoices = function (group) {
       return choices.filter(function (choice) {
         if (_this._isSelectOneElement) {
           return choice.groupId === group.id;
@@ -2187,7 +1094,7 @@ function () {
         renderChoiceLimit = _a.renderChoiceLimit;
     var filter = this._isSearching ? utils_1.sortByScore : this.config.sorter;
 
-    var appendChoice = function appendChoice(choice) {
+    var appendChoice = function (choice) {
       var shouldRender = renderSelectedChoices === 'auto' ? _this._isSelectOneElement || !choice.selected : true;
 
       if (shouldRender) {
@@ -2228,7 +1135,7 @@ function () {
 
     var choiceLimit = rendererableChoices.length; // Prepend placeholeder
 
-    var sortedChoices = this._isSelectOneElement ? __spreadArrays(placeholderChoices, normalChoices) : normalChoices;
+    var sortedChoices = this._isSelectOneElement ? __spreadArray(__spreadArray([], placeholderChoices, true), normalChoices, true) : normalChoices;
 
     if (this._isSearching) {
       choiceLimit = searchResultLimit;
@@ -2274,7 +1181,7 @@ function () {
       this.passedElement.options = items;
     }
 
-    var addItemToFragment = function addItemToFragment(item) {
+    var addItemToFragment = function (item) {
       // Create new list element
       var listItem = _this._getTemplate('item', item, removeItemButton); // Append it to list
 
@@ -2349,7 +1256,7 @@ function () {
     // unless shift is being pressed
 
     activeItems.forEach(function (item) {
-      if (item.id === parseInt("" + passedId, 10) && !item.highlighted) {
+      if (item.id === parseInt("".concat(passedId), 10) && !item.highlighted) {
         _this.highlightItem(item);
       } else if (!hasShiftKey && item.highlighted) {
         _this.unhighlightItem(item);
@@ -2437,11 +1344,11 @@ function () {
   };
 
   Choices.prototype._startLoading = function () {
-    this._store.dispatch(misc_1.setIsLoading(true));
+    this._store.dispatch((0, misc_1.setIsLoading)(true));
   };
 
   Choices.prototype._stopLoading = function () {
-    this._store.dispatch(misc_1.setIsLoading(false));
+    this._store.dispatch((0, misc_1.setIsLoading)(false));
   };
 
   Choices.prototype._handleLoadingState = function (setLoading) {
@@ -2449,7 +1356,7 @@ function () {
       setLoading = true;
     }
 
-    var placeholderItem = this.itemList.getChild("." + this.config.classNames.placeholder);
+    var placeholderItem = this.itemList.getChild(".".concat(this.config.classNames.placeholder));
 
     if (setLoading) {
       this.disable();
@@ -2483,7 +1390,7 @@ function () {
   };
 
   Choices.prototype._handleSearch = function (value) {
-    if (!value || !this.input.isFocussed) {
+    if (!this.input.isFocussed) {
       return;
     }
 
@@ -2495,7 +1402,7 @@ function () {
       return !option.active;
     }); // Check that we have a value to search and the input was an alphanumeric character
 
-    if (value && value.length >= searchFloor) {
+    if (value !== null && typeof value !== 'undefined' && value.length >= searchFloor) {
       var resultCount = searchChoices ? this._searchChoices(value) : 0; // Trigger search event
 
       this.passedElement.triggerEvent(constants_1.EVENTS.search, {
@@ -2506,7 +1413,7 @@ function () {
       // Otherwise reset choices to active
       this._isSearching = false;
 
-      this._store.dispatch(choices_1.activateChoices(true));
+      this._store.dispatch((0, choices_1.activateChoices)(true));
     }
   };
 
@@ -2515,7 +1422,7 @@ function () {
     var notice = typeof this.config.addItemText === 'function' ? this.config.addItemText(value) : this.config.addItemText;
 
     if (!this._isSelectOneElement) {
-      var isDuplicateValue = utils_1.existsInArray(activeItems, value);
+      var isDuplicateValue = (0, utils_1.existsInArray)(activeItems, value);
 
       if (this.config.maxItemCount > 0 && this.config.maxItemCount <= activeItems.length) {
         // If there is a max entry limit and we have reached that limit
@@ -2545,18 +1452,15 @@ function () {
     var newValue = typeof value === 'string' ? value.trim() : value;
     var currentValue = typeof this._currentValue === 'string' ? this._currentValue.trim() : this._currentValue;
 
-    if (newValue.length < 1 && newValue === currentValue + " ") {
+    if (newValue.length < 1 && newValue === "".concat(currentValue, " ")) {
       return 0;
     } // If new value matches the desired length and is not the same as the current value with a space
 
 
     var haystack = this._store.searchableChoices;
     var needle = newValue;
-
-    var keys = __spreadArrays(this.config.searchFields);
-
     var options = Object.assign(this.config.fuseOptions, {
-      keys: keys,
+      keys: __spreadArray([], this.config.searchFields, true),
       includeMatches: true
     });
     var fuse = new fuse_js_1.default(haystack, options);
@@ -2566,7 +1470,7 @@ function () {
     this._highlightPosition = 0;
     this._isSearching = true;
 
-    this._store.dispatch(choices_1.filterChoices(results));
+    this._store.dispatch((0, choices_1.filterChoices)(results));
 
     return results.length;
   };
@@ -2728,9 +1632,9 @@ function () {
       if (userHasRemovedValue && canReactivateChoices) {
         this._isSearching = false;
 
-        this._store.dispatch(choices_1.activateChoices(true));
+        this._store.dispatch((0, choices_1.activateChoices)(true));
       } else if (canSearch) {
-        this._handleSearch(this.input.value);
+        this._handleSearch(this.input.rawValue);
       }
     }
 
@@ -2782,7 +1686,7 @@ function () {
     }
 
     if (hasActiveDropdown) {
-      var highlightedChoice = this.dropdown.getChild("." + this.config.classNames.highlightedState);
+      var highlightedChoice = this.dropdown.getChild(".".concat(this.config.classNames.highlightedState));
 
       if (highlightedChoice) {
         // add enter keyCode value
@@ -2824,15 +1728,15 @@ function () {
 
       if (skipKey) {
         if (directionInt > 0) {
-          nextEl = this.dropdown.element.querySelector(selectableChoiceIdentifier + ":last-of-type");
+          nextEl = this.dropdown.element.querySelector("".concat(selectableChoiceIdentifier, ":last-of-type"));
         } else {
           nextEl = this.dropdown.element.querySelector(selectableChoiceIdentifier);
         }
       } else {
-        var currentEl = this.dropdown.element.querySelector("." + this.config.classNames.highlightedState);
+        var currentEl = this.dropdown.element.querySelector(".".concat(this.config.classNames.highlightedState));
 
         if (currentEl) {
-          nextEl = utils_1.getAdjacentEl(currentEl, selectableChoiceIdentifier, directionInt);
+          nextEl = (0, utils_1.getAdjacentEl)(currentEl, selectableChoiceIdentifier, directionInt);
         } else {
           nextEl = this.dropdown.element.querySelector(selectableChoiceIdentifier);
         }
@@ -2841,7 +1745,7 @@ function () {
       if (nextEl) {
         // We prevent default to stop the cursor moving
         // when pressing the arrow
-        if (!utils_1.isScrolledIntoView(nextEl, this.choiceList.element, directionInt)) {
+        if (!(0, utils_1.isScrolledIntoView)(nextEl, this.choiceList.element, directionInt)) {
           this.choiceList.scrollToChildElement(nextEl, directionInt);
         }
 
@@ -3061,7 +1965,7 @@ function () {
   };
 
   Choices.prototype._onFormReset = function () {
-    this._store.dispatch(misc_1.resetTo(this._initialState));
+    this._store.dispatch((0, misc_1.resetTo)(this._initialState));
   };
 
   Choices.prototype._highlightChoice = function (el) {
@@ -3078,7 +1982,7 @@ function () {
     }
 
     var passedEl = el;
-    var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll("." + this.config.classNames.highlightedState)); // Remove any highlighted choices
+    var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll(".".concat(this.config.classNames.highlightedState))); // Remove any highlighted choices
 
     highlightedChoices.forEach(function (choice) {
       choice.classList.remove(_this.config.classNames.highlightedState);
@@ -3146,7 +2050,7 @@ function () {
       passedValue += this.config.appendValue.toString();
     }
 
-    this._store.dispatch(items_1.addItem({
+    this._store.dispatch((0, items_1.addItem)({
       value: passedValue,
       label: passedLabel,
       id: id,
@@ -3185,7 +2089,7 @@ function () {
       return;
     }
 
-    this._store.dispatch(items_1.removeItem(id, choiceId));
+    this._store.dispatch((0, items_1.removeItem)(id, choiceId));
 
     this.passedElement.triggerEvent(constants_1.EVENTS.removeItem, {
       id: id,
@@ -3221,9 +2125,9 @@ function () {
     var choices = this._store.choices;
     var choiceLabel = label || value;
     var choiceId = choices ? choices.length + 1 : 1;
-    var choiceElementId = this._baseId + "-" + this._idNames.itemChoice + "-" + choiceId;
+    var choiceElementId = "".concat(this._baseId, "-").concat(this._idNames.itemChoice, "-").concat(choiceId);
 
-    this._store.dispatch(choices_1.addChoice({
+    this._store.dispatch((0, choices_1.addChoice)({
       id: choiceId,
       groupId: groupId,
       elementId: choiceElementId,
@@ -3256,24 +2160,24 @@ function () {
         valueKey = _b === void 0 ? 'value' : _b,
         _c = _a.labelKey,
         labelKey = _c === void 0 ? 'label' : _c;
-    var groupChoices = utils_1.isType('Object', group) ? group.choices : Array.from(group.getElementsByTagName('OPTION'));
+    var groupChoices = (0, utils_1.isType)('Object', group) ? group.choices : Array.from(group.getElementsByTagName('OPTION'));
     var groupId = id || Math.floor(new Date().valueOf() * Math.random());
     var isDisabled = group.disabled ? group.disabled : false;
 
     if (groupChoices) {
-      this._store.dispatch(groups_1.addGroup({
+      this._store.dispatch((0, groups_1.addGroup)({
         value: group.label,
         id: groupId,
         active: true,
         disabled: isDisabled
       }));
 
-      var addGroupChoices = function addGroupChoices(choice) {
+      var addGroupChoices = function (choice) {
         var isOptDisabled = choice.disabled || choice.parentNode && choice.parentNode.disabled;
 
         _this._addChoice({
           value: choice[valueKey],
-          label: utils_1.isType('Object', choice) ? choice[labelKey] : choice.innerHTML,
+          label: (0, utils_1.isType)('Object', choice) ? choice[labelKey] : choice.innerHTML,
           isSelected: choice.selected,
           isDisabled: isOptDisabled,
           groupId: groupId,
@@ -3284,7 +2188,7 @@ function () {
 
       groupChoices.forEach(addGroupChoices);
     } else {
-      this._store.dispatch(groups_1.addGroup({
+      this._store.dispatch((0, groups_1.addGroup)({
         value: group.label,
         id: group.id,
         active: false,
@@ -3302,8 +2206,7 @@ function () {
       args[_i - 1] = arguments[_i];
     }
 
-    var classNames = this.config.classNames;
-    return (_a = this._templates[template]).call.apply(_a, __spreadArrays([this, classNames], args));
+    return (_a = this._templates[template]).call.apply(_a, __spreadArray([this, this.config], args, false));
   };
 
   Choices.prototype._createTemplates = function () {
@@ -3314,7 +2217,7 @@ function () {
       userTemplates = callbackOnCreateTemplates.call(this, utils_1.strToEl);
     }
 
-    this._templates = deepmerge_1.default(templates_1.default, userTemplates);
+    this._templates = (0, deepmerge_1.default)(templates_1.default, userTemplates);
   };
 
   Choices.prototype._createElements = function () {
@@ -3508,9 +2411,9 @@ function () {
   Choices.prototype._setChoiceOrItem = function (item) {
     var _this = this;
 
-    var itemType = utils_1.getType(item).toLowerCase();
+    var itemType = (0, utils_1.getType)(item).toLowerCase();
     var handleType = {
-      object: function object() {
+      object: function () {
         if (!item.value) {
           return;
         } // If we are dealing with a select input, we need to create an option first
@@ -3536,7 +2439,7 @@ function () {
           });
         }
       },
-      string: function string() {
+      string: function () {
         if (!_this._isTextElement) {
           _this._addChoice({
             value: item,
@@ -3603,886 +2506,22 @@ function () {
   return Choices;
 }();
 
-exports.default = Choices;
+exports["default"] = Choices;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
 
-/*!
- * Fuse.js v3.4.6 - Lightweight fuzzy-search (http://fusejs.io)
- * 
- * Copyright (c) 2012-2017 Kirollos Risk (http://kiro.me)
- * All Rights Reserved. Apache Software License 2.0
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- */
-!function(e,t){ true?module.exports=t():undefined}(this,function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([function(e,t){e.exports=function(e){return Array.isArray?Array.isArray(e):"[object Array]"===Object.prototype.toString.call(e)}},function(e,t,n){function r(e){return(r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}function o(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}var i=n(2),a=n(8),s=n(0),c=function(){function e(t,n){var r=n.location,o=void 0===r?0:r,i=n.distance,s=void 0===i?100:i,c=n.threshold,h=void 0===c?.6:c,l=n.maxPatternLength,u=void 0===l?32:l,f=n.caseSensitive,d=void 0!==f&&f,v=n.tokenSeparator,p=void 0===v?/ +/g:v,g=n.findAllMatches,y=void 0!==g&&g,m=n.minMatchCharLength,k=void 0===m?1:m,S=n.id,x=void 0===S?null:S,b=n.keys,M=void 0===b?[]:b,_=n.shouldSort,L=void 0===_||_,w=n.getFn,A=void 0===w?a:w,C=n.sortFn,I=void 0===C?function(e,t){return e.score-t.score}:C,O=n.tokenize,j=void 0!==O&&O,P=n.matchAllTokens,F=void 0!==P&&P,T=n.includeMatches,z=void 0!==T&&T,E=n.includeScore,K=void 0!==E&&E,$=n.verbose,J=void 0!==$&&$;!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,e),this.options={location:o,distance:s,threshold:h,maxPatternLength:u,isCaseSensitive:d,tokenSeparator:p,findAllMatches:y,minMatchCharLength:k,id:x,keys:M,includeMatches:z,includeScore:K,shouldSort:L,getFn:A,sortFn:I,verbose:J,tokenize:j,matchAllTokens:F},this.setCollection(t)}var t,n,c;return t=e,(n=[{key:"setCollection",value:function(e){return this.list=e,e}},{key:"search",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{limit:!1};this._log('---------\nSearch pattern: "'.concat(e,'"'));var n=this._prepareSearchers(e),r=n.tokenSearchers,o=n.fullSearcher,i=this._search(r,o),a=i.weights,s=i.results;return this._computeScore(a,s),this.options.shouldSort&&this._sort(s),t.limit&&"number"==typeof t.limit&&(s=s.slice(0,t.limit)),this._format(s)}},{key:"_prepareSearchers",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",t=[];if(this.options.tokenize)for(var n=e.split(this.options.tokenSeparator),r=0,o=n.length;r<o;r+=1)t.push(new i(n[r],this.options));return{tokenSearchers:t,fullSearcher:new i(e,this.options)}}},{key:"_search",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[],t=arguments.length>1?arguments[1]:void 0,n=this.list,r={},o=[];if("string"==typeof n[0]){for(var i=0,a=n.length;i<a;i+=1)this._analyze({key:"",value:n[i],record:i,index:i},{resultMap:r,results:o,tokenSearchers:e,fullSearcher:t});return{weights:null,results:o}}for(var s={},c=0,h=n.length;c<h;c+=1)for(var l=n[c],u=0,f=this.options.keys.length;u<f;u+=1){var d=this.options.keys[u];if("string"!=typeof d){if(s[d.name]={weight:1-d.weight||1},d.weight<=0||d.weight>1)throw new Error("Key weight has to be > 0 and <= 1");d=d.name}else s[d]={weight:1};this._analyze({key:d,value:this.options.getFn(l,d),record:l,index:c},{resultMap:r,results:o,tokenSearchers:e,fullSearcher:t})}return{weights:s,results:o}}},{key:"_analyze",value:function(e,t){var n=e.key,r=e.arrayIndex,o=void 0===r?-1:r,i=e.value,a=e.record,c=e.index,h=t.tokenSearchers,l=void 0===h?[]:h,u=t.fullSearcher,f=void 0===u?[]:u,d=t.resultMap,v=void 0===d?{}:d,p=t.results,g=void 0===p?[]:p;if(null!=i){var y=!1,m=-1,k=0;if("string"==typeof i){this._log("\nKey: ".concat(""===n?"-":n));var S=f.search(i);if(this._log('Full text: "'.concat(i,'", score: ').concat(S.score)),this.options.tokenize){for(var x=i.split(this.options.tokenSeparator),b=[],M=0;M<l.length;M+=1){var _=l[M];this._log('\nPattern: "'.concat(_.pattern,'"'));for(var L=!1,w=0;w<x.length;w+=1){var A=x[w],C=_.search(A),I={};C.isMatch?(I[A]=C.score,y=!0,L=!0,b.push(C.score)):(I[A]=1,this.options.matchAllTokens||b.push(1)),this._log('Token: "'.concat(A,'", score: ').concat(I[A]))}L&&(k+=1)}m=b[0];for(var O=b.length,j=1;j<O;j+=1)m+=b[j];m/=O,this._log("Token score average:",m)}var P=S.score;m>-1&&(P=(P+m)/2),this._log("Score average:",P);var F=!this.options.tokenize||!this.options.matchAllTokens||k>=l.length;if(this._log("\nCheck Matches: ".concat(F)),(y||S.isMatch)&&F){var T=v[c];T?T.output.push({key:n,arrayIndex:o,value:i,score:P,matchedIndices:S.matchedIndices}):(v[c]={item:a,output:[{key:n,arrayIndex:o,value:i,score:P,matchedIndices:S.matchedIndices}]},g.push(v[c]))}}else if(s(i))for(var z=0,E=i.length;z<E;z+=1)this._analyze({key:n,arrayIndex:z,value:i[z],record:a,index:c},{resultMap:v,results:g,tokenSearchers:l,fullSearcher:f})}}},{key:"_computeScore",value:function(e,t){this._log("\n\nComputing score:\n");for(var n=0,r=t.length;n<r;n+=1){for(var o=t[n].output,i=o.length,a=1,s=1,c=0;c<i;c+=1){var h=e?e[o[c].key].weight:1,l=(1===h?o[c].score:o[c].score||.001)*h;1!==h?s=Math.min(s,l):(o[c].nScore=l,a*=l)}t[n].score=1===s?a:s,this._log(t[n])}}},{key:"_sort",value:function(e){this._log("\n\nSorting...."),e.sort(this.options.sortFn)}},{key:"_format",value:function(e){var t=[];if(this.options.verbose){var n=[];this._log("\n\nOutput:\n\n",JSON.stringify(e,function(e,t){if("object"===r(t)&&null!==t){if(-1!==n.indexOf(t))return;n.push(t)}return t})),n=null}var o=[];this.options.includeMatches&&o.push(function(e,t){var n=e.output;t.matches=[];for(var r=0,o=n.length;r<o;r+=1){var i=n[r];if(0!==i.matchedIndices.length){var a={indices:i.matchedIndices,value:i.value};i.key&&(a.key=i.key),i.hasOwnProperty("arrayIndex")&&i.arrayIndex>-1&&(a.arrayIndex=i.arrayIndex),t.matches.push(a)}}}),this.options.includeScore&&o.push(function(e,t){t.score=e.score});for(var i=0,a=e.length;i<a;i+=1){var s=e[i];if(this.options.id&&(s.item=this.options.getFn(s.item,this.options.id)[0]),o.length){for(var c={item:s.item},h=0,l=o.length;h<l;h+=1)o[h](s,c);t.push(c)}else t.push(s.item)}return t}},{key:"_log",value:function(){var e;this.options.verbose&&(e=console).log.apply(e,arguments)}}])&&o(t.prototype,n),c&&o(t,c),e}();e.exports=c},function(e,t,n){function r(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}var o=n(3),i=n(4),a=n(7),s=function(){function e(t,n){var r=n.location,o=void 0===r?0:r,i=n.distance,s=void 0===i?100:i,c=n.threshold,h=void 0===c?.6:c,l=n.maxPatternLength,u=void 0===l?32:l,f=n.isCaseSensitive,d=void 0!==f&&f,v=n.tokenSeparator,p=void 0===v?/ +/g:v,g=n.findAllMatches,y=void 0!==g&&g,m=n.minMatchCharLength,k=void 0===m?1:m;!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,e),this.options={location:o,distance:s,threshold:h,maxPatternLength:u,isCaseSensitive:d,tokenSeparator:p,findAllMatches:y,minMatchCharLength:k},this.pattern=this.options.isCaseSensitive?t:t.toLowerCase(),this.pattern.length<=u&&(this.patternAlphabet=a(this.pattern))}var t,n,s;return t=e,(n=[{key:"search",value:function(e){if(this.options.isCaseSensitive||(e=e.toLowerCase()),this.pattern===e)return{isMatch:!0,score:0,matchedIndices:[[0,e.length-1]]};var t=this.options,n=t.maxPatternLength,r=t.tokenSeparator;if(this.pattern.length>n)return o(e,this.pattern,r);var a=this.options,s=a.location,c=a.distance,h=a.threshold,l=a.findAllMatches,u=a.minMatchCharLength;return i(e,this.pattern,this.patternAlphabet,{location:s,distance:c,threshold:h,findAllMatches:l,minMatchCharLength:u})}}])&&r(t.prototype,n),s&&r(t,s),e}();e.exports=s},function(e,t){var n=/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g;e.exports=function(e,t){var r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:/ +/g,o=new RegExp(t.replace(n,"\\$&").replace(r,"|")),i=e.match(o),a=!!i,s=[];if(a)for(var c=0,h=i.length;c<h;c+=1){var l=i[c];s.push([e.indexOf(l),l.length-1])}return{score:a?.5:1,isMatch:a,matchedIndices:s}}},function(e,t,n){var r=n(5),o=n(6);e.exports=function(e,t,n,i){for(var a=i.location,s=void 0===a?0:a,c=i.distance,h=void 0===c?100:c,l=i.threshold,u=void 0===l?.6:l,f=i.findAllMatches,d=void 0!==f&&f,v=i.minMatchCharLength,p=void 0===v?1:v,g=s,y=e.length,m=u,k=e.indexOf(t,g),S=t.length,x=[],b=0;b<y;b+=1)x[b]=0;if(-1!==k){var M=r(t,{errors:0,currentLocation:k,expectedLocation:g,distance:h});if(m=Math.min(M,m),-1!==(k=e.lastIndexOf(t,g+S))){var _=r(t,{errors:0,currentLocation:k,expectedLocation:g,distance:h});m=Math.min(_,m)}}k=-1;for(var L=[],w=1,A=S+y,C=1<<(S<=31?S-1:30),I=0;I<S;I+=1){for(var O=0,j=A;O<j;){r(t,{errors:I,currentLocation:g+j,expectedLocation:g,distance:h})<=m?O=j:A=j,j=Math.floor((A-O)/2+O)}A=j;var P=Math.max(1,g-j+1),F=d?y:Math.min(g+j,y)+S,T=Array(F+2);T[F+1]=(1<<I)-1;for(var z=F;z>=P;z-=1){var E=z-1,K=n[e.charAt(E)];if(K&&(x[E]=1),T[z]=(T[z+1]<<1|1)&K,0!==I&&(T[z]|=(L[z+1]|L[z])<<1|1|L[z+1]),T[z]&C&&(w=r(t,{errors:I,currentLocation:E,expectedLocation:g,distance:h}))<=m){if(m=w,(k=E)<=g)break;P=Math.max(1,2*g-k)}}if(r(t,{errors:I+1,currentLocation:g,expectedLocation:g,distance:h})>m)break;L=T}return{isMatch:k>=0,score:0===w?.001:w,matchedIndices:o(x,p)}}},function(e,t){e.exports=function(e,t){var n=t.errors,r=void 0===n?0:n,o=t.currentLocation,i=void 0===o?0:o,a=t.expectedLocation,s=void 0===a?0:a,c=t.distance,h=void 0===c?100:c,l=r/e.length,u=Math.abs(s-i);return h?l+u/h:u?1:l}},function(e,t){e.exports=function(){for(var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[],t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:1,n=[],r=-1,o=-1,i=0,a=e.length;i<a;i+=1){var s=e[i];s&&-1===r?r=i:s||-1===r||((o=i-1)-r+1>=t&&n.push([r,o]),r=-1)}return e[i-1]&&i-r>=t&&n.push([r,i-1]),n}},function(e,t){e.exports=function(e){for(var t={},n=e.length,r=0;r<n;r+=1)t[e.charAt(r)]=0;for(var o=0;o<n;o+=1)t[e.charAt(o)]|=1<<n-o-1;return t}},function(e,t,n){var r=n(0);e.exports=function(e,t){return function e(t,n,o){if(n){var i=n.indexOf("."),a=n,s=null;-1!==i&&(a=n.slice(0,i),s=n.slice(i+1));var c=t[a];if(null!=c)if(s||"string"!=typeof c&&"number"!=typeof c)if(r(c))for(var h=0,l=c.length;h<l;h+=1)e(c[h],s,o);else s&&e(c,s,o);else o.push(c.toString())}else o.push(t);return o}(e,t,[])}}])});
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
+/***/ 613:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-var isMergeableObject = function isMergeableObject(value) {
-	return isNonNullObject(value)
-		&& !isSpecial(value)
-};
 
-function isNonNullObject(value) {
-	return !!value && typeof value === 'object'
-}
-
-function isSpecial(value) {
-	var stringValue = Object.prototype.toString.call(value);
-
-	return stringValue === '[object RegExp]'
-		|| stringValue === '[object Date]'
-		|| isReactElement(value)
-}
-
-// see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
-var canUseSymbol = typeof Symbol === 'function' && Symbol.for;
-var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for('react.element') : 0xeac7;
-
-function isReactElement(value) {
-	return value.$$typeof === REACT_ELEMENT_TYPE
-}
-
-function emptyTarget(val) {
-	return Array.isArray(val) ? [] : {}
-}
-
-function cloneUnlessOtherwiseSpecified(value, options) {
-	return (options.clone !== false && options.isMergeableObject(value))
-		? deepmerge(emptyTarget(value), value, options)
-		: value
-}
-
-function defaultArrayMerge(target, source, options) {
-	return target.concat(source).map(function(element) {
-		return cloneUnlessOtherwiseSpecified(element, options)
-	})
-}
-
-function getMergeFunction(key, options) {
-	if (!options.customMerge) {
-		return deepmerge
-	}
-	var customMerge = options.customMerge(key);
-	return typeof customMerge === 'function' ? customMerge : deepmerge
-}
-
-function getEnumerableOwnPropertySymbols(target) {
-	return Object.getOwnPropertySymbols
-		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
-			return target.propertyIsEnumerable(symbol)
-		})
-		: []
-}
-
-function getKeys(target) {
-	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
-}
-
-// Protects from prototype poisoning and unexpected merging up the prototype chain.
-function propertyIsUnsafe(target, key) {
-	try {
-		return (key in target) // Properties are safe to merge if they don't exist in the target yet,
-			&& !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
-				&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
-	} catch (unused) {
-		// Counterintuitively, it's safe to merge any property on a target that causes the `in` operator to throw.
-		// This happens when trying to copy an object in the source over a plain string in the target.
-		return false
-	}
-}
-
-function mergeObject(target, source, options) {
-	var destination = {};
-	if (options.isMergeableObject(target)) {
-		getKeys(target).forEach(function(key) {
-			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-		});
-	}
-	getKeys(source).forEach(function(key) {
-		if (propertyIsUnsafe(target, key)) {
-			return
-		}
-
-		if (!options.isMergeableObject(source[key]) || !target[key]) {
-			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-		} else {
-			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-		}
-	});
-	return destination
-}
-
-function deepmerge(target, source, options) {
-	options = options || {};
-	options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-	options.isMergeableObject = options.isMergeableObject || isMergeableObject;
-	// cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
-	// implementations can use it. The caller may not replace it.
-	options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
-
-	var sourceIsArray = Array.isArray(source);
-	var targetIsArray = Array.isArray(target);
-	var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-
-	if (!sourceAndTargetTypesMatch) {
-		return cloneUnlessOtherwiseSpecified(source, options)
-	} else if (sourceIsArray) {
-		return options.arrayMerge(target, source, options)
-	} else {
-		return mergeObject(target, source, options)
-	}
-}
-
-deepmerge.all = function deepmergeAll(array, options) {
-	if (!Array.isArray(array)) {
-		throw new Error('first argument should be an array')
-	}
-
-	return array.reduce(function(prev, next) {
-		return deepmerge(prev, next, options)
-	}, {})
-};
-
-var deepmerge_1 = deepmerge;
-
-module.exports = deepmerge_1;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
-    s += arguments[i].length;
-  }
-
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
-    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
-      r[k] = a[j];
-    }
-  }
-
-  return r;
-};
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
-/* eslint-disable @typescript-eslint/no-explicit-any */
+}));
 
-var redux_1 = __webpack_require__(3);
+var utils_1 = __webpack_require__(799);
 
-var index_1 = __importDefault(__webpack_require__(4));
-
-var Store =
-/** @class */
-function () {
-  function Store() {
-    this._store = redux_1.createStore(index_1.default, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-  }
-  /**
-   * Subscribe store to function call (wrapped Redux method)
-   */
-
-
-  Store.prototype.subscribe = function (onChange) {
-    this._store.subscribe(onChange);
-  };
-  /**
-   * Dispatch event to store (wrapped Redux method)
-   */
-
-
-  Store.prototype.dispatch = function (action) {
-    this._store.dispatch(action);
-  };
-
-  Object.defineProperty(Store.prototype, "state", {
-    /**
-     * Get store object (wrapping Redux method)
-     */
-    get: function get() {
-      return this._store.getState();
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "items", {
-    /**
-     * Get items from store
-     */
-    get: function get() {
-      return this.state.items;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "activeItems", {
-    /**
-     * Get active items from store
-     */
-    get: function get() {
-      return this.items.filter(function (item) {
-        return item.active === true;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "highlightedActiveItems", {
-    /**
-     * Get highlighted items from store
-     */
-    get: function get() {
-      return this.items.filter(function (item) {
-        return item.active && item.highlighted;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "choices", {
-    /**
-     * Get choices from store
-     */
-    get: function get() {
-      return this.state.choices;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "activeChoices", {
-    /**
-     * Get active choices from store
-     */
-    get: function get() {
-      return this.choices.filter(function (choice) {
-        return choice.active === true;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "selectableChoices", {
-    /**
-     * Get selectable choices from store
-     */
-    get: function get() {
-      return this.choices.filter(function (choice) {
-        return choice.disabled !== true;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "searchableChoices", {
-    /**
-     * Get choices that can be searched (excluding placeholders)
-     */
-    get: function get() {
-      return this.selectableChoices.filter(function (choice) {
-        return choice.placeholder !== true;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "placeholderChoice", {
-    /**
-     * Get placeholder choice from store
-     */
-    get: function get() {
-      return __spreadArrays(this.choices).reverse().find(function (choice) {
-        return choice.placeholder === true;
-      });
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "groups", {
-    /**
-     * Get groups from store
-     */
-    get: function get() {
-      return this.state.groups;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Store.prototype, "activeGroups", {
-    /**
-     * Get active groups from store
-     */
-    get: function get() {
-      var _a = this,
-          groups = _a.groups,
-          choices = _a.choices;
-
-      return groups.filter(function (group) {
-        var isActive = group.active === true && group.disabled === false;
-        var hasActiveOptions = choices.some(function (choice) {
-          return choice.active === true && choice.disabled === false;
-        });
-        return isActive && hasActiveOptions;
-      }, []);
-    },
-    enumerable: true,
-    configurable: true
-  });
-  /**
-   * Get loading state from store
-   */
-
-  Store.prototype.isLoading = function () {
-    return this.state.loading;
-  };
-  /**
-   * Get single choice by it's ID
-   */
-
-
-  Store.prototype.getChoiceById = function (id) {
-    return this.activeChoices.find(function (choice) {
-      return choice.id === parseInt(id, 10);
-    });
-  };
-  /**
-   * Get group by group id
-   */
-
-
-  Store.prototype.getGroupById = function (id) {
-    return this.groups.find(function (group) {
-      return group.id === id;
-    });
-  };
-
-  return Store;
-}();
-
-exports.default = Store;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports) {
-
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
-    s += arguments[i].length;
-  }
-
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
-    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
-      r[k] = a[j];
-    }
-  }
-
-  return r;
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.defaultState = [];
-
-function items(state, action) {
-  if (state === void 0) {
-    state = exports.defaultState;
-  }
-
-  switch (action.type) {
-    case 'ADD_ITEM':
-      {
-        var addItemAction = action; // Add object to items array
-
-        var newState = __spreadArrays(state, [{
-          id: addItemAction.id,
-          choiceId: addItemAction.choiceId,
-          groupId: addItemAction.groupId,
-          value: addItemAction.value,
-          label: addItemAction.label,
-          active: true,
-          highlighted: false,
-          customProperties: addItemAction.customProperties,
-          placeholder: addItemAction.placeholder || false,
-          keyCode: null
-        }]);
-
-        return newState.map(function (obj) {
-          var item = obj;
-          item.highlighted = false;
-          return item;
-        });
-      }
-
-    case 'REMOVE_ITEM':
-      {
-        // Set item to inactive
-        return state.map(function (obj) {
-          var item = obj;
-
-          if (item.id === action.id) {
-            item.active = false;
-          }
-
-          return item;
-        });
-      }
-
-    case 'HIGHLIGHT_ITEM':
-      {
-        var highlightItemAction_1 = action;
-        return state.map(function (obj) {
-          var item = obj;
-
-          if (item.id === highlightItemAction_1.id) {
-            item.highlighted = highlightItemAction_1.highlighted;
-          }
-
-          return item;
-        });
-      }
-
-    default:
-      {
-        return state;
-      }
-  }
-}
-
-exports.default = items;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
-    s += arguments[i].length;
-  }
-
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
-    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
-      r[k] = a[j];
-    }
-  }
-
-  return r;
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.defaultState = [];
-
-function groups(state, action) {
-  if (state === void 0) {
-    state = exports.defaultState;
-  }
-
-  switch (action.type) {
-    case 'ADD_GROUP':
-      {
-        var addGroupAction = action;
-        return __spreadArrays(state, [{
-          id: addGroupAction.id,
-          value: addGroupAction.value,
-          active: addGroupAction.active,
-          disabled: addGroupAction.disabled
-        }]);
-      }
-
-    case 'CLEAR_CHOICES':
-      {
-        return [];
-      }
-
-    default:
-      {
-        return state;
-      }
-  }
-}
-
-exports.default = groups;
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __spreadArrays = this && this.__spreadArrays || function () {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) {
-    s += arguments[i].length;
-  }
-
-  for (var r = Array(s), k = 0, i = 0; i < il; i++) {
-    for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) {
-      r[k] = a[j];
-    }
-  }
-
-  return r;
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.defaultState = [];
-
-function choices(state, action) {
-  if (state === void 0) {
-    state = exports.defaultState;
-  }
-
-  switch (action.type) {
-    case 'ADD_CHOICE':
-      {
-        var addChoiceAction = action;
-        var choice = {
-          id: addChoiceAction.id,
-          elementId: addChoiceAction.elementId,
-          groupId: addChoiceAction.groupId,
-          value: addChoiceAction.value,
-          label: addChoiceAction.label || addChoiceAction.value,
-          disabled: addChoiceAction.disabled || false,
-          selected: false,
-          active: true,
-          score: 9999,
-          customProperties: addChoiceAction.customProperties,
-          placeholder: addChoiceAction.placeholder || false
-        };
-        /*
-          A disabled choice appears in the choice dropdown but cannot be selected
-          A selected choice has been added to the passed input's value (added as an item)
-          An active choice appears within the choice dropdown
-        */
-
-        return __spreadArrays(state, [choice]);
-      }
-
-    case 'ADD_ITEM':
-      {
-        var addItemAction_1 = action; // When an item is added and it has an associated choice,
-        // we want to disable it so it can't be chosen again
-
-        if (addItemAction_1.choiceId > -1) {
-          return state.map(function (obj) {
-            var choice = obj;
-
-            if (choice.id === parseInt("" + addItemAction_1.choiceId, 10)) {
-              choice.selected = true;
-            }
-
-            return choice;
-          });
-        }
-
-        return state;
-      }
-
-    case 'REMOVE_ITEM':
-      {
-        var removeItemAction_1 = action; // When an item is removed and it has an associated choice,
-        // we want to re-enable it so it can be chosen again
-
-        if (removeItemAction_1.choiceId && removeItemAction_1.choiceId > -1) {
-          return state.map(function (obj) {
-            var choice = obj;
-
-            if (choice.id === parseInt("" + removeItemAction_1.choiceId, 10)) {
-              choice.selected = false;
-            }
-
-            return choice;
-          });
-        }
-
-        return state;
-      }
-
-    case 'FILTER_CHOICES':
-      {
-        var filterChoicesAction_1 = action;
-        return state.map(function (obj) {
-          var choice = obj; // Set active state based on whether choice is
-          // within filtered results
-
-          choice.active = filterChoicesAction_1.results.some(function (_a) {
-            var item = _a.item,
-                score = _a.score;
-
-            if (item.id === choice.id) {
-              choice.score = score;
-              return true;
-            }
-
-            return false;
-          });
-          return choice;
-        });
-      }
-
-    case 'ACTIVATE_CHOICES':
-      {
-        var activateChoicesAction_1 = action;
-        return state.map(function (obj) {
-          var choice = obj;
-          choice.active = activateChoicesAction_1.active;
-          return choice;
-        });
-      }
-
-    case 'CLEAR_CHOICES':
-      {
-        return exports.defaultState;
-      }
-
-    default:
-      {
-        return state;
-      }
-  }
-}
-
-exports.default = choices;
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.defaultState = false;
-
-var general = function general(state, action) {
-  if (state === void 0) {
-    state = exports.defaultState;
-  }
-
-  switch (action.type) {
-    case 'SET_IS_LOADING':
-      {
-        return action.isLoading;
-      }
-
-    default:
-      {
-        return state;
-      }
-  }
-};
-
-exports.default = general;
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var dropdown_1 = __importDefault(__webpack_require__(19));
-
-exports.Dropdown = dropdown_1.default;
-
-var container_1 = __importDefault(__webpack_require__(20));
-
-exports.Container = container_1.default;
-
-var input_1 = __importDefault(__webpack_require__(21));
-
-exports.Input = input_1.default;
-
-var list_1 = __importDefault(__webpack_require__(22));
-
-exports.List = list_1.default;
-
-var wrapped_input_1 = __importDefault(__webpack_require__(23));
-
-exports.WrappedInput = wrapped_input_1.default;
-
-var wrapped_select_1 = __importDefault(__webpack_require__(24));
-
-exports.WrappedSelect = wrapped_select_1.default;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var Dropdown =
-/** @class */
-function () {
-  function Dropdown(_a) {
-    var element = _a.element,
-        type = _a.type,
-        classNames = _a.classNames;
-    this.element = element;
-    this.classNames = classNames;
-    this.type = type;
-    this.isActive = false;
-  }
-
-  Object.defineProperty(Dropdown.prototype, "distanceFromTopWindow", {
-    /**
-     * Bottom position of dropdown in viewport coordinates
-     */
-    get: function get() {
-      return this.element.getBoundingClientRect().bottom;
-    },
-    enumerable: true,
-    configurable: true
-  });
-
-  Dropdown.prototype.getChild = function (selector) {
-    return this.element.querySelector(selector);
-  };
-  /**
-   * Show dropdown to user by adding active state class
-   */
-
-
-  Dropdown.prototype.show = function () {
-    this.element.classList.add(this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'true');
-    this.isActive = true;
-    return this;
-  };
-  /**
-   * Hide dropdown from user
-   */
-
-
-  Dropdown.prototype.hide = function () {
-    this.element.classList.remove(this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'false');
-    this.isActive = false;
-    return this;
-  };
-
-  return Dropdown;
-}();
-
-exports.default = Dropdown;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var utils_1 = __webpack_require__(1);
-
-var constants_1 = __webpack_require__(0);
+var constants_1 = __webpack_require__(883);
 
 var Container =
 /** @class */
@@ -4530,7 +2569,7 @@ function () {
     var shouldFlip = false;
 
     if (this.position === 'auto') {
-      shouldFlip = !window.matchMedia("(min-height: " + (dropdownPos + 1) + "px)").matches;
+      shouldFlip = !window.matchMedia("(min-height: ".concat(dropdownPos + 1, "px)")).matches;
     } else if (this.position === 'top') {
       shouldFlip = true;
     }
@@ -4606,7 +2645,7 @@ function () {
   };
 
   Container.prototype.wrap = function (element) {
-    utils_1.wrap(element, this.element);
+    (0, utils_1.wrap)(element, this.element);
   };
 
   Container.prototype.unwrap = function (element) {
@@ -4641,22 +2680,130 @@ function () {
   return Container;
 }();
 
-exports.default = Container;
+exports["default"] = Container;
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 217:
+/***/ (function(__unused_webpack_module, exports) {
 
 
-Object.defineProperty(exports, "__esModule", {
+
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
 
-var utils_1 = __webpack_require__(1);
+var Dropdown =
+/** @class */
+function () {
+  function Dropdown(_a) {
+    var element = _a.element,
+        type = _a.type,
+        classNames = _a.classNames;
+    this.element = element;
+    this.classNames = classNames;
+    this.type = type;
+    this.isActive = false;
+  }
 
-var constants_1 = __webpack_require__(0);
+  Object.defineProperty(Dropdown.prototype, "distanceFromTopWindow", {
+    /**
+     * Bottom position of dropdown in viewport coordinates
+     */
+    get: function () {
+      return this.element.getBoundingClientRect().bottom;
+    },
+    enumerable: false,
+    configurable: true
+  });
+
+  Dropdown.prototype.getChild = function (selector) {
+    return this.element.querySelector(selector);
+  };
+  /**
+   * Show dropdown to user by adding active state class
+   */
+
+
+  Dropdown.prototype.show = function () {
+    this.element.classList.add(this.classNames.activeState);
+    this.element.setAttribute('aria-expanded', 'true');
+    this.isActive = true;
+    return this;
+  };
+  /**
+   * Hide dropdown from user
+   */
+
+
+  Dropdown.prototype.hide = function () {
+    this.element.classList.remove(this.classNames.activeState);
+    this.element.setAttribute('aria-expanded', 'false');
+    this.isActive = false;
+    return this;
+  };
+
+  return Dropdown;
+}();
+
+exports["default"] = Dropdown;
+
+/***/ }),
+
+/***/ 520:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.WrappedSelect = exports.WrappedInput = exports.List = exports.Input = exports.Container = exports.Dropdown = void 0;
+
+var dropdown_1 = __importDefault(__webpack_require__(217));
+
+exports.Dropdown = dropdown_1.default;
+
+var container_1 = __importDefault(__webpack_require__(613));
+
+exports.Container = container_1.default;
+
+var input_1 = __importDefault(__webpack_require__(11));
+
+exports.Input = input_1.default;
+
+var list_1 = __importDefault(__webpack_require__(624));
+
+exports.List = list_1.default;
+
+var wrapped_input_1 = __importDefault(__webpack_require__(541));
+
+exports.WrappedInput = wrapped_input_1.default;
+
+var wrapped_select_1 = __importDefault(__webpack_require__(982));
+
+exports.WrappedSelect = wrapped_select_1.default;
+
+/***/ }),
+
+/***/ 11:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var utils_1 = __webpack_require__(799);
+
+var constants_1 = __webpack_require__(883);
 
 var Input =
 /** @class */
@@ -4679,20 +2826,27 @@ function () {
   }
 
   Object.defineProperty(Input.prototype, "placeholder", {
-    set: function set(placeholder) {
+    set: function (placeholder) {
       this.element.placeholder = placeholder;
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
   Object.defineProperty(Input.prototype, "value", {
-    get: function get() {
-      return utils_1.sanitise(this.element.value);
+    get: function () {
+      return (0, utils_1.sanitise)(this.element.value);
     },
-    set: function set(value) {
+    set: function (value) {
       this.element.value = value;
     },
-    enumerable: true,
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Input.prototype, "rawValue", {
+    get: function () {
+      return this.element.value;
+    },
+    enumerable: false,
     configurable: true
   });
 
@@ -4765,8 +2919,8 @@ function () {
         style = _a.style,
         value = _a.value,
         placeholder = _a.placeholder;
-    style.minWidth = placeholder.length + 1 + "ch";
-    style.width = value.length + 1 + "ch";
+    style.minWidth = "".concat(placeholder.length + 1, "ch");
+    style.width = "".concat(value.length + 1, "ch");
   };
 
   Input.prototype.setActiveDescendant = function (activeDescendantID) {
@@ -4800,20 +2954,20 @@ function () {
   return Input;
 }();
 
-exports.default = Input;
+exports["default"] = Input;
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 624:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-Object.defineProperty(exports, "__esModule", {
+
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
 
-var constants_1 = __webpack_require__(0);
+var constants_1 = __webpack_require__(883);
 
 var List =
 /** @class */
@@ -4908,32 +3062,144 @@ function () {
   return List;
 }();
 
-exports.default = List;
+exports["default"] = List;
 
 /***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 730:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var utils_1 = __webpack_require__(799);
+
+var WrappedElement =
+/** @class */
+function () {
+  function WrappedElement(_a) {
+    var element = _a.element,
+        classNames = _a.classNames;
+    this.element = element;
+    this.classNames = classNames;
+
+    if (!(element instanceof HTMLInputElement) && !(element instanceof HTMLSelectElement)) {
+      throw new TypeError('Invalid element passed');
+    }
+
+    this.isDisabled = false;
+  }
+
+  Object.defineProperty(WrappedElement.prototype, "isActive", {
+    get: function () {
+      return this.element.dataset.choice === 'active';
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(WrappedElement.prototype, "dir", {
+    get: function () {
+      return this.element.dir;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(WrappedElement.prototype, "value", {
+    get: function () {
+      return this.element.value;
+    },
+    set: function (value) {
+      // you must define setter here otherwise it will be readonly property
+      this.element.value = value;
+    },
+    enumerable: false,
+    configurable: true
+  });
+
+  WrappedElement.prototype.conceal = function () {
+    // Hide passed input
+    this.element.classList.add(this.classNames.input);
+    this.element.hidden = true; // Remove element from tab index
+
+    this.element.tabIndex = -1; // Backup original styles if any
+
+    var origStyle = this.element.getAttribute('style');
+
+    if (origStyle) {
+      this.element.setAttribute('data-choice-orig-style', origStyle);
+    }
+
+    this.element.setAttribute('data-choice', 'active');
+  };
+
+  WrappedElement.prototype.reveal = function () {
+    // Reinstate passed element
+    this.element.classList.remove(this.classNames.input);
+    this.element.hidden = false;
+    this.element.removeAttribute('tabindex'); // Recover original styles if any
+
+    var origStyle = this.element.getAttribute('data-choice-orig-style');
+
+    if (origStyle) {
+      this.element.removeAttribute('data-choice-orig-style');
+      this.element.setAttribute('style', origStyle);
+    } else {
+      this.element.removeAttribute('style');
+    }
+
+    this.element.removeAttribute('data-choice'); // Re-assign values - this is weird, I know
+    // @todo Figure out why we need to do this
+
+    this.element.value = this.element.value; // eslint-disable-line no-self-assign
+  };
+
+  WrappedElement.prototype.enable = function () {
+    this.element.removeAttribute('disabled');
+    this.element.disabled = false;
+    this.isDisabled = false;
+  };
+
+  WrappedElement.prototype.disable = function () {
+    this.element.setAttribute('disabled', '');
+    this.element.disabled = true;
+    this.isDisabled = true;
+  };
+
+  WrappedElement.prototype.triggerEvent = function (eventType, data) {
+    (0, utils_1.dispatchEvent)(this.element, eventType, data);
+  };
+
+  return WrappedElement;
+}();
+
+exports["default"] = WrappedElement;
+
+/***/ }),
+
+/***/ 541:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
 
 
 var __extends = this && this.__extends || function () {
-  var _extendStatics = function extendStatics(d, b) {
-    _extendStatics = Object.setPrototypeOf || {
+  var extendStatics = function (d, b) {
+    extendStatics = Object.setPrototypeOf || {
       __proto__: []
     } instanceof Array && function (d, b) {
       d.__proto__ = b;
     } || function (d, b) {
-      for (var p in b) {
-        if (b.hasOwnProperty(p)) d[p] = b[p];
-      }
+      for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
     };
 
-    return _extendStatics(d, b);
+    return extendStatics(d, b);
   };
 
   return function (d, b) {
-    _extendStatics(d, b);
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+    extendStatics(d, b);
 
     function __() {
       this.constructor = d;
@@ -4949,11 +3215,11 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
 
-var wrapped_element_1 = __importDefault(__webpack_require__(5));
+var wrapped_element_1 = __importDefault(__webpack_require__(730));
 
 var WrappedInput =
 /** @class */
@@ -4975,45 +3241,44 @@ function (_super) {
   }
 
   Object.defineProperty(WrappedInput.prototype, "value", {
-    get: function get() {
+    get: function () {
       return this.element.value;
     },
-    set: function set(value) {
+    set: function (value) {
       this.element.setAttribute('value', value);
       this.element.value = value;
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
   return WrappedInput;
 }(wrapped_element_1.default);
 
-exports.default = WrappedInput;
+exports["default"] = WrappedInput;
 
 /***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 982:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
 
 
 var __extends = this && this.__extends || function () {
-  var _extendStatics = function extendStatics(d, b) {
-    _extendStatics = Object.setPrototypeOf || {
+  var extendStatics = function (d, b) {
+    extendStatics = Object.setPrototypeOf || {
       __proto__: []
     } instanceof Array && function (d, b) {
       d.__proto__ = b;
     } || function (d, b) {
-      for (var p in b) {
-        if (b.hasOwnProperty(p)) d[p] = b[p];
-      }
+      for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
     };
 
-    return _extendStatics(d, b);
+    return extendStatics(d, b);
   };
 
   return function (d, b) {
-    _extendStatics(d, b);
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+    extendStatics(d, b);
 
     function __() {
       this.constructor = d;
@@ -5029,11 +3294,11 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
 
-var wrapped_element_1 = __importDefault(__webpack_require__(5));
+var wrapped_element_1 = __importDefault(__webpack_require__(730));
 
 var WrappedSelect =
 /** @class */
@@ -5055,30 +3320,30 @@ function (_super) {
   }
 
   Object.defineProperty(WrappedSelect.prototype, "placeholderOption", {
-    get: function get() {
+    get: function () {
       return this.element.querySelector('option[value=""]') || // Backward compatibility layer for the non-standard placeholder attribute supported in older versions.
       this.element.querySelector('option[placeholder]');
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
   Object.defineProperty(WrappedSelect.prototype, "optionGroups", {
-    get: function get() {
+    get: function () {
       return Array.from(this.element.getElementsByTagName('OPTGROUP'));
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
   Object.defineProperty(WrappedSelect.prototype, "options", {
-    get: function get() {
+    get: function () {
       return Array.from(this.element.options);
     },
-    set: function set(options) {
+    set: function (options) {
       var _this = this;
 
       var fragment = document.createDocumentFragment();
 
-      var addOptionToFragment = function addOptionToFragment(data) {
+      var addOptionToFragment = function (data) {
         // Create a standard select option
         var option = _this.template(data); // Append it to fragment
 
@@ -5092,7 +3357,7 @@ function (_super) {
       });
       this.appendDocFragment(fragment);
     },
-    enumerable: true,
+    enumerable: false,
     configurable: true
   });
 
@@ -5104,26 +3369,1226 @@ function (_super) {
   return WrappedSelect;
 }(wrapped_element_1.default);
 
-exports.default = WrappedSelect;
+exports["default"] = WrappedSelect;
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 883:
+/***/ (function(__unused_webpack_module, exports) {
 
 
-Object.defineProperty(exports, "__esModule", {
+
+Object.defineProperty(exports, "__esModule", ({
   value: true
+}));
+exports.SCROLLING_SPEED = exports.SELECT_MULTIPLE_TYPE = exports.SELECT_ONE_TYPE = exports.TEXT_TYPE = exports.KEY_CODES = exports.ACTION_TYPES = exports.EVENTS = void 0;
+exports.EVENTS = {
+  showDropdown: 'showDropdown',
+  hideDropdown: 'hideDropdown',
+  change: 'change',
+  choice: 'choice',
+  search: 'search',
+  addItem: 'addItem',
+  removeItem: 'removeItem',
+  highlightItem: 'highlightItem',
+  highlightChoice: 'highlightChoice',
+  unhighlightItem: 'unhighlightItem'
+};
+exports.ACTION_TYPES = {
+  ADD_CHOICE: 'ADD_CHOICE',
+  FILTER_CHOICES: 'FILTER_CHOICES',
+  ACTIVATE_CHOICES: 'ACTIVATE_CHOICES',
+  CLEAR_CHOICES: 'CLEAR_CHOICES',
+  ADD_GROUP: 'ADD_GROUP',
+  ADD_ITEM: 'ADD_ITEM',
+  REMOVE_ITEM: 'REMOVE_ITEM',
+  HIGHLIGHT_ITEM: 'HIGHLIGHT_ITEM',
+  CLEAR_ALL: 'CLEAR_ALL',
+  RESET_TO: 'RESET_TO',
+  SET_IS_LOADING: 'SET_IS_LOADING'
+};
+exports.KEY_CODES = {
+  BACK_KEY: 46,
+  DELETE_KEY: 8,
+  ENTER_KEY: 13,
+  A_KEY: 65,
+  ESC_KEY: 27,
+  UP_KEY: 38,
+  DOWN_KEY: 40,
+  PAGE_UP_KEY: 33,
+  PAGE_DOWN_KEY: 34
+};
+exports.TEXT_TYPE = 'text';
+exports.SELECT_ONE_TYPE = 'select-one';
+exports.SELECT_MULTIPLE_TYPE = 'select-multiple';
+exports.SCROLLING_SPEED = 4;
+
+/***/ }),
+
+/***/ 789:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.DEFAULT_CONFIG = exports.DEFAULT_CLASSNAMES = void 0;
+
+var utils_1 = __webpack_require__(799);
+
+exports.DEFAULT_CLASSNAMES = {
+  containerOuter: 'choices',
+  containerInner: 'choices__inner',
+  input: 'choices__input',
+  inputCloned: 'choices__input--cloned',
+  list: 'choices__list',
+  listItems: 'choices__list--multiple',
+  listSingle: 'choices__list--single',
+  listDropdown: 'choices__list--dropdown',
+  item: 'choices__item',
+  itemSelectable: 'choices__item--selectable',
+  itemDisabled: 'choices__item--disabled',
+  itemChoice: 'choices__item--choice',
+  placeholder: 'choices__placeholder',
+  group: 'choices__group',
+  groupHeading: 'choices__heading',
+  button: 'choices__button',
+  activeState: 'is-active',
+  focusState: 'is-focused',
+  openState: 'is-open',
+  disabledState: 'is-disabled',
+  highlightedState: 'is-highlighted',
+  selectedState: 'is-selected',
+  flippedState: 'is-flipped',
+  loadingState: 'is-loading',
+  noResults: 'has-no-results',
+  noChoices: 'has-no-choices'
+};
+exports.DEFAULT_CONFIG = {
+  items: [],
+  choices: [],
+  silent: false,
+  renderChoiceLimit: -1,
+  maxItemCount: -1,
+  addItems: true,
+  addItemFilter: null,
+  removeItems: true,
+  removeItemButton: false,
+  editItems: false,
+  allowHTML: true,
+  duplicateItemsAllowed: true,
+  delimiter: ',',
+  paste: true,
+  searchEnabled: true,
+  searchChoices: true,
+  searchFloor: 1,
+  searchResultLimit: 4,
+  searchFields: ['label', 'value'],
+  position: 'auto',
+  resetScrollPosition: true,
+  shouldSort: true,
+  shouldSortItems: false,
+  sorter: utils_1.sortByAlpha,
+  placeholder: true,
+  placeholderValue: null,
+  searchPlaceholderValue: null,
+  prependValue: null,
+  appendValue: null,
+  renderSelectedChoices: 'auto',
+  loadingText: 'Loading...',
+  noResultsText: 'No results found',
+  noChoicesText: 'No choices to choose from',
+  itemSelectText: 'Press to select',
+  uniqueItemText: 'Only unique values can be added',
+  customAddItemText: 'Only values matching specific conditions can be added',
+  addItemText: function (value) {
+    return "Press Enter to add <b>\"".concat((0, utils_1.sanitise)(value), "\"</b>");
+  },
+  maxItemText: function (maxItemCount) {
+    return "Only ".concat(maxItemCount, " values can be added");
+  },
+  valueComparer: function (value1, value2) {
+    return value1 === value2;
+  },
+  fuseOptions: {
+    includeScore: true
+  },
+  labelId: '',
+  callbackOnInit: null,
+  callbackOnCreateTemplates: null,
+  classNames: exports.DEFAULT_CLASSNAMES
+};
+
+/***/ }),
+
+/***/ 18:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 978:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 948:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 359:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 285:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 533:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 187:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function () {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
 });
+
+var __exportStar = this && this.__exportStar || function (m, exports) {
+  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+__exportStar(__webpack_require__(18), exports);
+
+__exportStar(__webpack_require__(978), exports);
+
+__exportStar(__webpack_require__(948), exports);
+
+__exportStar(__webpack_require__(359), exports);
+
+__exportStar(__webpack_require__(285), exports);
+
+__exportStar(__webpack_require__(533), exports);
+
+__exportStar(__webpack_require__(287), exports);
+
+__exportStar(__webpack_require__(132), exports);
+
+__exportStar(__webpack_require__(837), exports);
+
+__exportStar(__webpack_require__(598), exports);
+
+__exportStar(__webpack_require__(369), exports);
+
+__exportStar(__webpack_require__(37), exports);
+
+__exportStar(__webpack_require__(47), exports);
+
+__exportStar(__webpack_require__(923), exports);
+
+__exportStar(__webpack_require__(876), exports);
+
+/***/ }),
+
+/***/ 287:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 132:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 837:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 598:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 37:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 369:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 47:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 923:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 876:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+/***/ }),
+
+/***/ 799:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.diff = exports.cloneObject = exports.existsInArray = exports.dispatchEvent = exports.sortByScore = exports.sortByAlpha = exports.strToEl = exports.sanitise = exports.isScrolledIntoView = exports.getAdjacentEl = exports.wrap = exports.isType = exports.getType = exports.generateId = exports.generateChars = exports.getRandomNumber = void 0;
+
+var getRandomNumber = function (min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+};
+
+exports.getRandomNumber = getRandomNumber;
+
+var generateChars = function (length) {
+  return Array.from({
+    length: length
+  }, function () {
+    return (0, exports.getRandomNumber)(0, 36).toString(36);
+  }).join('');
+};
+
+exports.generateChars = generateChars;
+
+var generateId = function (element, prefix) {
+  var id = element.id || element.name && "".concat(element.name, "-").concat((0, exports.generateChars)(2)) || (0, exports.generateChars)(4);
+  id = id.replace(/(:|\.|\[|\]|,)/g, '');
+  id = "".concat(prefix, "-").concat(id);
+  return id;
+};
+
+exports.generateId = generateId;
+
+var getType = function (obj) {
+  return Object.prototype.toString.call(obj).slice(8, -1);
+};
+
+exports.getType = getType;
+
+var isType = function (type, obj) {
+  return obj !== undefined && obj !== null && (0, exports.getType)(obj) === type;
+};
+
+exports.isType = isType;
+
+var wrap = function (element, wrapper) {
+  if (wrapper === void 0) {
+    wrapper = document.createElement('div');
+  }
+
+  if (element.parentNode) {
+    if (element.nextSibling) {
+      element.parentNode.insertBefore(wrapper, element.nextSibling);
+    } else {
+      element.parentNode.appendChild(wrapper);
+    }
+  }
+
+  return wrapper.appendChild(element);
+};
+
+exports.wrap = wrap;
+
+var getAdjacentEl = function (startEl, selector, direction) {
+  if (direction === void 0) {
+    direction = 1;
+  }
+
+  var prop = "".concat(direction > 0 ? 'next' : 'previous', "ElementSibling");
+  var sibling = startEl[prop];
+
+  while (sibling) {
+    if (sibling.matches(selector)) {
+      return sibling;
+    }
+
+    sibling = sibling[prop];
+  }
+
+  return sibling;
+};
+
+exports.getAdjacentEl = getAdjacentEl;
+
+var isScrolledIntoView = function (element, parent, direction) {
+  if (direction === void 0) {
+    direction = 1;
+  }
+
+  if (!element) {
+    return false;
+  }
+
+  var isVisible;
+
+  if (direction > 0) {
+    // In view from bottom
+    isVisible = parent.scrollTop + parent.offsetHeight >= element.offsetTop + element.offsetHeight;
+  } else {
+    // In view from top
+    isVisible = element.offsetTop >= parent.scrollTop;
+  }
+
+  return isVisible;
+};
+
+exports.isScrolledIntoView = isScrolledIntoView;
+
+var sanitise = function (value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  return value.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+};
+
+exports.sanitise = sanitise;
+
+exports.strToEl = function () {
+  var tmpEl = document.createElement('div');
+  return function (str) {
+    var cleanedInput = str.trim();
+    tmpEl.innerHTML = cleanedInput;
+    var firldChild = tmpEl.children[0];
+
+    while (tmpEl.firstChild) {
+      tmpEl.removeChild(tmpEl.firstChild);
+    }
+
+    return firldChild;
+  };
+}();
+
+var sortByAlpha = function (_a, _b) {
+  var value = _a.value,
+      _c = _a.label,
+      label = _c === void 0 ? value : _c;
+  var value2 = _b.value,
+      _d = _b.label,
+      label2 = _d === void 0 ? value2 : _d;
+  return label.localeCompare(label2, [], {
+    sensitivity: 'base',
+    ignorePunctuation: true,
+    numeric: true
+  });
+};
+
+exports.sortByAlpha = sortByAlpha;
+
+var sortByScore = function (a, b) {
+  var _a = a.score,
+      scoreA = _a === void 0 ? 0 : _a;
+  var _b = b.score,
+      scoreB = _b === void 0 ? 0 : _b;
+  return scoreA - scoreB;
+};
+
+exports.sortByScore = sortByScore;
+
+var dispatchEvent = function (element, type, customArgs) {
+  if (customArgs === void 0) {
+    customArgs = null;
+  }
+
+  var event = new CustomEvent(type, {
+    detail: customArgs,
+    bubbles: true,
+    cancelable: true
+  });
+  return element.dispatchEvent(event);
+};
+
+exports.dispatchEvent = dispatchEvent;
+
+var existsInArray = function (array, value, key) {
+  if (key === void 0) {
+    key = 'value';
+  }
+
+  return array.some(function (item) {
+    if (typeof value === 'string') {
+      return item[key] === value.trim();
+    }
+
+    return item[key] === value;
+  });
+};
+
+exports.existsInArray = existsInArray;
+
+var cloneObject = function (obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
+exports.cloneObject = cloneObject;
+/**
+ * Returns an array of keys present on the first but missing on the second object
+ */
+
+var diff = function (a, b) {
+  var aKeys = Object.keys(a).sort();
+  var bKeys = Object.keys(b).sort();
+  return aKeys.filter(function (i) {
+    return bKeys.indexOf(i) < 0;
+  });
+};
+
+exports.diff = diff;
+
+/***/ }),
+
+/***/ 273:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.defaultState = void 0;
+exports.defaultState = [];
+
+function choices(state, action) {
+  if (state === void 0) {
+    state = exports.defaultState;
+  }
+
+  if (action === void 0) {
+    action = {};
+  }
+
+  switch (action.type) {
+    case 'ADD_CHOICE':
+      {
+        var addChoiceAction = action;
+        var choice = {
+          id: addChoiceAction.id,
+          elementId: addChoiceAction.elementId,
+          groupId: addChoiceAction.groupId,
+          value: addChoiceAction.value,
+          label: addChoiceAction.label || addChoiceAction.value,
+          disabled: addChoiceAction.disabled || false,
+          selected: false,
+          active: true,
+          score: 9999,
+          customProperties: addChoiceAction.customProperties,
+          placeholder: addChoiceAction.placeholder || false
+        };
+        /*
+          A disabled choice appears in the choice dropdown but cannot be selected
+          A selected choice has been added to the passed input's value (added as an item)
+          An active choice appears within the choice dropdown
+        */
+
+        return __spreadArray(__spreadArray([], state, true), [choice], false);
+      }
+
+    case 'ADD_ITEM':
+      {
+        var addItemAction_1 = action; // When an item is added and it has an associated choice,
+        // we want to disable it so it can't be chosen again
+
+        if (addItemAction_1.choiceId > -1) {
+          return state.map(function (obj) {
+            var choice = obj;
+
+            if (choice.id === parseInt("".concat(addItemAction_1.choiceId), 10)) {
+              choice.selected = true;
+            }
+
+            return choice;
+          });
+        }
+
+        return state;
+      }
+
+    case 'REMOVE_ITEM':
+      {
+        var removeItemAction_1 = action; // When an item is removed and it has an associated choice,
+        // we want to re-enable it so it can be chosen again
+
+        if (removeItemAction_1.choiceId && removeItemAction_1.choiceId > -1) {
+          return state.map(function (obj) {
+            var choice = obj;
+
+            if (choice.id === parseInt("".concat(removeItemAction_1.choiceId), 10)) {
+              choice.selected = false;
+            }
+
+            return choice;
+          });
+        }
+
+        return state;
+      }
+
+    case 'FILTER_CHOICES':
+      {
+        var filterChoicesAction_1 = action;
+        return state.map(function (obj) {
+          var choice = obj; // Set active state based on whether choice is
+          // within filtered results
+
+          choice.active = filterChoicesAction_1.results.some(function (_a) {
+            var item = _a.item,
+                score = _a.score;
+
+            if (item.id === choice.id) {
+              choice.score = score;
+              return true;
+            }
+
+            return false;
+          });
+          return choice;
+        });
+      }
+
+    case 'ACTIVATE_CHOICES':
+      {
+        var activateChoicesAction_1 = action;
+        return state.map(function (obj) {
+          var choice = obj;
+          choice.active = activateChoicesAction_1.active;
+          return choice;
+        });
+      }
+
+    case 'CLEAR_CHOICES':
+      {
+        return exports.defaultState;
+      }
+
+    default:
+      {
+        return state;
+      }
+  }
+}
+
+exports["default"] = choices;
+
+/***/ }),
+
+/***/ 871:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.defaultState = void 0;
+exports.defaultState = [];
+
+function groups(state, action) {
+  if (state === void 0) {
+    state = exports.defaultState;
+  }
+
+  if (action === void 0) {
+    action = {};
+  }
+
+  switch (action.type) {
+    case 'ADD_GROUP':
+      {
+        var addGroupAction = action;
+        return __spreadArray(__spreadArray([], state, true), [{
+          id: addGroupAction.id,
+          value: addGroupAction.value,
+          active: addGroupAction.active,
+          disabled: addGroupAction.disabled
+        }], false);
+      }
+
+    case 'CLEAR_CHOICES':
+      {
+        return [];
+      }
+
+    default:
+      {
+        return state;
+      }
+  }
+}
+
+exports["default"] = groups;
+
+/***/ }),
+
+/***/ 655:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.defaultState = void 0;
+
+var redux_1 = __webpack_require__(857);
+
+var items_1 = __importDefault(__webpack_require__(52));
+
+var groups_1 = __importDefault(__webpack_require__(871));
+
+var choices_1 = __importDefault(__webpack_require__(273));
+
+var loading_1 = __importDefault(__webpack_require__(502));
+
+var utils_1 = __webpack_require__(799);
+
+exports.defaultState = {
+  groups: [],
+  items: [],
+  choices: [],
+  loading: false
+};
+var appReducer = (0, redux_1.combineReducers)({
+  items: items_1.default,
+  groups: groups_1.default,
+  choices: choices_1.default,
+  loading: loading_1.default
+});
+
+var rootReducer = function (passedState, action) {
+  var state = passedState; // If we are clearing all items, groups and options we reassign
+  // state and then pass that state to our proper reducer. This isn't
+  // mutating our actual state
+  // See: http://stackoverflow.com/a/35641992
+
+  if (action.type === 'CLEAR_ALL') {
+    state = exports.defaultState;
+  } else if (action.type === 'RESET_TO') {
+    return (0, utils_1.cloneObject)(action.state);
+  }
+
+  return appReducer(state, action);
+};
+
+exports["default"] = rootReducer;
+
+/***/ }),
+
+/***/ 52:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.defaultState = void 0;
+exports.defaultState = [];
+
+function items(state, action) {
+  if (state === void 0) {
+    state = exports.defaultState;
+  }
+
+  if (action === void 0) {
+    action = {};
+  }
+
+  switch (action.type) {
+    case 'ADD_ITEM':
+      {
+        var addItemAction = action; // Add object to items array
+
+        var newState = __spreadArray(__spreadArray([], state, true), [{
+          id: addItemAction.id,
+          choiceId: addItemAction.choiceId,
+          groupId: addItemAction.groupId,
+          value: addItemAction.value,
+          label: addItemAction.label,
+          active: true,
+          highlighted: false,
+          customProperties: addItemAction.customProperties,
+          placeholder: addItemAction.placeholder || false,
+          keyCode: null
+        }], false);
+
+        return newState.map(function (obj) {
+          var item = obj;
+          item.highlighted = false;
+          return item;
+        });
+      }
+
+    case 'REMOVE_ITEM':
+      {
+        // Set item to inactive
+        return state.map(function (obj) {
+          var item = obj;
+
+          if (item.id === action.id) {
+            item.active = false;
+          }
+
+          return item;
+        });
+      }
+
+    case 'HIGHLIGHT_ITEM':
+      {
+        var highlightItemAction_1 = action;
+        return state.map(function (obj) {
+          var item = obj;
+
+          if (item.id === highlightItemAction_1.id) {
+            item.highlighted = highlightItemAction_1.highlighted;
+          }
+
+          return item;
+        });
+      }
+
+    default:
+      {
+        return state;
+      }
+  }
+}
+
+exports["default"] = items;
+
+/***/ }),
+
+/***/ 502:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.defaultState = void 0;
+exports.defaultState = false;
+
+var general = function (state, action) {
+  if (state === void 0) {
+    state = exports.defaultState;
+  }
+
+  if (action === void 0) {
+    action = {};
+  }
+
+  switch (action.type) {
+    case 'SET_IS_LOADING':
+      {
+        return action.isLoading;
+      }
+
+    default:
+      {
+        return state;
+      }
+  }
+};
+
+exports["default"] = general;
+
+/***/ }),
+
+/***/ 744:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+var redux_1 = __webpack_require__(857);
+
+var index_1 = __importDefault(__webpack_require__(655));
+
+var Store =
+/** @class */
+function () {
+  function Store() {
+    this._store = (0, redux_1.createStore)(index_1.default, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+  }
+  /**
+   * Subscribe store to function call (wrapped Redux method)
+   */
+
+
+  Store.prototype.subscribe = function (onChange) {
+    this._store.subscribe(onChange);
+  };
+  /**
+   * Dispatch event to store (wrapped Redux method)
+   */
+
+
+  Store.prototype.dispatch = function (action) {
+    this._store.dispatch(action);
+  };
+
+  Object.defineProperty(Store.prototype, "state", {
+    /**
+     * Get store object (wrapping Redux method)
+     */
+    get: function () {
+      return this._store.getState();
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "items", {
+    /**
+     * Get items from store
+     */
+    get: function () {
+      return this.state.items;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "activeItems", {
+    /**
+     * Get active items from store
+     */
+    get: function () {
+      return this.items.filter(function (item) {
+        return item.active === true;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "highlightedActiveItems", {
+    /**
+     * Get highlighted items from store
+     */
+    get: function () {
+      return this.items.filter(function (item) {
+        return item.active && item.highlighted;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "choices", {
+    /**
+     * Get choices from store
+     */
+    get: function () {
+      return this.state.choices;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "activeChoices", {
+    /**
+     * Get active choices from store
+     */
+    get: function () {
+      return this.choices.filter(function (choice) {
+        return choice.active === true;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "selectableChoices", {
+    /**
+     * Get selectable choices from store
+     */
+    get: function () {
+      return this.choices.filter(function (choice) {
+        return choice.disabled !== true;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "searchableChoices", {
+    /**
+     * Get choices that can be searched (excluding placeholders)
+     */
+    get: function () {
+      return this.selectableChoices.filter(function (choice) {
+        return choice.placeholder !== true;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "placeholderChoice", {
+    /**
+     * Get placeholder choice from store
+     */
+    get: function () {
+      return __spreadArray([], this.choices, true).reverse().find(function (choice) {
+        return choice.placeholder === true;
+      });
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "groups", {
+    /**
+     * Get groups from store
+     */
+    get: function () {
+      return this.state.groups;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Store.prototype, "activeGroups", {
+    /**
+     * Get active groups from store
+     */
+    get: function () {
+      var _a = this,
+          groups = _a.groups,
+          choices = _a.choices;
+
+      return groups.filter(function (group) {
+        var isActive = group.active === true && group.disabled === false;
+        var hasActiveOptions = choices.some(function (choice) {
+          return choice.active === true && choice.disabled === false;
+        });
+        return isActive && hasActiveOptions;
+      }, []);
+    },
+    enumerable: false,
+    configurable: true
+  });
+  /**
+   * Get loading state from store
+   */
+
+  Store.prototype.isLoading = function () {
+    return this.state.loading;
+  };
+  /**
+   * Get single choice by it's ID
+   */
+
+
+  Store.prototype.getChoiceById = function (id) {
+    return this.activeChoices.find(function (choice) {
+      return choice.id === parseInt(id, 10);
+    });
+  };
+  /**
+   * Get group by group id
+   */
+
+
+  Store.prototype.getGroupById = function (id) {
+    return this.groups.find(function (group) {
+      return group.id === id;
+    });
+  };
+
+  return Store;
+}();
+
+exports["default"] = Store;
+
+/***/ }),
+
+/***/ 686:
+/***/ (function(__unused_webpack_module, exports) {
+
+
 /**
  * Helpers to create HTML elements used by Choices
  * Can be overridden by providing `callbackOnCreateTemplates` option
  */
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
 var templates = {
-  containerOuter: function containerOuter(_a, dir, isSelectElement, isSelectOneElement, searchEnabled, passedElementType, labelId) {
-    var containerOuter = _a.containerOuter;
+  containerOuter: function (_a, dir, isSelectElement, isSelectOneElement, searchEnabled, passedElementType, labelId) {
+    var containerOuter = _a.classNames.containerOuter;
     var div = Object.assign(document.createElement('div'), {
       className: containerOuter
     });
@@ -5154,33 +4619,40 @@ var templates = {
 
     return div;
   },
-  containerInner: function containerInner(_a) {
-    var containerInner = _a.containerInner;
+  containerInner: function (_a) {
+    var containerInner = _a.classNames.containerInner;
     return Object.assign(document.createElement('div'), {
       className: containerInner
     });
   },
-  itemList: function itemList(_a, isSelectOneElement) {
-    var list = _a.list,
-        listSingle = _a.listSingle,
-        listItems = _a.listItems;
+  itemList: function (_a, isSelectOneElement) {
+    var _b = _a.classNames,
+        list = _b.list,
+        listSingle = _b.listSingle,
+        listItems = _b.listItems;
     return Object.assign(document.createElement('div'), {
-      className: list + " " + (isSelectOneElement ? listSingle : listItems)
+      className: "".concat(list, " ").concat(isSelectOneElement ? listSingle : listItems)
     });
   },
-  placeholder: function placeholder(_a, value) {
-    var placeholder = _a.placeholder;
-    return Object.assign(document.createElement('div'), {
-      className: placeholder,
-      innerHTML: value
-    });
+  placeholder: function (_a, value) {
+    var _b;
+
+    var allowHTML = _a.allowHTML,
+        placeholder = _a.classNames.placeholder;
+    return Object.assign(document.createElement('div'), (_b = {
+      className: placeholder
+    }, _b[allowHTML ? 'innerHTML' : 'innerText'] = value, _b));
   },
-  item: function item(_a, _b, removeItemButton) {
-    var item = _a.item,
-        button = _a.button,
-        highlightedState = _a.highlightedState,
-        itemSelectable = _a.itemSelectable,
-        placeholder = _a.placeholder;
+  item: function (_a, _b, removeItemButton) {
+    var _c, _d;
+
+    var allowHTML = _a.allowHTML,
+        _e = _a.classNames,
+        item = _e.item,
+        button = _e.button,
+        highlightedState = _e.highlightedState,
+        itemSelectable = _e.itemSelectable,
+        placeholder = _e.placeholder;
     var id = _b.id,
         value = _b.value,
         label = _b.label,
@@ -5189,10 +4661,9 @@ var templates = {
         disabled = _b.disabled,
         highlighted = _b.highlighted,
         isPlaceholder = _b.placeholder;
-    var div = Object.assign(document.createElement('div'), {
-      className: item,
-      innerHTML: label
-    });
+    var div = Object.assign(document.createElement('div'), (_c = {
+      className: item
+    }, _c[allowHTML ? 'innerHTML' : 'innerText'] = label, _c));
     Object.assign(div.dataset, {
       item: '',
       id: id,
@@ -5223,20 +4694,19 @@ var templates = {
       /** @todo This MUST be localizable, not hardcoded! */
 
       var REMOVE_ITEM_TEXT = 'Remove item';
-      var removeButton = Object.assign(document.createElement('button'), {
+      var removeButton = Object.assign(document.createElement('button'), (_d = {
         type: 'button',
-        className: button,
-        innerHTML: REMOVE_ITEM_TEXT
-      });
-      removeButton.setAttribute('aria-label', REMOVE_ITEM_TEXT + ": '" + value + "'");
+        className: button
+      }, _d[allowHTML ? 'innerHTML' : 'innerText'] = REMOVE_ITEM_TEXT, _d));
+      removeButton.setAttribute('aria-label', "".concat(REMOVE_ITEM_TEXT, ": '").concat(value, "'"));
       removeButton.dataset.button = '';
       div.appendChild(removeButton);
     }
 
     return div;
   },
-  choiceList: function choiceList(_a, isSelectOneElement) {
-    var list = _a.list;
+  choiceList: function (_a, isSelectOneElement) {
+    var list = _a.classNames.list;
     var div = Object.assign(document.createElement('div'), {
       className: list
     });
@@ -5248,15 +4718,19 @@ var templates = {
     div.setAttribute('role', 'listbox');
     return div;
   },
-  choiceGroup: function choiceGroup(_a, _b) {
-    var group = _a.group,
-        groupHeading = _a.groupHeading,
-        itemDisabled = _a.itemDisabled;
+  choiceGroup: function (_a, _b) {
+    var _c;
+
+    var allowHTML = _a.allowHTML,
+        _d = _a.classNames,
+        group = _d.group,
+        groupHeading = _d.groupHeading,
+        itemDisabled = _d.itemDisabled;
     var id = _b.id,
         value = _b.value,
         disabled = _b.disabled;
     var div = Object.assign(document.createElement('div'), {
-      className: group + " " + (disabled ? itemDisabled : '')
+      className: "".concat(group, " ").concat(disabled ? itemDisabled : '')
     });
     div.setAttribute('role', 'group');
     Object.assign(div.dataset, {
@@ -5269,19 +4743,22 @@ var templates = {
       div.setAttribute('aria-disabled', 'true');
     }
 
-    div.appendChild(Object.assign(document.createElement('div'), {
-      className: groupHeading,
-      innerHTML: value
-    }));
+    div.appendChild(Object.assign(document.createElement('div'), (_c = {
+      className: groupHeading
+    }, _c[allowHTML ? 'innerHTML' : 'innerText'] = value, _c)));
     return div;
   },
-  choice: function choice(_a, _b, selectText) {
-    var item = _a.item,
-        itemChoice = _a.itemChoice,
-        itemSelectable = _a.itemSelectable,
-        selectedState = _a.selectedState,
-        itemDisabled = _a.itemDisabled,
-        placeholder = _a.placeholder;
+  choice: function (_a, _b, selectText) {
+    var _c;
+
+    var allowHTML = _a.allowHTML,
+        _d = _a.classNames,
+        item = _d.item,
+        itemChoice = _d.itemChoice,
+        itemSelectable = _d.itemSelectable,
+        selectedState = _d.selectedState,
+        itemDisabled = _d.itemDisabled,
+        placeholder = _d.placeholder;
     var id = _b.id,
         value = _b.value,
         label = _b.label,
@@ -5290,11 +4767,9 @@ var templates = {
         isDisabled = _b.disabled,
         isSelected = _b.selected,
         isPlaceholder = _b.placeholder;
-    var div = Object.assign(document.createElement('div'), {
-      id: elementId,
-      innerHTML: label,
-      className: item + " " + itemChoice
-    });
+    var div = Object.assign(document.createElement('div'), (_c = {
+      id: elementId
+    }, _c[allowHTML ? 'innerHTML' : 'innerText'] = label, _c.className = "".concat(item, " ").concat(itemChoice), _c));
 
     if (isSelected) {
       div.classList.add(selectedState);
@@ -5323,12 +4798,14 @@ var templates = {
 
     return div;
   },
-  input: function input(_a, placeholderValue) {
-    var input = _a.input,
-        inputCloned = _a.inputCloned;
+  input: function (_a, placeholderValue) {
+    var _b = _a.classNames,
+        input = _b.input,
+        inputCloned = _b.inputCloned;
     var inp = Object.assign(document.createElement('input'), {
-      type: 'text',
-      className: input + " " + inputCloned,
+      type: 'search',
+      name: 'search_terms',
+      className: "".concat(input, " ").concat(inputCloned),
       autocomplete: 'off',
       autocapitalize: 'off',
       spellcheck: false
@@ -5338,19 +4815,24 @@ var templates = {
     inp.setAttribute('aria-label', placeholderValue);
     return inp;
   },
-  dropdown: function dropdown(_a) {
-    var list = _a.list,
-        listDropdown = _a.listDropdown;
+  dropdown: function (_a) {
+    var _b = _a.classNames,
+        list = _b.list,
+        listDropdown = _b.listDropdown;
     var div = document.createElement('div');
     div.classList.add(list, listDropdown);
     div.setAttribute('aria-expanded', 'false');
     return div;
   },
-  notice: function notice(_a, innerHTML, type) {
-    var item = _a.item,
-        itemChoice = _a.itemChoice,
-        noResults = _a.noResults,
-        noChoices = _a.noChoices;
+  notice: function (_a, innerText, type) {
+    var _b;
+
+    var allowHTML = _a.allowHTML,
+        _c = _a.classNames,
+        item = _c.item,
+        itemChoice = _c.itemChoice,
+        noResults = _c.noResults,
+        noChoices = _c.noChoices;
 
     if (type === void 0) {
       type = '';
@@ -5364,12 +4846,9 @@ var templates = {
       classes.push(noResults);
     }
 
-    return Object.assign(document.createElement('div'), {
-      innerHTML: innerHTML,
-      className: classes.join(' ')
-    });
+    return Object.assign(document.createElement('div'), (_b = {}, _b[allowHTML ? 'innerHTML' : 'innerText'] = innerText, _b.className = classes.join(' '), _b));
   },
-  option: function option(_a) {
+  option: function (_a) {
     var label = _a.label,
         value = _a.value,
         customProperties = _a.customProperties,
@@ -5378,187 +4857,2767 @@ var templates = {
     var opt = new Option(label, value, false, active);
 
     if (customProperties) {
-      opt.dataset.customProperties = "" + customProperties;
+      opt.dataset.customProperties = "".concat(customProperties);
     }
 
     opt.disabled = !!disabled;
     return opt;
   }
 };
-exports.default = templates;
+exports["default"] = templates;
 
 /***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 996:
+/***/ (function(module) {
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
-var constants_1 = __webpack_require__(0);
-
-exports.addChoice = function (_a) {
-  var value = _a.value,
-      label = _a.label,
-      id = _a.id,
-      groupId = _a.groupId,
-      disabled = _a.disabled,
-      elementId = _a.elementId,
-      customProperties = _a.customProperties,
-      placeholder = _a.placeholder,
-      keyCode = _a.keyCode;
-  return {
-    type: constants_1.ACTION_TYPES.ADD_CHOICE,
-    value: value,
-    label: label,
-    id: id,
-    groupId: groupId,
-    disabled: disabled,
-    elementId: elementId,
-    customProperties: customProperties,
-    placeholder: placeholder,
-    keyCode: keyCode
-  };
+var isMergeableObject = function isMergeableObject(value) {
+	return isNonNullObject(value)
+		&& !isSpecial(value)
 };
 
-exports.filterChoices = function (results) {
-  return {
-    type: constants_1.ACTION_TYPES.FILTER_CHOICES,
-    results: results
-  };
+function isNonNullObject(value) {
+	return !!value && typeof value === 'object'
+}
+
+function isSpecial(value) {
+	var stringValue = Object.prototype.toString.call(value);
+
+	return stringValue === '[object RegExp]'
+		|| stringValue === '[object Date]'
+		|| isReactElement(value)
+}
+
+// see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+var canUseSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for('react.element') : 0xeac7;
+
+function isReactElement(value) {
+	return value.$$typeof === REACT_ELEMENT_TYPE
+}
+
+function emptyTarget(val) {
+	return Array.isArray(val) ? [] : {}
+}
+
+function cloneUnlessOtherwiseSpecified(value, options) {
+	return (options.clone !== false && options.isMergeableObject(value))
+		? deepmerge(emptyTarget(value), value, options)
+		: value
+}
+
+function defaultArrayMerge(target, source, options) {
+	return target.concat(source).map(function(element) {
+		return cloneUnlessOtherwiseSpecified(element, options)
+	})
+}
+
+function getMergeFunction(key, options) {
+	if (!options.customMerge) {
+		return deepmerge
+	}
+	var customMerge = options.customMerge(key);
+	return typeof customMerge === 'function' ? customMerge : deepmerge
+}
+
+function getEnumerableOwnPropertySymbols(target) {
+	return Object.getOwnPropertySymbols
+		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
+			return target.propertyIsEnumerable(symbol)
+		})
+		: []
+}
+
+function getKeys(target) {
+	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
+}
+
+function propertyIsOnObject(object, property) {
+	try {
+		return property in object
+	} catch(_) {
+		return false
+	}
+}
+
+// Protects from prototype poisoning and unexpected merging up the prototype chain.
+function propertyIsUnsafe(target, key) {
+	return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
+		&& !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
+			&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
+}
+
+function mergeObject(target, source, options) {
+	var destination = {};
+	if (options.isMergeableObject(target)) {
+		getKeys(target).forEach(function(key) {
+			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+		});
+	}
+	getKeys(source).forEach(function(key) {
+		if (propertyIsUnsafe(target, key)) {
+			return
+		}
+
+		if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
+		} else {
+			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+		}
+	});
+	return destination
+}
+
+function deepmerge(target, source, options) {
+	options = options || {};
+	options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+	options.isMergeableObject = options.isMergeableObject || isMergeableObject;
+	// cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
+	// implementations can use it. The caller may not replace it.
+	options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
+
+	var sourceIsArray = Array.isArray(source);
+	var targetIsArray = Array.isArray(target);
+	var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+	if (!sourceAndTargetTypesMatch) {
+		return cloneUnlessOtherwiseSpecified(source, options)
+	} else if (sourceIsArray) {
+		return options.arrayMerge(target, source, options)
+	} else {
+		return mergeObject(target, source, options)
+	}
+}
+
+deepmerge.all = function deepmergeAll(array, options) {
+	if (!Array.isArray(array)) {
+		throw new Error('first argument should be an array')
+	}
+
+	return array.reduce(function(prev, next) {
+		return deepmerge(prev, next, options)
+	}, {})
 };
 
-exports.activateChoices = function (active) {
-  if (active === void 0) {
-    active = true;
+var deepmerge_1 = deepmerge;
+
+module.exports = deepmerge_1;
+
+
+/***/ }),
+
+/***/ 221:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": function() { return /* binding */ Fuse; }
+/* harmony export */ });
+/**
+ * Fuse.js v6.5.3 - Lightweight fuzzy-search (http://fusejs.io)
+ *
+ * Copyright (c) 2021 Kiro Risk (http://kiro.me)
+ * All Rights Reserved. Apache Software License 2.0
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+function isArray(value) {
+  return !Array.isArray
+    ? getTag(value) === '[object Array]'
+    : Array.isArray(value)
+}
+
+// Adapted from: https://github.com/lodash/lodash/blob/master/.internal/baseToString.js
+const INFINITY = 1 / 0;
+function baseToString(value) {
+  // Exit early for strings to avoid a performance hit in some environments.
+  if (typeof value == 'string') {
+    return value
+  }
+  let result = value + '';
+  return result == '0' && 1 / value == -INFINITY ? '-0' : result
+}
+
+function toString(value) {
+  return value == null ? '' : baseToString(value)
+}
+
+function isString(value) {
+  return typeof value === 'string'
+}
+
+function isNumber(value) {
+  return typeof value === 'number'
+}
+
+// Adapted from: https://github.com/lodash/lodash/blob/master/isBoolean.js
+function isBoolean(value) {
+  return (
+    value === true ||
+    value === false ||
+    (isObjectLike(value) && getTag(value) == '[object Boolean]')
+  )
+}
+
+function isObject(value) {
+  return typeof value === 'object'
+}
+
+// Checks if `value` is object-like.
+function isObjectLike(value) {
+  return isObject(value) && value !== null
+}
+
+function isDefined(value) {
+  return value !== undefined && value !== null
+}
+
+function isBlank(value) {
+  return !value.trim().length
+}
+
+// Gets the `toStringTag` of `value`.
+// Adapted from: https://github.com/lodash/lodash/blob/master/.internal/getTag.js
+function getTag(value) {
+  return value == null
+    ? value === undefined
+      ? '[object Undefined]'
+      : '[object Null]'
+    : Object.prototype.toString.call(value)
+}
+
+const EXTENDED_SEARCH_UNAVAILABLE = 'Extended search is not available';
+
+const INCORRECT_INDEX_TYPE = "Incorrect 'index' type";
+
+const LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY = (key) =>
+  `Invalid value for key ${key}`;
+
+const PATTERN_LENGTH_TOO_LARGE = (max) =>
+  `Pattern length exceeds max of ${max}.`;
+
+const MISSING_KEY_PROPERTY = (name) => `Missing ${name} property in key`;
+
+const INVALID_KEY_WEIGHT_VALUE = (key) =>
+  `Property 'weight' in key '${key}' must be a positive integer`;
+
+const hasOwn = Object.prototype.hasOwnProperty;
+
+class KeyStore {
+  constructor(keys) {
+    this._keys = [];
+    this._keyMap = {};
+
+    let totalWeight = 0;
+
+    keys.forEach((key) => {
+      let obj = createKey(key);
+
+      totalWeight += obj.weight;
+
+      this._keys.push(obj);
+      this._keyMap[obj.id] = obj;
+
+      totalWeight += obj.weight;
+    });
+
+    // Normalize weights so that their sum is equal to 1
+    this._keys.forEach((key) => {
+      key.weight /= totalWeight;
+    });
+  }
+  get(keyId) {
+    return this._keyMap[keyId]
+  }
+  keys() {
+    return this._keys
+  }
+  toJSON() {
+    return JSON.stringify(this._keys)
+  }
+}
+
+function createKey(key) {
+  let path = null;
+  let id = null;
+  let src = null;
+  let weight = 1;
+
+  if (isString(key) || isArray(key)) {
+    src = key;
+    path = createKeyPath(key);
+    id = createKeyId(key);
+  } else {
+    if (!hasOwn.call(key, 'name')) {
+      throw new Error(MISSING_KEY_PROPERTY('name'))
+    }
+
+    const name = key.name;
+    src = name;
+
+    if (hasOwn.call(key, 'weight')) {
+      weight = key.weight;
+
+      if (weight <= 0) {
+        throw new Error(INVALID_KEY_WEIGHT_VALUE(name))
+      }
+    }
+
+    path = createKeyPath(name);
+    id = createKeyId(name);
   }
 
-  return {
-    type: constants_1.ACTION_TYPES.ACTIVATE_CHOICES,
-    active: active
+  return { path, id, weight, src }
+}
+
+function createKeyPath(key) {
+  return isArray(key) ? key : key.split('.')
+}
+
+function createKeyId(key) {
+  return isArray(key) ? key.join('.') : key
+}
+
+function get(obj, path) {
+  let list = [];
+  let arr = false;
+
+  const deepGet = (obj, path, index) => {
+    if (!isDefined(obj)) {
+      return
+    }
+    if (!path[index]) {
+      // If there's no path left, we've arrived at the object we care about.
+      list.push(obj);
+    } else {
+      let key = path[index];
+
+      const value = obj[key];
+
+      if (!isDefined(value)) {
+        return
+      }
+
+      // If we're at the last value in the path, and if it's a string/number/bool,
+      // add it to the list
+      if (
+        index === path.length - 1 &&
+        (isString(value) || isNumber(value) || isBoolean(value))
+      ) {
+        list.push(toString(value));
+      } else if (isArray(value)) {
+        arr = true;
+        // Search each item in the array.
+        for (let i = 0, len = value.length; i < len; i += 1) {
+          deepGet(value[i], path, index + 1);
+        }
+      } else if (path.length) {
+        // An object. Recurse further.
+        deepGet(value, path, index + 1);
+      }
+    }
   };
+
+  // Backwards compatibility (since path used to be a string)
+  deepGet(obj, isString(path) ? path.split('.') : path, 0);
+
+  return arr ? list : list[0]
+}
+
+const MatchOptions = {
+  // Whether the matches should be included in the result set. When `true`, each record in the result
+  // set will include the indices of the matched characters.
+  // These can consequently be used for highlighting purposes.
+  includeMatches: false,
+  // When `true`, the matching function will continue to the end of a search pattern even if
+  // a perfect match has already been located in the string.
+  findAllMatches: false,
+  // Minimum number of characters that must be matched before a result is considered a match
+  minMatchCharLength: 1
 };
 
-exports.clearChoices = function () {
-  return {
-    type: constants_1.ACTION_TYPES.CLEAR_CHOICES
-  };
+const BasicOptions = {
+  // When `true`, the algorithm continues searching to the end of the input even if a perfect
+  // match is found before the end of the same input.
+  isCaseSensitive: false,
+  // When true, the matching function will continue to the end of a search pattern even if
+  includeScore: false,
+  // List of properties that will be searched. This also supports nested properties.
+  keys: [],
+  // Whether to sort the result list, by score
+  shouldSort: true,
+  // Default sort function: sort by ascending score, ascending index
+  sortFn: (a, b) =>
+    a.score === b.score ? (a.idx < b.idx ? -1 : 1) : a.score < b.score ? -1 : 1
 };
 
-/***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
+const FuzzyOptions = {
+  // Approximately where in the text is the pattern expected to be found?
+  location: 0,
+  // At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
+  // (of both letters and location), a threshold of '1.0' would match anything.
+  threshold: 0.6,
+  // Determines how close the match must be to the fuzzy location (specified above).
+  // An exact letter match which is 'distance' characters away from the fuzzy location
+  // would score as a complete mismatch. A distance of '0' requires the match be at
+  // the exact location specified, a threshold of '1000' would require a perfect match
+  // to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
+  distance: 100
+};
 
-"use strict";
+const AdvancedOptions = {
+  // When `true`, it enables the use of unix-like search commands
+  useExtendedSearch: false,
+  // The get function to use when fetching an object's properties.
+  // The default will search nested paths *ie foo.bar.baz*
+  getFn: get,
+  // When `true`, search will ignore `location` and `distance`, so it won't matter
+  // where in the string the pattern appears.
+  // More info: https://fusejs.io/concepts/scoring-theory.html#fuzziness-score
+  ignoreLocation: false,
+  // When `true`, the calculation for the relevance score (used for sorting) will
+  // ignore the field-length norm.
+  // More info: https://fusejs.io/concepts/scoring-theory.html#field-length-norm
+  ignoreFieldNorm: false,
+  // The weight to determine how much field length norm effects scoring.
+  fieldNormWeight: 1
+};
 
+var Config = {
+  ...BasicOptions,
+  ...MatchOptions,
+  ...FuzzyOptions,
+  ...AdvancedOptions
+};
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+const SPACE = /[^ ]+/g;
+
+// Field-length norm: the shorter the field, the higher the weight.
+// Set to 3 decimals to reduce index size.
+function norm(weight = 1, mantissa = 3) {
+  const cache = new Map();
+  const m = Math.pow(10, mantissa);
+
+  return {
+    get(value) {
+      const numTokens = value.match(SPACE).length;
+
+      if (cache.has(numTokens)) {
+        return cache.get(numTokens)
+      }
+
+      // Default function is 1/sqrt(x), weight makes that variable
+      const norm = 1 / Math.pow(numTokens, 0.5 * weight);
+
+      // In place of `toFixed(mantissa)`, for faster computation
+      const n = parseFloat(Math.round(norm * m) / m);
+
+      cache.set(numTokens, n);
+
+      return n
+    },
+    clear() {
+      cache.clear();
+    }
+  }
+}
+
+class FuseIndex {
+  constructor({
+    getFn = Config.getFn,
+    fieldNormWeight = Config.fieldNormWeight
+  } = {}) {
+    this.norm = norm(fieldNormWeight, 3);
+    this.getFn = getFn;
+    this.isCreated = false;
+
+    this.setIndexRecords();
+  }
+  setSources(docs = []) {
+    this.docs = docs;
+  }
+  setIndexRecords(records = []) {
+    this.records = records;
+  }
+  setKeys(keys = []) {
+    this.keys = keys;
+    this._keysMap = {};
+    keys.forEach((key, idx) => {
+      this._keysMap[key.id] = idx;
+    });
+  }
+  create() {
+    if (this.isCreated || !this.docs.length) {
+      return
+    }
+
+    this.isCreated = true;
+
+    // List is Array<String>
+    if (isString(this.docs[0])) {
+      this.docs.forEach((doc, docIndex) => {
+        this._addString(doc, docIndex);
+      });
+    } else {
+      // List is Array<Object>
+      this.docs.forEach((doc, docIndex) => {
+        this._addObject(doc, docIndex);
+      });
+    }
+
+    this.norm.clear();
+  }
+  // Adds a doc to the end of the index
+  add(doc) {
+    const idx = this.size();
+
+    if (isString(doc)) {
+      this._addString(doc, idx);
+    } else {
+      this._addObject(doc, idx);
+    }
+  }
+  // Removes the doc at the specified index of the index
+  removeAt(idx) {
+    this.records.splice(idx, 1);
+
+    // Change ref index of every subsquent doc
+    for (let i = idx, len = this.size(); i < len; i += 1) {
+      this.records[i].i -= 1;
+    }
+  }
+  getValueForItemAtKeyId(item, keyId) {
+    return item[this._keysMap[keyId]]
+  }
+  size() {
+    return this.records.length
+  }
+  _addString(doc, docIndex) {
+    if (!isDefined(doc) || isBlank(doc)) {
+      return
+    }
+
+    let record = {
+      v: doc,
+      i: docIndex,
+      n: this.norm.get(doc)
+    };
+
+    this.records.push(record);
+  }
+  _addObject(doc, docIndex) {
+    let record = { i: docIndex, $: {} };
+
+    // Iterate over every key (i.e, path), and fetch the value at that key
+    this.keys.forEach((key, keyIndex) => {
+      // console.log(key)
+      let value = this.getFn(doc, key.path);
+
+      if (!isDefined(value)) {
+        return
+      }
+
+      if (isArray(value)) {
+        let subRecords = [];
+        const stack = [{ nestedArrIndex: -1, value }];
+
+        while (stack.length) {
+          const { nestedArrIndex, value } = stack.pop();
+
+          if (!isDefined(value)) {
+            continue
+          }
+
+          if (isString(value) && !isBlank(value)) {
+            let subRecord = {
+              v: value,
+              i: nestedArrIndex,
+              n: this.norm.get(value)
+            };
+
+            subRecords.push(subRecord);
+          } else if (isArray(value)) {
+            value.forEach((item, k) => {
+              stack.push({
+                nestedArrIndex: k,
+                value: item
+              });
+            });
+          } else ;
+        }
+        record.$[keyIndex] = subRecords;
+      } else if (!isBlank(value)) {
+        let subRecord = {
+          v: value,
+          n: this.norm.get(value)
+        };
+
+        record.$[keyIndex] = subRecord;
+      }
+    });
+
+    this.records.push(record);
+  }
+  toJSON() {
+    return {
+      keys: this.keys,
+      records: this.records
+    }
+  }
+}
+
+function createIndex(
+  keys,
+  docs,
+  { getFn = Config.getFn, fieldNormWeight = Config.fieldNormWeight } = {}
+) {
+  const myIndex = new FuseIndex({ getFn, fieldNormWeight });
+  myIndex.setKeys(keys.map(createKey));
+  myIndex.setSources(docs);
+  myIndex.create();
+  return myIndex
+}
+
+function parseIndex(
+  data,
+  { getFn = Config.getFn, fieldNormWeight = Config.fieldNormWeight } = {}
+) {
+  const { keys, records } = data;
+  const myIndex = new FuseIndex({ getFn, fieldNormWeight });
+  myIndex.setKeys(keys);
+  myIndex.setIndexRecords(records);
+  return myIndex
+}
+
+function computeScore$1(
+  pattern,
+  {
+    errors = 0,
+    currentLocation = 0,
+    expectedLocation = 0,
+    distance = Config.distance,
+    ignoreLocation = Config.ignoreLocation
+  } = {}
+) {
+  const accuracy = errors / pattern.length;
+
+  if (ignoreLocation) {
+    return accuracy
+  }
+
+  const proximity = Math.abs(expectedLocation - currentLocation);
+
+  if (!distance) {
+    // Dodge divide by zero error.
+    return proximity ? 1.0 : accuracy
+  }
+
+  return accuracy + proximity / distance
+}
+
+function convertMaskToIndices(
+  matchmask = [],
+  minMatchCharLength = Config.minMatchCharLength
+) {
+  let indices = [];
+  let start = -1;
+  let end = -1;
+  let i = 0;
+
+  for (let len = matchmask.length; i < len; i += 1) {
+    let match = matchmask[i];
+    if (match && start === -1) {
+      start = i;
+    } else if (!match && start !== -1) {
+      end = i - 1;
+      if (end - start + 1 >= minMatchCharLength) {
+        indices.push([start, end]);
+      }
+      start = -1;
+    }
+  }
+
+  // (i-1 - start) + 1 => i - start
+  if (matchmask[i - 1] && i - start >= minMatchCharLength) {
+    indices.push([start, i - 1]);
+  }
+
+  return indices
+}
+
+// Machine word size
+const MAX_BITS = 32;
+
+function search(
+  text,
+  pattern,
+  patternAlphabet,
+  {
+    location = Config.location,
+    distance = Config.distance,
+    threshold = Config.threshold,
+    findAllMatches = Config.findAllMatches,
+    minMatchCharLength = Config.minMatchCharLength,
+    includeMatches = Config.includeMatches,
+    ignoreLocation = Config.ignoreLocation
+  } = {}
+) {
+  if (pattern.length > MAX_BITS) {
+    throw new Error(PATTERN_LENGTH_TOO_LARGE(MAX_BITS))
+  }
+
+  const patternLen = pattern.length;
+  // Set starting location at beginning text and initialize the alphabet.
+  const textLen = text.length;
+  // Handle the case when location > text.length
+  const expectedLocation = Math.max(0, Math.min(location, textLen));
+  // Highest score beyond which we give up.
+  let currentThreshold = threshold;
+  // Is there a nearby exact match? (speedup)
+  let bestLocation = expectedLocation;
+
+  // Performance: only computer matches when the minMatchCharLength > 1
+  // OR if `includeMatches` is true.
+  const computeMatches = minMatchCharLength > 1 || includeMatches;
+  // A mask of the matches, used for building the indices
+  const matchMask = computeMatches ? Array(textLen) : [];
+
+  let index;
+
+  // Get all exact matches, here for speed up
+  while ((index = text.indexOf(pattern, bestLocation)) > -1) {
+    let score = computeScore$1(pattern, {
+      currentLocation: index,
+      expectedLocation,
+      distance,
+      ignoreLocation
+    });
+
+    currentThreshold = Math.min(score, currentThreshold);
+    bestLocation = index + patternLen;
+
+    if (computeMatches) {
+      let i = 0;
+      while (i < patternLen) {
+        matchMask[index + i] = 1;
+        i += 1;
+      }
+    }
+  }
+
+  // Reset the best location
+  bestLocation = -1;
+
+  let lastBitArr = [];
+  let finalScore = 1;
+  let binMax = patternLen + textLen;
+
+  const mask = 1 << (patternLen - 1);
+
+  for (let i = 0; i < patternLen; i += 1) {
+    // Scan for the best match; each iteration allows for one more error.
+    // Run a binary search to determine how far from the match location we can stray
+    // at this error level.
+    let binMin = 0;
+    let binMid = binMax;
+
+    while (binMin < binMid) {
+      const score = computeScore$1(pattern, {
+        errors: i,
+        currentLocation: expectedLocation + binMid,
+        expectedLocation,
+        distance,
+        ignoreLocation
+      });
+
+      if (score <= currentThreshold) {
+        binMin = binMid;
+      } else {
+        binMax = binMid;
+      }
+
+      binMid = Math.floor((binMax - binMin) / 2 + binMin);
+    }
+
+    // Use the result from this iteration as the maximum for the next.
+    binMax = binMid;
+
+    let start = Math.max(1, expectedLocation - binMid + 1);
+    let finish = findAllMatches
+      ? textLen
+      : Math.min(expectedLocation + binMid, textLen) + patternLen;
+
+    // Initialize the bit array
+    let bitArr = Array(finish + 2);
+
+    bitArr[finish + 1] = (1 << i) - 1;
+
+    for (let j = finish; j >= start; j -= 1) {
+      let currentLocation = j - 1;
+      let charMatch = patternAlphabet[text.charAt(currentLocation)];
+
+      if (computeMatches) {
+        // Speed up: quick bool to int conversion (i.e, `charMatch ? 1 : 0`)
+        matchMask[currentLocation] = +!!charMatch;
+      }
+
+      // First pass: exact match
+      bitArr[j] = ((bitArr[j + 1] << 1) | 1) & charMatch;
+
+      // Subsequent passes: fuzzy match
+      if (i) {
+        bitArr[j] |=
+          ((lastBitArr[j + 1] | lastBitArr[j]) << 1) | 1 | lastBitArr[j + 1];
+      }
+
+      if (bitArr[j] & mask) {
+        finalScore = computeScore$1(pattern, {
+          errors: i,
+          currentLocation,
+          expectedLocation,
+          distance,
+          ignoreLocation
+        });
+
+        // This match will almost certainly be better than any existing match.
+        // But check anyway.
+        if (finalScore <= currentThreshold) {
+          // Indeed it is
+          currentThreshold = finalScore;
+          bestLocation = currentLocation;
+
+          // Already passed `loc`, downhill from here on in.
+          if (bestLocation <= expectedLocation) {
+            break
+          }
+
+          // When passing `bestLocation`, don't exceed our current distance from `expectedLocation`.
+          start = Math.max(1, 2 * expectedLocation - bestLocation);
+        }
+      }
+    }
+
+    // No hope for a (better) match at greater error levels.
+    const score = computeScore$1(pattern, {
+      errors: i + 1,
+      currentLocation: expectedLocation,
+      expectedLocation,
+      distance,
+      ignoreLocation
+    });
+
+    if (score > currentThreshold) {
+      break
+    }
+
+    lastBitArr = bitArr;
+  }
+
+  const result = {
+    isMatch: bestLocation >= 0,
+    // Count exact matches (those with a score of 0) to be "almost" exact
+    score: Math.max(0.001, finalScore)
+  };
+
+  if (computeMatches) {
+    const indices = convertMaskToIndices(matchMask, minMatchCharLength);
+    if (!indices.length) {
+      result.isMatch = false;
+    } else if (includeMatches) {
+      result.indices = indices;
+    }
+  }
+
+  return result
+}
+
+function createPatternAlphabet(pattern) {
+  let mask = {};
+
+  for (let i = 0, len = pattern.length; i < len; i += 1) {
+    const char = pattern.charAt(i);
+    mask[char] = (mask[char] || 0) | (1 << (len - i - 1));
+  }
+
+  return mask
+}
+
+class BitapSearch {
+  constructor(
+    pattern,
+    {
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance,
+      includeMatches = Config.includeMatches,
+      findAllMatches = Config.findAllMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      isCaseSensitive = Config.isCaseSensitive,
+      ignoreLocation = Config.ignoreLocation
+    } = {}
+  ) {
+    this.options = {
+      location,
+      threshold,
+      distance,
+      includeMatches,
+      findAllMatches,
+      minMatchCharLength,
+      isCaseSensitive,
+      ignoreLocation
+    };
+
+    this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
+
+    this.chunks = [];
+
+    if (!this.pattern.length) {
+      return
+    }
+
+    const addChunk = (pattern, startIndex) => {
+      this.chunks.push({
+        pattern,
+        alphabet: createPatternAlphabet(pattern),
+        startIndex
+      });
+    };
+
+    const len = this.pattern.length;
+
+    if (len > MAX_BITS) {
+      let i = 0;
+      const remainder = len % MAX_BITS;
+      const end = len - remainder;
+
+      while (i < end) {
+        addChunk(this.pattern.substr(i, MAX_BITS), i);
+        i += MAX_BITS;
+      }
+
+      if (remainder) {
+        const startIndex = len - MAX_BITS;
+        addChunk(this.pattern.substr(startIndex), startIndex);
+      }
+    } else {
+      addChunk(this.pattern, 0);
+    }
+  }
+
+  searchIn(text) {
+    const { isCaseSensitive, includeMatches } = this.options;
+
+    if (!isCaseSensitive) {
+      text = text.toLowerCase();
+    }
+
+    // Exact match
+    if (this.pattern === text) {
+      let result = {
+        isMatch: true,
+        score: 0
+      };
+
+      if (includeMatches) {
+        result.indices = [[0, text.length - 1]];
+      }
+
+      return result
+    }
+
+    // Otherwise, use Bitap algorithm
+    const {
+      location,
+      distance,
+      threshold,
+      findAllMatches,
+      minMatchCharLength,
+      ignoreLocation
+    } = this.options;
+
+    let allIndices = [];
+    let totalScore = 0;
+    let hasMatches = false;
+
+    this.chunks.forEach(({ pattern, alphabet, startIndex }) => {
+      const { isMatch, score, indices } = search(text, pattern, alphabet, {
+        location: location + startIndex,
+        distance,
+        threshold,
+        findAllMatches,
+        minMatchCharLength,
+        includeMatches,
+        ignoreLocation
+      });
+
+      if (isMatch) {
+        hasMatches = true;
+      }
+
+      totalScore += score;
+
+      if (isMatch && indices) {
+        allIndices = [...allIndices, ...indices];
+      }
+    });
+
+    let result = {
+      isMatch: hasMatches,
+      score: hasMatches ? totalScore / this.chunks.length : 1
+    };
+
+    if (hasMatches && includeMatches) {
+      result.indices = allIndices;
+    }
+
+    return result
+  }
+}
+
+class BaseMatch {
+  constructor(pattern) {
+    this.pattern = pattern;
+  }
+  static isMultiMatch(pattern) {
+    return getMatch(pattern, this.multiRegex)
+  }
+  static isSingleMatch(pattern) {
+    return getMatch(pattern, this.singleRegex)
+  }
+  search(/*text*/) {}
+}
+
+function getMatch(pattern, exp) {
+  const matches = pattern.match(exp);
+  return matches ? matches[1] : null
+}
+
+// Token: 'file
+
+class ExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'exact'
+  }
+  static get multiRegex() {
+    return /^="(.*)"$/
+  }
+  static get singleRegex() {
+    return /^=(.*)$/
+  }
+  search(text) {
+    const isMatch = text === this.pattern;
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [0, this.pattern.length - 1]
+    }
+  }
+}
+
+// Token: !fire
+
+class InverseExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'inverse-exact'
+  }
+  static get multiRegex() {
+    return /^!"(.*)"$/
+  }
+  static get singleRegex() {
+    return /^!(.*)$/
+  }
+  search(text) {
+    const index = text.indexOf(this.pattern);
+    const isMatch = index === -1;
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [0, text.length - 1]
+    }
+  }
+}
+
+// Token: ^file
+
+class PrefixExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'prefix-exact'
+  }
+  static get multiRegex() {
+    return /^\^"(.*)"$/
+  }
+  static get singleRegex() {
+    return /^\^(.*)$/
+  }
+  search(text) {
+    const isMatch = text.startsWith(this.pattern);
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [0, this.pattern.length - 1]
+    }
+  }
+}
+
+// Token: !^fire
+
+class InversePrefixExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'inverse-prefix-exact'
+  }
+  static get multiRegex() {
+    return /^!\^"(.*)"$/
+  }
+  static get singleRegex() {
+    return /^!\^(.*)$/
+  }
+  search(text) {
+    const isMatch = !text.startsWith(this.pattern);
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [0, text.length - 1]
+    }
+  }
+}
+
+// Token: .file$
+
+class SuffixExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'suffix-exact'
+  }
+  static get multiRegex() {
+    return /^"(.*)"\$$/
+  }
+  static get singleRegex() {
+    return /^(.*)\$$/
+  }
+  search(text) {
+    const isMatch = text.endsWith(this.pattern);
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [text.length - this.pattern.length, text.length - 1]
+    }
+  }
+}
+
+// Token: !.file$
+
+class InverseSuffixExactMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'inverse-suffix-exact'
+  }
+  static get multiRegex() {
+    return /^!"(.*)"\$$/
+  }
+  static get singleRegex() {
+    return /^!(.*)\$$/
+  }
+  search(text) {
+    const isMatch = !text.endsWith(this.pattern);
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices: [0, text.length - 1]
+    }
+  }
+}
+
+class FuzzyMatch extends BaseMatch {
+  constructor(
+    pattern,
+    {
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance,
+      includeMatches = Config.includeMatches,
+      findAllMatches = Config.findAllMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      isCaseSensitive = Config.isCaseSensitive,
+      ignoreLocation = Config.ignoreLocation
+    } = {}
+  ) {
+    super(pattern);
+    this._bitapSearch = new BitapSearch(pattern, {
+      location,
+      threshold,
+      distance,
+      includeMatches,
+      findAllMatches,
+      minMatchCharLength,
+      isCaseSensitive,
+      ignoreLocation
+    });
+  }
+  static get type() {
+    return 'fuzzy'
+  }
+  static get multiRegex() {
+    return /^"(.*)"$/
+  }
+  static get singleRegex() {
+    return /^(.*)$/
+  }
+  search(text) {
+    return this._bitapSearch.searchIn(text)
+  }
+}
+
+// Token: 'file
+
+class IncludeMatch extends BaseMatch {
+  constructor(pattern) {
+    super(pattern);
+  }
+  static get type() {
+    return 'include'
+  }
+  static get multiRegex() {
+    return /^'"(.*)"$/
+  }
+  static get singleRegex() {
+    return /^'(.*)$/
+  }
+  search(text) {
+    let location = 0;
+    let index;
+
+    const indices = [];
+    const patternLen = this.pattern.length;
+
+    // Get all exact matches
+    while ((index = text.indexOf(this.pattern, location)) > -1) {
+      location = index + patternLen;
+      indices.push([index, location - 1]);
+    }
+
+    const isMatch = !!indices.length;
+
+    return {
+      isMatch,
+      score: isMatch ? 0 : 1,
+      indices
+    }
+  }
+}
+
+// ❗Order is important. DO NOT CHANGE.
+const searchers = [
+  ExactMatch,
+  IncludeMatch,
+  PrefixExactMatch,
+  InversePrefixExactMatch,
+  InverseSuffixExactMatch,
+  SuffixExactMatch,
+  InverseExactMatch,
+  FuzzyMatch
+];
+
+const searchersLen = searchers.length;
+
+// Regex to split by spaces, but keep anything in quotes together
+const SPACE_RE = / +(?=([^\"]*\"[^\"]*\")*[^\"]*$)/;
+const OR_TOKEN = '|';
+
+// Return a 2D array representation of the query, for simpler parsing.
+// Example:
+// "^core go$ | rb$ | py$ xy$" => [["^core", "go$"], ["rb$"], ["py$", "xy$"]]
+function parseQuery(pattern, options = {}) {
+  return pattern.split(OR_TOKEN).map((item) => {
+    let query = item
+      .trim()
+      .split(SPACE_RE)
+      .filter((item) => item && !!item.trim());
+
+    let results = [];
+    for (let i = 0, len = query.length; i < len; i += 1) {
+      const queryItem = query[i];
+
+      // 1. Handle multiple query match (i.e, once that are quoted, like `"hello world"`)
+      let found = false;
+      let idx = -1;
+      while (!found && ++idx < searchersLen) {
+        const searcher = searchers[idx];
+        let token = searcher.isMultiMatch(queryItem);
+        if (token) {
+          results.push(new searcher(token, options));
+          found = true;
+        }
+      }
+
+      if (found) {
+        continue
+      }
+
+      // 2. Handle single query matches (i.e, once that are *not* quoted)
+      idx = -1;
+      while (++idx < searchersLen) {
+        const searcher = searchers[idx];
+        let token = searcher.isSingleMatch(queryItem);
+        if (token) {
+          results.push(new searcher(token, options));
+          break
+        }
+      }
+    }
+
+    return results
+  })
+}
+
+// These extended matchers can return an array of matches, as opposed
+// to a singl match
+const MultiMatchSet = new Set([FuzzyMatch.type, IncludeMatch.type]);
+
+/**
+ * Command-like searching
+ * ======================
+ *
+ * Given multiple search terms delimited by spaces.e.g. `^jscript .python$ ruby !java`,
+ * search in a given text.
+ *
+ * Search syntax:
+ *
+ * | Token       | Match type                 | Description                            |
+ * | ----------- | -------------------------- | -------------------------------------- |
+ * | `jscript`   | fuzzy-match                | Items that fuzzy match `jscript`       |
+ * | `=scheme`   | exact-match                | Items that are `scheme`                |
+ * | `'python`   | include-match              | Items that include `python`            |
+ * | `!ruby`     | inverse-exact-match        | Items that do not include `ruby`       |
+ * | `^java`     | prefix-exact-match         | Items that start with `java`           |
+ * | `!^earlang` | inverse-prefix-exact-match | Items that do not start with `earlang` |
+ * | `.js$`      | suffix-exact-match         | Items that end with `.js`              |
+ * | `!.go$`     | inverse-suffix-exact-match | Items that do not end with `.go`       |
+ *
+ * A single pipe character acts as an OR operator. For example, the following
+ * query matches entries that start with `core` and end with either`go`, `rb`,
+ * or`py`.
+ *
+ * ```
+ * ^core go$ | rb$ | py$
+ * ```
+ */
+class ExtendedSearch {
+  constructor(
+    pattern,
+    {
+      isCaseSensitive = Config.isCaseSensitive,
+      includeMatches = Config.includeMatches,
+      minMatchCharLength = Config.minMatchCharLength,
+      ignoreLocation = Config.ignoreLocation,
+      findAllMatches = Config.findAllMatches,
+      location = Config.location,
+      threshold = Config.threshold,
+      distance = Config.distance
+    } = {}
+  ) {
+    this.query = null;
+    this.options = {
+      isCaseSensitive,
+      includeMatches,
+      minMatchCharLength,
+      findAllMatches,
+      ignoreLocation,
+      location,
+      threshold,
+      distance
+    };
+
+    this.pattern = isCaseSensitive ? pattern : pattern.toLowerCase();
+    this.query = parseQuery(this.pattern, this.options);
+  }
+
+  static condition(_, options) {
+    return options.useExtendedSearch
+  }
+
+  searchIn(text) {
+    const query = this.query;
+
+    if (!query) {
+      return {
+        isMatch: false,
+        score: 1
+      }
+    }
+
+    const { includeMatches, isCaseSensitive } = this.options;
+
+    text = isCaseSensitive ? text : text.toLowerCase();
+
+    let numMatches = 0;
+    let allIndices = [];
+    let totalScore = 0;
+
+    // ORs
+    for (let i = 0, qLen = query.length; i < qLen; i += 1) {
+      const searchers = query[i];
+
+      // Reset indices
+      allIndices.length = 0;
+      numMatches = 0;
+
+      // ANDs
+      for (let j = 0, pLen = searchers.length; j < pLen; j += 1) {
+        const searcher = searchers[j];
+        const { isMatch, indices, score } = searcher.search(text);
+
+        if (isMatch) {
+          numMatches += 1;
+          totalScore += score;
+          if (includeMatches) {
+            const type = searcher.constructor.type;
+            if (MultiMatchSet.has(type)) {
+              allIndices = [...allIndices, ...indices];
+            } else {
+              allIndices.push(indices);
+            }
+          }
+        } else {
+          totalScore = 0;
+          numMatches = 0;
+          allIndices.length = 0;
+          break
+        }
+      }
+
+      // OR condition, so if TRUE, return
+      if (numMatches) {
+        let result = {
+          isMatch: true,
+          score: totalScore / numMatches
+        };
+
+        if (includeMatches) {
+          result.indices = allIndices;
+        }
+
+        return result
+      }
+    }
+
+    // Nothing was matched
+    return {
+      isMatch: false,
+      score: 1
+    }
+  }
+}
+
+const registeredSearchers = [];
+
+function register(...args) {
+  registeredSearchers.push(...args);
+}
+
+function createSearcher(pattern, options) {
+  for (let i = 0, len = registeredSearchers.length; i < len; i += 1) {
+    let searcherClass = registeredSearchers[i];
+    if (searcherClass.condition(pattern, options)) {
+      return new searcherClass(pattern, options)
+    }
+  }
+
+  return new BitapSearch(pattern, options)
+}
+
+const LogicalOperator = {
+  AND: '$and',
+  OR: '$or'
+};
+
+const KeyType = {
+  PATH: '$path',
+  PATTERN: '$val'
+};
+
+const isExpression = (query) =>
+  !!(query[LogicalOperator.AND] || query[LogicalOperator.OR]);
+
+const isPath = (query) => !!query[KeyType.PATH];
+
+const isLeaf = (query) =>
+  !isArray(query) && isObject(query) && !isExpression(query);
+
+const convertToExplicit = (query) => ({
+  [LogicalOperator.AND]: Object.keys(query).map((key) => ({
+    [key]: query[key]
+  }))
 });
 
-var constants_1 = __webpack_require__(0);
+// When `auto` is `true`, the parse function will infer and initialize and add
+// the appropriate `Searcher` instance
+function parse(query, options, { auto = true } = {}) {
+  const next = (query) => {
+    let keys = Object.keys(query);
 
-exports.addItem = function (_a) {
-  var value = _a.value,
-      label = _a.label,
-      id = _a.id,
-      choiceId = _a.choiceId,
-      groupId = _a.groupId,
-      customProperties = _a.customProperties,
-      placeholder = _a.placeholder,
-      keyCode = _a.keyCode;
-  return {
-    type: constants_1.ACTION_TYPES.ADD_ITEM,
-    value: value,
-    label: label,
-    id: id,
-    choiceId: choiceId,
-    groupId: groupId,
-    customProperties: customProperties,
-    placeholder: placeholder,
-    keyCode: keyCode
-  };
-};
+    const isQueryPath = isPath(query);
 
-exports.removeItem = function (id, choiceId) {
-  return {
-    type: constants_1.ACTION_TYPES.REMOVE_ITEM,
-    id: id,
-    choiceId: choiceId
-  };
-};
+    if (!isQueryPath && keys.length > 1 && !isExpression(query)) {
+      return next(convertToExplicit(query))
+    }
 
-exports.highlightItem = function (id, highlighted) {
-  return {
-    type: constants_1.ACTION_TYPES.HIGHLIGHT_ITEM,
-    id: id,
-    highlighted: highlighted
+    if (isLeaf(query)) {
+      const key = isQueryPath ? query[KeyType.PATH] : keys[0];
+
+      const pattern = isQueryPath ? query[KeyType.PATTERN] : query[key];
+
+      if (!isString(pattern)) {
+        throw new Error(LOGICAL_SEARCH_INVALID_QUERY_FOR_KEY(key))
+      }
+
+      const obj = {
+        keyId: createKeyId(key),
+        pattern
+      };
+
+      if (auto) {
+        obj.searcher = createSearcher(pattern, options);
+      }
+
+      return obj
+    }
+
+    let node = {
+      children: [],
+      operator: keys[0]
+    };
+
+    keys.forEach((key) => {
+      const value = query[key];
+
+      if (isArray(value)) {
+        value.forEach((item) => {
+          node.children.push(next(item));
+        });
+      }
+    });
+
+    return node
   };
-};
+
+  if (!isExpression(query)) {
+    query = convertToExplicit(query);
+  }
+
+  return next(query)
+}
+
+// Practical scoring function
+function computeScore(
+  results,
+  { ignoreFieldNorm = Config.ignoreFieldNorm }
+) {
+  results.forEach((result) => {
+    let totalScore = 1;
+
+    result.matches.forEach(({ key, norm, score }) => {
+      const weight = key ? key.weight : null;
+
+      totalScore *= Math.pow(
+        score === 0 && weight ? Number.EPSILON : score,
+        (weight || 1) * (ignoreFieldNorm ? 1 : norm)
+      );
+    });
+
+    result.score = totalScore;
+  });
+}
+
+function transformMatches(result, data) {
+  const matches = result.matches;
+  data.matches = [];
+
+  if (!isDefined(matches)) {
+    return
+  }
+
+  matches.forEach((match) => {
+    if (!isDefined(match.indices) || !match.indices.length) {
+      return
+    }
+
+    const { indices, value } = match;
+
+    let obj = {
+      indices,
+      value
+    };
+
+    if (match.key) {
+      obj.key = match.key.src;
+    }
+
+    if (match.idx > -1) {
+      obj.refIndex = match.idx;
+    }
+
+    data.matches.push(obj);
+  });
+}
+
+function transformScore(result, data) {
+  data.score = result.score;
+}
+
+function format(
+  results,
+  docs,
+  {
+    includeMatches = Config.includeMatches,
+    includeScore = Config.includeScore
+  } = {}
+) {
+  const transformers = [];
+
+  if (includeMatches) transformers.push(transformMatches);
+  if (includeScore) transformers.push(transformScore);
+
+  return results.map((result) => {
+    const { idx } = result;
+
+    const data = {
+      item: docs[idx],
+      refIndex: idx
+    };
+
+    if (transformers.length) {
+      transformers.forEach((transformer) => {
+        transformer(result, data);
+      });
+    }
+
+    return data
+  })
+}
+
+class Fuse {
+  constructor(docs, options = {}, index) {
+    this.options = { ...Config, ...options };
+
+    if (
+      this.options.useExtendedSearch &&
+      !true
+    ) {}
+
+    this._keyStore = new KeyStore(this.options.keys);
+
+    this.setCollection(docs, index);
+  }
+
+  setCollection(docs, index) {
+    this._docs = docs;
+
+    if (index && !(index instanceof FuseIndex)) {
+      throw new Error(INCORRECT_INDEX_TYPE)
+    }
+
+    this._myIndex =
+      index ||
+      createIndex(this.options.keys, this._docs, {
+        getFn: this.options.getFn,
+        fieldNormWeight: this.options.fieldNormWeight
+      });
+  }
+
+  add(doc) {
+    if (!isDefined(doc)) {
+      return
+    }
+
+    this._docs.push(doc);
+    this._myIndex.add(doc);
+  }
+
+  remove(predicate = (/* doc, idx */) => false) {
+    const results = [];
+
+    for (let i = 0, len = this._docs.length; i < len; i += 1) {
+      const doc = this._docs[i];
+      if (predicate(doc, i)) {
+        this.removeAt(i);
+        i -= 1;
+        len -= 1;
+
+        results.push(doc);
+      }
+    }
+
+    return results
+  }
+
+  removeAt(idx) {
+    this._docs.splice(idx, 1);
+    this._myIndex.removeAt(idx);
+  }
+
+  getIndex() {
+    return this._myIndex
+  }
+
+  search(query, { limit = -1 } = {}) {
+    const {
+      includeMatches,
+      includeScore,
+      shouldSort,
+      sortFn,
+      ignoreFieldNorm
+    } = this.options;
+
+    let results = isString(query)
+      ? isString(this._docs[0])
+        ? this._searchStringList(query)
+        : this._searchObjectList(query)
+      : this._searchLogical(query);
+
+    computeScore(results, { ignoreFieldNorm });
+
+    if (shouldSort) {
+      results.sort(sortFn);
+    }
+
+    if (isNumber(limit) && limit > -1) {
+      results = results.slice(0, limit);
+    }
+
+    return format(results, this._docs, {
+      includeMatches,
+      includeScore
+    })
+  }
+
+  _searchStringList(query) {
+    const searcher = createSearcher(query, this.options);
+    const { records } = this._myIndex;
+    const results = [];
+
+    // Iterate over every string in the index
+    records.forEach(({ v: text, i: idx, n: norm }) => {
+      if (!isDefined(text)) {
+        return
+      }
+
+      const { isMatch, score, indices } = searcher.searchIn(text);
+
+      if (isMatch) {
+        results.push({
+          item: text,
+          idx,
+          matches: [{ score, value: text, norm, indices }]
+        });
+      }
+    });
+
+    return results
+  }
+
+  _searchLogical(query) {
+
+    const expression = parse(query, this.options);
+
+    const evaluate = (node, item, idx) => {
+      if (!node.children) {
+        const { keyId, searcher } = node;
+
+        const matches = this._findMatches({
+          key: this._keyStore.get(keyId),
+          value: this._myIndex.getValueForItemAtKeyId(item, keyId),
+          searcher
+        });
+
+        if (matches && matches.length) {
+          return [
+            {
+              idx,
+              item,
+              matches
+            }
+          ]
+        }
+
+        return []
+      }
+
+      const res = [];
+      for (let i = 0, len = node.children.length; i < len; i += 1) {
+        const child = node.children[i];
+        const result = evaluate(child, item, idx);
+        if (result.length) {
+          res.push(...result);
+        } else if (node.operator === LogicalOperator.AND) {
+          return []
+        }
+      }
+      return res
+    };
+
+    const records = this._myIndex.records;
+    const resultMap = {};
+    const results = [];
+
+    records.forEach(({ $: item, i: idx }) => {
+      if (isDefined(item)) {
+        let expResults = evaluate(expression, item, idx);
+
+        if (expResults.length) {
+          // Dedupe when adding
+          if (!resultMap[idx]) {
+            resultMap[idx] = { idx, item, matches: [] };
+            results.push(resultMap[idx]);
+          }
+          expResults.forEach(({ matches }) => {
+            resultMap[idx].matches.push(...matches);
+          });
+        }
+      }
+    });
+
+    return results
+  }
+
+  _searchObjectList(query) {
+    const searcher = createSearcher(query, this.options);
+    const { keys, records } = this._myIndex;
+    const results = [];
+
+    // List is Array<Object>
+    records.forEach(({ $: item, i: idx }) => {
+      if (!isDefined(item)) {
+        return
+      }
+
+      let matches = [];
+
+      // Iterate over every key (i.e, path), and fetch the value at that key
+      keys.forEach((key, keyIndex) => {
+        matches.push(
+          ...this._findMatches({
+            key,
+            value: item[keyIndex],
+            searcher
+          })
+        );
+      });
+
+      if (matches.length) {
+        results.push({
+          idx,
+          item,
+          matches
+        });
+      }
+    });
+
+    return results
+  }
+  _findMatches({ key, value, searcher }) {
+    if (!isDefined(value)) {
+      return []
+    }
+
+    let matches = [];
+
+    if (isArray(value)) {
+      value.forEach(({ v: text, i: idx, n: norm }) => {
+        if (!isDefined(text)) {
+          return
+        }
+
+        const { isMatch, score, indices } = searcher.searchIn(text);
+
+        if (isMatch) {
+          matches.push({
+            score,
+            key,
+            value: text,
+            idx,
+            norm,
+            indices
+          });
+        }
+      });
+    } else {
+      const { v: text, n: norm } = value;
+
+      const { isMatch, score, indices } = searcher.searchIn(text);
+
+      if (isMatch) {
+        matches.push({ score, key, value: text, norm, indices });
+      }
+    }
+
+    return matches
+  }
+}
+
+Fuse.version = '6.5.3';
+Fuse.createIndex = createIndex;
+Fuse.parseIndex = parseIndex;
+Fuse.config = Config;
+
+{
+  Fuse.parseQuery = parse;
+}
+
+{
+  register(ExtendedSearch);
+}
+
+
+
 
 /***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 857:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "__DO_NOT_USE__ActionTypes": function() { return /* binding */ ActionTypes; },
+  "applyMiddleware": function() { return /* binding */ applyMiddleware; },
+  "bindActionCreators": function() { return /* binding */ bindActionCreators; },
+  "combineReducers": function() { return /* binding */ combineReducers; },
+  "compose": function() { return /* binding */ compose; },
+  "createStore": function() { return /* binding */ createStore; }
 });
 
-var constants_1 = __webpack_require__(0);
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
 
-exports.addGroup = function (_a) {
-  var value = _a.value,
-      id = _a.id,
-      active = _a.active,
-      disabled = _a.disabled;
-  return {
-    type: constants_1.ACTION_TYPES.ADD_GROUP,
-    value: value,
-    id: id,
-    active: active,
-    disabled: disabled
-  };
+  return obj;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
+
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    enumerableOnly && (symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    })), keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = null != arguments[i] ? arguments[i] : {};
+    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+    });
+  }
+
+  return target;
+}
+;// CONCATENATED MODULE: ./node_modules/redux/es/redux.js
+
+
+/**
+ * Adapted from React: https://github.com/facebook/react/blob/master/packages/shared/formatProdErrorMessage.js
+ *
+ * Do not require this module directly! Use normal throw error calls. These messages will be replaced with error codes
+ * during build.
+ * @param {number} code
+ */
+function formatProdErrorMessage(code) {
+  return "Minified Redux error #" + code + "; visit https://redux.js.org/Errors?code=" + code + " for the full message or " + 'use the non-minified dev environment for full errors. ';
+}
+
+// Inlined version of the `symbol-observable` polyfill
+var $$observable = (function () {
+  return typeof Symbol === 'function' && Symbol.observable || '@@observable';
+})();
+
+/**
+ * These are private action types reserved by Redux.
+ * For any unknown actions, you must return the current state.
+ * If the current state is undefined, you must return the initial state.
+ * Do not reference these action types directly in your code.
+ */
+var randomString = function randomString() {
+  return Math.random().toString(36).substring(7).split('').join('.');
 };
 
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var constants_1 = __webpack_require__(0);
-
-exports.clearAll = function () {
-  return {
-    type: constants_1.ACTION_TYPES.CLEAR_ALL
-  };
+var ActionTypes = {
+  INIT: "@@redux/INIT" + randomString(),
+  REPLACE: "@@redux/REPLACE" + randomString(),
+  PROBE_UNKNOWN_ACTION: function PROBE_UNKNOWN_ACTION() {
+    return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
+  }
 };
 
-exports.resetTo = function (state) {
-  return {
-    type: constants_1.ACTION_TYPES.RESET_TO,
-    state: state
-  };
-};
+/**
+ * @param {any} obj The object to inspect.
+ * @returns {boolean} True if the argument appears to be a plain object.
+ */
+function isPlainObject(obj) {
+  if (typeof obj !== 'object' || obj === null) return false;
+  var proto = obj;
 
-exports.setIsLoading = function (isLoading) {
-  return {
-    type: constants_1.ACTION_TYPES.SET_IS_LOADING,
-    isLoading: isLoading
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+
+  return Object.getPrototypeOf(obj) === proto;
+}
+
+// Inlined / shortened version of `kindOf` from https://github.com/jonschlinkert/kind-of
+function miniKindOf(val) {
+  if (val === void 0) return 'undefined';
+  if (val === null) return 'null';
+  var type = typeof val;
+
+  switch (type) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+    case 'symbol':
+    case 'function':
+      {
+        return type;
+      }
+  }
+
+  if (Array.isArray(val)) return 'array';
+  if (isDate(val)) return 'date';
+  if (isError(val)) return 'error';
+  var constructorName = ctorName(val);
+
+  switch (constructorName) {
+    case 'Symbol':
+    case 'Promise':
+    case 'WeakMap':
+    case 'WeakSet':
+    case 'Map':
+    case 'Set':
+      return constructorName;
+  } // other
+
+
+  return type.slice(8, -1).toLowerCase().replace(/\s/g, '');
+}
+
+function ctorName(val) {
+  return typeof val.constructor === 'function' ? val.constructor.name : null;
+}
+
+function isError(val) {
+  return val instanceof Error || typeof val.message === 'string' && val.constructor && typeof val.constructor.stackTraceLimit === 'number';
+}
+
+function isDate(val) {
+  if (val instanceof Date) return true;
+  return typeof val.toDateString === 'function' && typeof val.getDate === 'function' && typeof val.setDate === 'function';
+}
+
+function kindOf(val) {
+  var typeOfVal = typeof val;
+
+  if (false) {}
+
+  return typeOfVal;
+}
+
+/**
+ * Creates a Redux store that holds the state tree.
+ * The only way to change the data in the store is to call `dispatch()` on it.
+ *
+ * There should only be a single store in your app. To specify how different
+ * parts of the state tree respond to actions, you may combine several reducers
+ * into a single reducer function by using `combineReducers`.
+ *
+ * @param {Function} reducer A function that returns the next state tree, given
+ * the current state tree and the action to handle.
+ *
+ * @param {any} [preloadedState] The initial state. You may optionally specify it
+ * to hydrate the state from the server in universal apps, or to restore a
+ * previously serialized user session.
+ * If you use `combineReducers` to produce the root reducer function, this must be
+ * an object with the same shape as `combineReducers` keys.
+ *
+ * @param {Function} [enhancer] The store enhancer. You may optionally specify it
+ * to enhance the store with third-party capabilities such as middleware,
+ * time travel, persistence, etc. The only store enhancer that ships with Redux
+ * is `applyMiddleware()`.
+ *
+ * @returns {Store} A Redux store that lets you read the state, dispatch actions
+ * and subscribe to changes.
+ */
+
+function createStore(reducer, preloadedState, enhancer) {
+  var _ref2;
+
+  if (typeof preloadedState === 'function' && typeof enhancer === 'function' || typeof enhancer === 'function' && typeof arguments[3] === 'function') {
+    throw new Error( true ? formatProdErrorMessage(0) : 0);
+  }
+
+  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
+    enhancer = preloadedState;
+    preloadedState = undefined;
+  }
+
+  if (typeof enhancer !== 'undefined') {
+    if (typeof enhancer !== 'function') {
+      throw new Error( true ? formatProdErrorMessage(1) : 0);
+    }
+
+    return enhancer(createStore)(reducer, preloadedState);
+  }
+
+  if (typeof reducer !== 'function') {
+    throw new Error( true ? formatProdErrorMessage(2) : 0);
+  }
+
+  var currentReducer = reducer;
+  var currentState = preloadedState;
+  var currentListeners = [];
+  var nextListeners = currentListeners;
+  var isDispatching = false;
+  /**
+   * This makes a shallow copy of currentListeners so we can use
+   * nextListeners as a temporary list while dispatching.
+   *
+   * This prevents any bugs around consumers calling
+   * subscribe/unsubscribe in the middle of a dispatch.
+   */
+
+  function ensureCanMutateNextListeners() {
+    if (nextListeners === currentListeners) {
+      nextListeners = currentListeners.slice();
+    }
+  }
+  /**
+   * Reads the state tree managed by the store.
+   *
+   * @returns {any} The current state tree of your application.
+   */
+
+
+  function getState() {
+    if (isDispatching) {
+      throw new Error( true ? formatProdErrorMessage(3) : 0);
+    }
+
+    return currentState;
+  }
+  /**
+   * Adds a change listener. It will be called any time an action is dispatched,
+   * and some part of the state tree may potentially have changed. You may then
+   * call `getState()` to read the current state tree inside the callback.
+   *
+   * You may call `dispatch()` from a change listener, with the following
+   * caveats:
+   *
+   * 1. The subscriptions are snapshotted just before every `dispatch()` call.
+   * If you subscribe or unsubscribe while the listeners are being invoked, this
+   * will not have any effect on the `dispatch()` that is currently in progress.
+   * However, the next `dispatch()` call, whether nested or not, will use a more
+   * recent snapshot of the subscription list.
+   *
+   * 2. The listener should not expect to see all state changes, as the state
+   * might have been updated multiple times during a nested `dispatch()` before
+   * the listener is called. It is, however, guaranteed that all subscribers
+   * registered before the `dispatch()` started will be called with the latest
+   * state by the time it exits.
+   *
+   * @param {Function} listener A callback to be invoked on every dispatch.
+   * @returns {Function} A function to remove this change listener.
+   */
+
+
+  function subscribe(listener) {
+    if (typeof listener !== 'function') {
+      throw new Error( true ? formatProdErrorMessage(4) : 0);
+    }
+
+    if (isDispatching) {
+      throw new Error( true ? formatProdErrorMessage(5) : 0);
+    }
+
+    var isSubscribed = true;
+    ensureCanMutateNextListeners();
+    nextListeners.push(listener);
+    return function unsubscribe() {
+      if (!isSubscribed) {
+        return;
+      }
+
+      if (isDispatching) {
+        throw new Error( true ? formatProdErrorMessage(6) : 0);
+      }
+
+      isSubscribed = false;
+      ensureCanMutateNextListeners();
+      var index = nextListeners.indexOf(listener);
+      nextListeners.splice(index, 1);
+      currentListeners = null;
+    };
+  }
+  /**
+   * Dispatches an action. It is the only way to trigger a state change.
+   *
+   * The `reducer` function, used to create the store, will be called with the
+   * current state tree and the given `action`. Its return value will
+   * be considered the **next** state of the tree, and the change listeners
+   * will be notified.
+   *
+   * The base implementation only supports plain object actions. If you want to
+   * dispatch a Promise, an Observable, a thunk, or something else, you need to
+   * wrap your store creating function into the corresponding middleware. For
+   * example, see the documentation for the `redux-thunk` package. Even the
+   * middleware will eventually dispatch plain object actions using this method.
+   *
+   * @param {Object} action A plain object representing “what changed”. It is
+   * a good idea to keep actions serializable so you can record and replay user
+   * sessions, or use the time travelling `redux-devtools`. An action must have
+   * a `type` property which may not be `undefined`. It is a good idea to use
+   * string constants for action types.
+   *
+   * @returns {Object} For convenience, the same action object you dispatched.
+   *
+   * Note that, if you use a custom middleware, it may wrap `dispatch()` to
+   * return something else (for example, a Promise you can await).
+   */
+
+
+  function dispatch(action) {
+    if (!isPlainObject(action)) {
+      throw new Error( true ? formatProdErrorMessage(7) : 0);
+    }
+
+    if (typeof action.type === 'undefined') {
+      throw new Error( true ? formatProdErrorMessage(8) : 0);
+    }
+
+    if (isDispatching) {
+      throw new Error( true ? formatProdErrorMessage(9) : 0);
+    }
+
+    try {
+      isDispatching = true;
+      currentState = currentReducer(currentState, action);
+    } finally {
+      isDispatching = false;
+    }
+
+    var listeners = currentListeners = nextListeners;
+
+    for (var i = 0; i < listeners.length; i++) {
+      var listener = listeners[i];
+      listener();
+    }
+
+    return action;
+  }
+  /**
+   * Replaces the reducer currently used by the store to calculate the state.
+   *
+   * You might need this if your app implements code splitting and you want to
+   * load some of the reducers dynamically. You might also need this if you
+   * implement a hot reloading mechanism for Redux.
+   *
+   * @param {Function} nextReducer The reducer for the store to use instead.
+   * @returns {void}
+   */
+
+
+  function replaceReducer(nextReducer) {
+    if (typeof nextReducer !== 'function') {
+      throw new Error( true ? formatProdErrorMessage(10) : 0);
+    }
+
+    currentReducer = nextReducer; // This action has a similiar effect to ActionTypes.INIT.
+    // Any reducers that existed in both the new and old rootReducer
+    // will receive the previous state. This effectively populates
+    // the new state tree with any relevant data from the old one.
+
+    dispatch({
+      type: ActionTypes.REPLACE
+    });
+  }
+  /**
+   * Interoperability point for observable/reactive libraries.
+   * @returns {observable} A minimal observable of state changes.
+   * For more information, see the observable proposal:
+   * https://github.com/tc39/proposal-observable
+   */
+
+
+  function observable() {
+    var _ref;
+
+    var outerSubscribe = subscribe;
+    return _ref = {
+      /**
+       * The minimal observable subscription method.
+       * @param {Object} observer Any object that can be used as an observer.
+       * The observer object should have a `next` method.
+       * @returns {subscription} An object with an `unsubscribe` method that can
+       * be used to unsubscribe the observable from the store, and prevent further
+       * emission of values from the observable.
+       */
+      subscribe: function subscribe(observer) {
+        if (typeof observer !== 'object' || observer === null) {
+          throw new Error( true ? formatProdErrorMessage(11) : 0);
+        }
+
+        function observeState() {
+          if (observer.next) {
+            observer.next(getState());
+          }
+        }
+
+        observeState();
+        var unsubscribe = outerSubscribe(observeState);
+        return {
+          unsubscribe: unsubscribe
+        };
+      }
+    }, _ref[$$observable] = function () {
+      return this;
+    }, _ref;
+  } // When a store is created, an "INIT" action is dispatched so that every
+  // reducer returns their initial state. This effectively populates
+  // the initial state tree.
+
+
+  dispatch({
+    type: ActionTypes.INIT
+  });
+  return _ref2 = {
+    dispatch: dispatch,
+    subscribe: subscribe,
+    getState: getState,
+    replaceReducer: replaceReducer
+  }, _ref2[$$observable] = observable, _ref2;
+}
+
+/**
+ * Prints a warning in the console if it exists.
+ *
+ * @param {String} message The warning message.
+ * @returns {void}
+ */
+function warning(message) {
+  /* eslint-disable no-console */
+  if (typeof console !== 'undefined' && typeof console.error === 'function') {
+    console.error(message);
+  }
+  /* eslint-enable no-console */
+
+
+  try {
+    // This error was thrown as a convenience so that if you enable
+    // "break on all exceptions" in your console,
+    // it would pause the execution at this line.
+    throw new Error(message);
+  } catch (e) {} // eslint-disable-line no-empty
+
+}
+
+function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
+  var reducerKeys = Object.keys(reducers);
+  var argumentName = action && action.type === ActionTypes.INIT ? 'preloadedState argument passed to createStore' : 'previous state received by the reducer';
+
+  if (reducerKeys.length === 0) {
+    return 'Store does not have a valid reducer. Make sure the argument passed ' + 'to combineReducers is an object whose values are reducers.';
+  }
+
+  if (!isPlainObject(inputState)) {
+    return "The " + argumentName + " has unexpected type of \"" + kindOf(inputState) + "\". Expected argument to be an object with the following " + ("keys: \"" + reducerKeys.join('", "') + "\"");
+  }
+
+  var unexpectedKeys = Object.keys(inputState).filter(function (key) {
+    return !reducers.hasOwnProperty(key) && !unexpectedKeyCache[key];
+  });
+  unexpectedKeys.forEach(function (key) {
+    unexpectedKeyCache[key] = true;
+  });
+  if (action && action.type === ActionTypes.REPLACE) return;
+
+  if (unexpectedKeys.length > 0) {
+    return "Unexpected " + (unexpectedKeys.length > 1 ? 'keys' : 'key') + " " + ("\"" + unexpectedKeys.join('", "') + "\" found in " + argumentName + ". ") + "Expected to find one of the known reducer keys instead: " + ("\"" + reducerKeys.join('", "') + "\". Unexpected keys will be ignored.");
+  }
+}
+
+function assertReducerShape(reducers) {
+  Object.keys(reducers).forEach(function (key) {
+    var reducer = reducers[key];
+    var initialState = reducer(undefined, {
+      type: ActionTypes.INIT
+    });
+
+    if (typeof initialState === 'undefined') {
+      throw new Error( true ? formatProdErrorMessage(12) : 0);
+    }
+
+    if (typeof reducer(undefined, {
+      type: ActionTypes.PROBE_UNKNOWN_ACTION()
+    }) === 'undefined') {
+      throw new Error( true ? formatProdErrorMessage(13) : 0);
+    }
+  });
+}
+/**
+ * Turns an object whose values are different reducer functions, into a single
+ * reducer function. It will call every child reducer, and gather their results
+ * into a single state object, whose keys correspond to the keys of the passed
+ * reducer functions.
+ *
+ * @param {Object} reducers An object whose values correspond to different
+ * reducer functions that need to be combined into one. One handy way to obtain
+ * it is to use ES6 `import * as reducers` syntax. The reducers may never return
+ * undefined for any action. Instead, they should return their initial state
+ * if the state passed to them was undefined, and the current state for any
+ * unrecognized action.
+ *
+ * @returns {Function} A reducer function that invokes every reducer inside the
+ * passed object, and builds a state object with the same shape.
+ */
+
+
+function combineReducers(reducers) {
+  var reducerKeys = Object.keys(reducers);
+  var finalReducers = {};
+
+  for (var i = 0; i < reducerKeys.length; i++) {
+    var key = reducerKeys[i];
+
+    if (false) {}
+
+    if (typeof reducers[key] === 'function') {
+      finalReducers[key] = reducers[key];
+    }
+  }
+
+  var finalReducerKeys = Object.keys(finalReducers); // This is used to make sure we don't warn about the same
+  // keys multiple times.
+
+  var unexpectedKeyCache;
+
+  if (false) {}
+
+  var shapeAssertionError;
+
+  try {
+    assertReducerShape(finalReducers);
+  } catch (e) {
+    shapeAssertionError = e;
+  }
+
+  return function combination(state, action) {
+    if (state === void 0) {
+      state = {};
+    }
+
+    if (shapeAssertionError) {
+      throw shapeAssertionError;
+    }
+
+    if (false) { var warningMessage; }
+
+    var hasChanged = false;
+    var nextState = {};
+
+    for (var _i = 0; _i < finalReducerKeys.length; _i++) {
+      var _key = finalReducerKeys[_i];
+      var reducer = finalReducers[_key];
+      var previousStateForKey = state[_key];
+      var nextStateForKey = reducer(previousStateForKey, action);
+
+      if (typeof nextStateForKey === 'undefined') {
+        var actionType = action && action.type;
+        throw new Error( true ? formatProdErrorMessage(14) : 0);
+      }
+
+      nextState[_key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
+
+    hasChanged = hasChanged || finalReducerKeys.length !== Object.keys(state).length;
+    return hasChanged ? nextState : state;
   };
-};
+}
+
+function bindActionCreator(actionCreator, dispatch) {
+  return function () {
+    return dispatch(actionCreator.apply(this, arguments));
+  };
+}
+/**
+ * Turns an object whose values are action creators, into an object with the
+ * same keys, but with every function wrapped into a `dispatch` call so they
+ * may be invoked directly. This is just a convenience method, as you can call
+ * `store.dispatch(MyActionCreators.doSomething())` yourself just fine.
+ *
+ * For convenience, you can also pass an action creator as the first argument,
+ * and get a dispatch wrapped function in return.
+ *
+ * @param {Function|Object} actionCreators An object whose values are action
+ * creator functions. One handy way to obtain it is to use ES6 `import * as`
+ * syntax. You may also pass a single function.
+ *
+ * @param {Function} dispatch The `dispatch` function available on your Redux
+ * store.
+ *
+ * @returns {Function|Object} The object mimicking the original object, but with
+ * every action creator wrapped into the `dispatch` call. If you passed a
+ * function as `actionCreators`, the return value will also be a single
+ * function.
+ */
+
+
+function bindActionCreators(actionCreators, dispatch) {
+  if (typeof actionCreators === 'function') {
+    return bindActionCreator(actionCreators, dispatch);
+  }
+
+  if (typeof actionCreators !== 'object' || actionCreators === null) {
+    throw new Error( true ? formatProdErrorMessage(16) : 0);
+  }
+
+  var boundActionCreators = {};
+
+  for (var key in actionCreators) {
+    var actionCreator = actionCreators[key];
+
+    if (typeof actionCreator === 'function') {
+      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch);
+    }
+  }
+
+  return boundActionCreators;
+}
+
+/**
+ * Composes single-argument functions from right to left. The rightmost
+ * function can take multiple arguments as it provides the signature for
+ * the resulting composite function.
+ *
+ * @param {...Function} funcs The functions to compose.
+ * @returns {Function} A function obtained by composing the argument functions
+ * from right to left. For example, compose(f, g, h) is identical to doing
+ * (...args) => f(g(h(...args))).
+ */
+function compose() {
+  for (var _len = arguments.length, funcs = new Array(_len), _key = 0; _key < _len; _key++) {
+    funcs[_key] = arguments[_key];
+  }
+
+  if (funcs.length === 0) {
+    return function (arg) {
+      return arg;
+    };
+  }
+
+  if (funcs.length === 1) {
+    return funcs[0];
+  }
+
+  return funcs.reduce(function (a, b) {
+    return function () {
+      return a(b.apply(void 0, arguments));
+    };
+  });
+}
+
+/**
+ * Creates a store enhancer that applies middleware to the dispatch method
+ * of the Redux store. This is handy for a variety of tasks, such as expressing
+ * asynchronous actions in a concise manner, or logging every action payload.
+ *
+ * See `redux-thunk` package as an example of the Redux middleware.
+ *
+ * Because middleware is potentially asynchronous, this should be the first
+ * store enhancer in the composition chain.
+ *
+ * Note that each middleware will be given the `dispatch` and `getState` functions
+ * as named arguments.
+ *
+ * @param {...Function} middlewares The middleware chain to be applied.
+ * @returns {Function} A store enhancer applying the middleware.
+ */
+
+function applyMiddleware() {
+  for (var _len = arguments.length, middlewares = new Array(_len), _key = 0; _key < _len; _key++) {
+    middlewares[_key] = arguments[_key];
+  }
+
+  return function (createStore) {
+    return function () {
+      var store = createStore.apply(void 0, arguments);
+
+      var _dispatch = function dispatch() {
+        throw new Error( true ? formatProdErrorMessage(15) : 0);
+      };
+
+      var middlewareAPI = {
+        getState: store.getState,
+        dispatch: function dispatch() {
+          return _dispatch.apply(void 0, arguments);
+        }
+      };
+      var chain = middlewares.map(function (middleware) {
+        return middleware(middlewareAPI);
+      });
+      _dispatch = compose.apply(void 0, chain)(store.dispatch);
+      return _objectSpread2(_objectSpread2({}, store), {}, {
+        dispatch: _dispatch
+      });
+    };
+  };
+}
+
+/*
+ * This is a dummy function to check if the function name has been altered by minification.
+ * If the function has been minified and NODE_ENV !== 'production', warn the user.
+ */
+
+function isCrushed() {}
+
+if (false) {}
+
+
+
 
 /***/ })
-/******/ ])["default"];
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+!function() {
+/* harmony import */ var _scripts_choices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(373);
+/* harmony import */ var _scripts_choices__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_scripts_choices__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _scripts_interfaces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(187);
+/* harmony import */ var _scripts_interfaces__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_scripts_interfaces__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _scripts_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(883);
+/* harmony import */ var _scripts_defaults__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(789);
+/* harmony import */ var _scripts_templates__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(686);
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ((_scripts_choices__WEBPACK_IMPORTED_MODULE_0___default()));
+
+}();
+__webpack_exports__ = __webpack_exports__["default"];
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });

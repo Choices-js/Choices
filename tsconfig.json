@@ -3,8 +3,12 @@
     "baseUrl": "/",
     "outDir": "./dist/",
     "allowJs": true,
+    "declaration": true,
+    "declarationDir": "./public/types/",
+    "declarationMap": true,
     "sourceMap": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "target": "es5",
     "lib": ["es2017", "dom"],
@@ -12,7 +16,8 @@
     "noUnusedParameters": true,
     "noImplicitAny": false,
     "strictNullChecks": true,
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "newLine": "lf"
   },
   "include": ["./src/**/*", "./cypress/**/*"]
 }

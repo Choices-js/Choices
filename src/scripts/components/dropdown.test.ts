@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 import Dropdown from './dropdown';
-import { DEFAULT_CLASSNAMES } from '../constants';
 
 describe('components/dropdown', () => {
   let instance;

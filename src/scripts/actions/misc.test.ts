@@ -1,6 +1,6 @@
 import { expect } from 'chai';
+import { State } from '../interfaces/state';
 import * as actions from './misc';
-import { State } from '../interfaces';
 
 describe('actions/misc', () => {
   describe('clearAll action', () => {

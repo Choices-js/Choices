@@ -1,14 +1,15 @@
-import { Group, State } from '../interfaces';
 import { AddGroupAction } from '../actions/groups';
 import { ClearChoicesAction } from '../actions/choices';
+import { Group } from '../interfaces/group';
+import { State } from '../interfaces/state';
 
 export const defaultState = [];
 
-type ActionTypes = AddGroupAction | ClearChoicesAction;
+type ActionTypes = AddGroupAction | ClearChoicesAction | Record<string, never>;
 
 export default function groups(
   state: Group[] = defaultState,
-  action: ActionTypes,
+  action: ActionTypes = {},
 ): State['groups'] {
   switch (action.type) {
     case 'ADD_GROUP': {

@@ -1,5 +1,5 @@
 import { ACTION_TYPES } from '../constants';
-import { Choice } from '../interfaces';
+import { Choice } from '../interfaces/choice';
 
 export interface AddChoiceAction {
   type: typeof ACTION_TYPES.ADD_CHOICE;

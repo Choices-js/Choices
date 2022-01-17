@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { stub, spy } from 'sinon';
 import WrappedElement from './wrapped-element';
 import WrappedSelect from './wrapped-select';
-import { DEFAULT_CLASSNAMES } from '../constants';
 import Templates from '../templates';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 
 describe('components/wrappedSelect', () => {
   let instance;
@@ -56,7 +56,7 @@ describe('components/wrappedSelect', () => {
   describe('inherited methods', () => {
     const methods: string[] = ['conceal', 'reveal', 'enable', 'disable'];
 
-    methods.forEach(method => {
+    methods.forEach((method) => {
       beforeEach(() => {
         stub(WrappedElement.prototype, method as keyof WrappedElement);
       });
@@ -93,7 +93,7 @@ describe('components/wrappedSelect', () => {
     it('returns all option elements', () => {
       const { options } = instance;
       expect(options).to.be.an('array');
-      options.forEach(option => {
+      options.forEach((option) => {
         expect(option).to.be.instanceOf(HTMLOptionElement);
       });
     });
@@ -108,7 +108,7 @@ describe('components/wrappedSelect', () => {
 
       const { optionGroups } = instance;
       expect(optionGroups.length).to.equal(3);
-      optionGroups.forEach(option => {
+      optionGroups.forEach((option) => {
         expect(option).to.be.instanceOf(HTMLOptGroupElement);
       });
     });

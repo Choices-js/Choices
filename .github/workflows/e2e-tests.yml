@@ -20,16 +20,16 @@ jobs:
       TERM: xterm-256color
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -46,7 +46,7 @@ jobs:
         env:
           CYPRESS_INSTALL_BINARY: 0
       - name: Cache Cypress cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.cypress-info.outputs.cache }}
           key: ${{ runner.OS }}-cypress-${{ steps.cypress-info.outputs.version }}

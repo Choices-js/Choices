@@ -2,7 +2,9 @@ import { SCROLLING_SPEED } from '../constants';
 
 export default class List {
   element: HTMLElement;
+
   scrollPos: number;
+
   height: number;
 
   constructor({ element }: { element: HTMLElement }) {

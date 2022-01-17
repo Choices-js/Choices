@@ -1,6 +1,6 @@
 import { expect } from 'chai';
+import { DEFAULT_CLASSNAMES } from '../defaults';
 import WrappedElement from './wrapped-element';
-import { DEFAULT_CLASSNAMES } from '../constants';
 
 describe('components/wrappedElement', () => {
   let instance;
@@ -163,7 +163,7 @@ describe('components/wrappedElement', () => {
   });
 
   describe('triggerEvent', () => {
-    it('fires event on element using passed eventType and data', done => {
+    it('fires event on element using passed eventType and data', (done) => {
       const data = {
         test: true,
       };

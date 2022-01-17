@@ -1,9 +1,13 @@
-import { PassedElement, ClassNames } from '../interfaces';
+import { ClassNames } from '../interfaces/class-names';
+import { PassedElementType } from '../interfaces/passed-element-type';
 
 export default class Dropdown {
   element: HTMLElement;
-  type: PassedElement['type'];
+
+  type: PassedElementType;
+
   classNames: ClassNames;
+
   isActive: boolean;
 
   constructor({
@@ -12,7 +16,7 @@ export default class Dropdown {
     classNames,
   }: {
     element: HTMLElement;
-    type: PassedElement['type'];
+    type: PassedElementType;
     classNames: ClassNames;
   }) {
     this.element = element;

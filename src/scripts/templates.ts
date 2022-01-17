@@ -1,18 +1,24 @@
-import { ClassNames, Item, Choice, Group, PassedElement } from './interfaces';
-
 /**
  * Helpers to create HTML elements used by Choices
  * Can be overridden by providing `callbackOnCreateTemplates` option
  */
 
+import { Choice } from './interfaces/choice';
+import { Group } from './interfaces/group';
+import { Item } from './interfaces/item';
+import { PassedElementType } from './interfaces/passed-element-type';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TemplateOptions = Record<'classNames' | 'allowHTML', any>;
+
 const templates = {
   containerOuter(
-    { containerOuter }: Pick<ClassNames, 'containerOuter'>,
+    { classNames: { containerOuter } }: TemplateOptions,
     dir: HTMLElement['dir'],
     isSelectElement: boolean,
     isSelectOneElement: boolean,
     searchEnabled: boolean,
-    passedElementType: PassedElement['type'],
+    passedElementType: PassedElementType,
     labelId: string,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
@@ -46,19 +52,15 @@ const templates = {
   },
 
   containerInner({
-    containerInner,
-  }: Pick<ClassNames, 'containerInner'>): HTMLDivElement {
+    classNames: { containerInner },
+  }: TemplateOptions): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
       className: containerInner,
     });
   },
 
   itemList(
-    {
-      list,
-      listSingle,
-      listItems,
-    }: Pick<ClassNames, 'list' | 'listSingle' | 'listItems'>,
+    { classNames: { list, listSingle, listItems } }: TemplateOptions,
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
@@ -67,26 +69,26 @@ const templates = {
   },
 
   placeholder(
-    { placeholder }: Pick<ClassNames, 'placeholder'>,
+    { allowHTML, classNames: { placeholder } }: TemplateOptions,
     value: string,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
       className: placeholder,
-      innerHTML: value,
+      [allowHTML ? 'innerHTML' : 'innerText']: value,
     });
   },
 
   item(
     {
-      item,
-      button,
-      highlightedState,
-      itemSelectable,
-      placeholder,
-    }: Pick<
-      ClassNames,
-      'item' | 'button' | 'highlightedState' | 'itemSelectable' | 'placeholder'
-    >,
+      allowHTML,
+      classNames: {
+        item,
+        button,
+        highlightedState,
+        itemSelectable,
+        placeholder,
+      },
+    }: TemplateOptions,
     {
       id,
       value,
@@ -101,7 +103,7 @@ const templates = {
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
       className: item,
-      innerHTML: label,
+      [allowHTML ? 'innerHTML' : 'innerText']: label,
     });
 
     Object.assign(div.dataset, {
@@ -135,7 +137,7 @@ const templates = {
       const removeButton = Object.assign(document.createElement('button'), {
         type: 'button',
         className: button,
-        innerHTML: REMOVE_ITEM_TEXT,
+        [allowHTML ? 'innerHTML' : 'innerText']: REMOVE_ITEM_TEXT,
       });
       removeButton.setAttribute(
         'aria-label',
@@ -149,7 +151,7 @@ const templates = {
   },
 
   choiceList(
-    { list }: Pick<ClassNames, 'list'>,
+    { classNames: { list } }: TemplateOptions,
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
@@ -166,10 +168,9 @@ const templates = {
 
   choiceGroup(
     {
-      group,
-      groupHeading,
-      itemDisabled,
-    }: Pick<ClassNames, 'group' | 'groupHeading' | 'itemDisabled'>,
+      allowHTML,
+      classNames: { group, groupHeading, itemDisabled },
+    }: TemplateOptions,
     { id, value, disabled }: Group,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
@@ -191,7 +192,7 @@ const templates = {
     div.appendChild(
       Object.assign(document.createElement('div'), {
         className: groupHeading,
-        innerHTML: value,
+        [allowHTML ? 'innerHTML' : 'innerText']: value,
       }),
     );
 
@@ -200,21 +201,16 @@ const templates = {
 
   choice(
     {
-      item,
-      itemChoice,
-      itemSelectable,
-      selectedState,
-      itemDisabled,
-      placeholder,
-    }: Pick<
-      ClassNames,
-      | 'item'
-      | 'itemChoice'
-      | 'itemSelectable'
-      | 'selectedState'
-      | 'itemDisabled'
-      | 'placeholder'
-    >,
+      allowHTML,
+      classNames: {
+        item,
+        itemChoice,
+        itemSelectable,
+        selectedState,
+        itemDisabled,
+        placeholder,
+      },
+    }: TemplateOptions,
     {
       id,
       value,
@@ -229,7 +225,7 @@ const templates = {
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
       id: elementId,
-      innerHTML: label,
+      [allowHTML ? 'innerHTML' : 'innerText']: label,
       className: `${item} ${itemChoice}`,
     });
 
@@ -263,11 +259,12 @@ const templates = {
   },
 
   input(
-    { input, inputCloned }: Pick<ClassNames, 'input' | 'inputCloned'>,
+    { classNames: { input, inputCloned } }: TemplateOptions,
     placeholderValue: string,
   ): HTMLInputElement {
     const inp = Object.assign(document.createElement('input'), {
-      type: 'text',
+      type: 'search',
+      name: 'search_terms',
       className: `${input} ${inputCloned}`,
       autocomplete: 'off',
       autocapitalize: 'off',
@@ -282,9 +279,8 @@ const templates = {
   },
 
   dropdown({
-    list,
-    listDropdown,
-  }: Pick<ClassNames, 'list' | 'listDropdown'>): HTMLDivElement {
+    classNames: { list, listDropdown },
+  }: TemplateOptions): HTMLDivElement {
     const div = document.createElement('div');
 
     div.classList.add(list, listDropdown);
@@ -295,12 +291,10 @@ const templates = {
 
   notice(
     {
-      item,
-      itemChoice,
-      noResults,
-      noChoices,
-    }: Pick<ClassNames, 'item' | 'itemChoice' | 'noResults' | 'noChoices'>,
-    innerHTML: string,
+      allowHTML,
+      classNames: { item, itemChoice, noResults, noChoices },
+    }: TemplateOptions,
+    innerText: string,
     type: 'no-choices' | 'no-results' | '' = '',
   ): HTMLDivElement {
     const classes = [item, itemChoice];
@@ -312,7 +306,7 @@ const templates = {
     }
 
     return Object.assign(document.createElement('div'), {
-      innerHTML,
+      [allowHTML ? 'innerHTML' : 'innerText']: innerText,
       className: classes.join(' '),
     });
   },

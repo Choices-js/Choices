@@ -1,5 +1,5 @@
-import { State } from '../interfaces';
 import { ACTION_TYPES } from '../constants';
+import { State } from '../interfaces/state';
 
 export interface ClearAllAction {
   type: typeof ACTION_TYPES.CLEAR_ALL;
