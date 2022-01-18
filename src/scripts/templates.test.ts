@@ -79,6 +79,40 @@ describe('templates', () => {
         });
       });
 
+      describe('with label id for a11y', () => {
+        it('returns expected html', () => {
+          const isSelectElement = true;
+          const isSelectOneElement = true;
+          const searchEnabled = false;
+          const passedElementType = 'select-one';
+          const labelId = 'testLabelId';
+
+          const expectedOutput = strToEl(`
+            <div
+              class="${options.classNames.containerOuter}"
+              data-type="${passedElementType}"
+              role="listbox"
+              tabindex="0"
+              aria-haspopup="true"
+              aria-expanded="false"
+              aria-labeledby="${labelId}"
+              dir="${direction}"
+              >
+            </div>
+          `);
+          const actualOutput = templates.containerOuter(
+            options,
+            direction,
+            isSelectElement,
+            isSelectOneElement,
+            searchEnabled,
+            passedElementType,
+            labelId,
+          );
+          expectEqualElements(actualOutput, expectedOutput);
+        });
+      });
+
       describe('search disabled', () => {
         it('returns expected html', () => {
           const isSelectElement = true;
