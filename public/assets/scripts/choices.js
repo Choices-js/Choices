@@ -399,7 +399,7 @@ function () {
           selected: !!option.selected,
           disabled: option.disabled || option.parentNode.disabled,
           placeholder: option.value === '' || option.hasAttribute('placeholder'),
-          customProperties: option.dataset['custom-properties']
+          customProperties: option.dataset['customProperties']
         });
       });
     }
