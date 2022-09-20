@@ -177,8 +177,8 @@ class Choices implements Choices {
 
     if (
       !(
-        passedElement instanceof HTMLInputElement ||
-        passedElement instanceof HTMLSelectElement
+        passedElement?.constructor.name === 'HTMLInputElement' ||
+        passedElement?.constructor.name === 'HTMLSelectElement'
       )
     ) {
       throw TypeError(
@@ -186,9 +186,9 @@ class Choices implements Choices {
       );
     }
 
-    this._isTextElement = passedElement.type === TEXT_TYPE;
-    this._isSelectOneElement = passedElement.type === SELECT_ONE_TYPE;
-    this._isSelectMultipleElement = passedElement.type === SELECT_MULTIPLE_TYPE;
+    this._isTextElement = (passedElement as HTMLInputElement).type === TEXT_TYPE;
+    this._isSelectOneElement = (passedElement as HTMLSelectElement).type === SELECT_ONE_TYPE;
+    this._isSelectMultipleElement = (passedElement as HTMLSelectElement).type === SELECT_MULTIPLE_TYPE;
     this._isSelectElement =
       this._isSelectOneElement || this._isSelectMultipleElement;
 

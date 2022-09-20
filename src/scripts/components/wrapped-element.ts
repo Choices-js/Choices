@@ -14,8 +14,8 @@ export default class WrappedElement {
     this.classNames = classNames;
 
     if (
-      !(element instanceof HTMLInputElement) &&
-      !(element instanceof HTMLSelectElement)
+      !(element?.constructor.name === 'HTMLInputElement') &&
+      !(element?.constructor.name === 'HTMLSelectElement')
     ) {
       throw new TypeError('Invalid element passed');
     }
