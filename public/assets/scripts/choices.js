@@ -306,7 +306,7 @@ function () {
 
     var passedElement = typeof element === 'string' ? document.querySelector(element) : element;
 
-    if (!(passedElement instanceof HTMLInputElement || passedElement instanceof HTMLSelectElement)) {
+    if (!((passedElement === null || passedElement === void 0 ? void 0 : passedElement.constructor.name) === 'HTMLInputElement' || (passedElement === null || passedElement === void 0 ? void 0 : passedElement.constructor.name) === 'HTMLSelectElement')) {
       throw TypeError('Expected one of the following types text|select-one|select-multiple');
     }
 
@@ -3086,7 +3086,7 @@ function () {
     this.element = element;
     this.classNames = classNames;
 
-    if (!(element instanceof HTMLInputElement) && !(element instanceof HTMLSelectElement)) {
+    if (!((element === null || element === void 0 ? void 0 : element.constructor.name) === 'HTMLInputElement') && !((element === null || element === void 0 ? void 0 : element.constructor.name) === 'HTMLSelectElement')) {
       throw new TypeError('Invalid element passed');
     }
 
@@ -4614,7 +4614,7 @@ var templates = {
     div.setAttribute('aria-expanded', 'false');
 
     if (labelId) {
-      div.setAttribute('aria-labeledby', labelId);
+      div.setAttribute('aria-labelledby', labelId);
     }
 
     return div;
