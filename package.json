@@ -110,6 +110,8 @@
   "dependencies": {
     "deepmerge": "^4.2.2",
     "fuse.js": "^6.5.3",
+    "pixelmatch": "^5.3.0",
+    "puppeteer": "^19.3.0",
     "redux": "^4.1.2"
   },
   "npmName": "choices.js",

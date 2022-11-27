@@ -1552,7 +1552,7 @@ function () {
     var hasActiveDropdown = this.dropdown.isActive;
     var hasItems = this.itemList.hasChildren();
     var keyString = String.fromCharCode(keyCode);
-    var wasAlphaNumericChar = /[a-zA-Z0-9-_ ]/.test(keyString);
+    var wasPrintableChar = /[^\x00-\x1F]/.test(keyString);
     var BACK_KEY = constants_1.KEY_CODES.BACK_KEY,
         DELETE_KEY = constants_1.KEY_CODES.DELETE_KEY,
         ENTER_KEY = constants_1.KEY_CODES.ENTER_KEY,
@@ -1563,7 +1563,7 @@ function () {
         PAGE_UP_KEY = constants_1.KEY_CODES.PAGE_UP_KEY,
         PAGE_DOWN_KEY = constants_1.KEY_CODES.PAGE_DOWN_KEY;
 
-    if (!this._isTextElement && !hasActiveDropdown && wasAlphaNumericChar) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
       this.showDropdown();
 
       if (!this.input.isFocussed) {
@@ -1572,7 +1572,7 @@ function () {
           the input was not focussed at the time of key press
           therefore does not have the value of the key.
         */
-        this.input.value += keyString.toLowerCase();
+        this.input.value += event.key.toLowerCase();
       }
     }
 
@@ -4614,7 +4614,7 @@ var templates = {
     div.setAttribute('aria-expanded', 'false');
 
     if (labelId) {
-      div.setAttribute('aria-labeledby', labelId);
+      div.setAttribute('aria-labelledby', labelId);
     }
 
     return div;

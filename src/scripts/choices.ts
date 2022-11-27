@@ -1438,7 +1438,7 @@ class Choices implements Choices {
     const hasActiveDropdown = this.dropdown.isActive;
     const hasItems = this.itemList.hasChildren();
     const keyString = String.fromCharCode(keyCode);
-    const wasAlphaNumericChar = /[a-zA-Z0-9-_ ]/.test(keyString);
+    const wasPrintableChar = /[^\x00-\x1F]/.test(keyString);
 
     const {
       BACK_KEY,
@@ -1452,7 +1452,7 @@ class Choices implements Choices {
       PAGE_DOWN_KEY,
     } = KEY_CODES;
 
-    if (!this._isTextElement && !hasActiveDropdown && wasAlphaNumericChar) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
       this.showDropdown();
 
       if (!this.input.isFocussed) {
@@ -1461,7 +1461,7 @@ class Choices implements Choices {
           the input was not focussed at the time of key press
           therefore does not have the value of the key.
         */
-        this.input.value += keyString.toLowerCase();
+        this.input.value += event.key.toLowerCase();
       }
     }
 
