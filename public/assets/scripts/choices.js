@@ -1264,6 +1264,7 @@ var Choices = /** @class */function () {
     var hasActiveDropdown = this.dropdown.isActive;
     var hasItems = this.itemList.hasChildren();
     var keyString = String.fromCharCode(keyCode);
+    // eslint-disable-next-line no-control-regex
     var wasPrintableChar = /[^\x00-\x1F]/.test(keyString);
     var BACK_KEY = constants_1.KEY_CODES.BACK_KEY,
       DELETE_KEY = constants_1.KEY_CODES.DELETE_KEY,
@@ -1274,7 +1275,7 @@ var Choices = /** @class */function () {
       DOWN_KEY = constants_1.KEY_CODES.DOWN_KEY,
       PAGE_UP_KEY = constants_1.KEY_CODES.PAGE_UP_KEY,
       PAGE_DOWN_KEY = constants_1.KEY_CODES.PAGE_DOWN_KEY;
-    if (!this._isTextElement && !hasActiveDropdown && wasAlphaNumericChar) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
       this.showDropdown();
       if (!this.input.isFocussed) {
         /*
@@ -6833,7 +6834,7 @@ if (false) {}
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -6847,14 +6848,14 @@ if (false) {}
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	!function() {
@@ -6867,7 +6868,7 @@ if (false) {}
 /******/ 			return getter;
 /******/ 		};
 /******/ 	}();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	!function() {
 /******/ 		// define getter functions for harmony exports
@@ -6879,12 +6880,12 @@ if (false) {}
 /******/ 			}
 /******/ 		};
 /******/ 	}();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	!function() {
 /******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
 /******/ 	}();
-/******/
+/******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	!function() {
 /******/ 		// define __esModule on exports
@@ -6895,7 +6896,7 @@ if (false) {}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
 /******/ 	}();
-/******/
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.

@@ -1441,6 +1441,7 @@ class Choices implements Choices {
     const hasActiveDropdown = this.dropdown.isActive;
     const hasItems = this.itemList.hasChildren();
     const keyString = String.fromCharCode(keyCode);
+    // eslint-disable-next-line no-control-regex
     const wasPrintableChar = /[^\x00-\x1F]/.test(keyString);
 
     const {
