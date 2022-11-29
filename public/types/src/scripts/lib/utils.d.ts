@@ -23,5 +23,6 @@ export declare const cloneObject: (obj: object) => object;
  * Returns an array of keys present on the first but missing on the second object
  */
 export declare const diff: (a: Record<string, any>, b: Record<string, any>) => string[];
+export declare const parseCustomProperties: (customProperties: any) => any;
 export {};
 //# sourceMappingURL=utils.d.ts.map

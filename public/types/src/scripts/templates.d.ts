@@ -6,7 +6,7 @@ import { Choice } from './interfaces/choice';
 import { Group } from './interfaces/group';
 import { Item } from './interfaces/item';
 import { PassedElementType } from './interfaces/passed-element-type';
-declare type TemplateOptions = Record<'classNames' | 'allowHTML', any>;
+type TemplateOptions = Record<'classNames' | 'allowHTML', any>;
 declare const templates: {
     containerOuter({ classNames: { containerOuter } }: TemplateOptions, dir: HTMLElement['dir'], isSelectElement: boolean, isSelectOneElement: boolean, searchEnabled: boolean, passedElementType: PassedElementType, labelId: string): HTMLDivElement;
     containerInner({ classNames: { containerInner }, }: TemplateOptions): HTMLDivElement;

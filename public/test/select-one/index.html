@@ -305,6 +305,28 @@
           ></select>
         </div>
 
+        <div data-test-hook="custom-properties-html">
+          <label for="choices-custom-properties-html">Custom properties</label>
+          <select
+            class="form-control"
+            name="choices-custom-properties-html"
+            id="choices-custom-properties-html"
+          >
+            <option value="Dropdown item 1">Label One</option>
+            <option value="Dropdown item 2">Label Two</option>
+            <option
+              value="Dropdown item 3"
+              data-custom-properties="This option is fantastic"
+              >Label Three</option
+            >
+            <option
+              value="Dropdown item 4"
+              data-custom-properties="{ 'description': 'foo' }"
+              >Label Four</option
+            >
+          </select>
+        </div>
+
         <div data-test-hook="non-string-values">
           <label for="choices-non-string-values">Non-string values</label>
           <select
@@ -548,6 +570,11 @@
               },
             },
           ],
+        });
+
+        new Choices('#choices-custom-properties-html', {
+          allowHTML: true,
+          searchFields: ['label', 'value', 'customProperties'],
         });
 
         new Choices('#choices-non-string-values', {
