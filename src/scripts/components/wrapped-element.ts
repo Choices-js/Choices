@@ -1,6 +1,6 @@
 import { ClassNames } from '../interfaces/class-names';
 import { EventType } from '../interfaces/event-type';
-import { dispatchEvent } from '../lib/utils';
+import { dispatchEvent, getClassNames } from '../lib/utils';
 
 export default class WrappedElement {
   element: HTMLInputElement | HTMLSelectElement;
@@ -42,7 +42,7 @@ export default class WrappedElement {
 
   conceal(): void {
     // Hide passed input
-    this.element.classList.add(this.classNames.input);
+    this.element.classList.add(...getClassNames(this.classNames.input));
     this.element.hidden = true;
 
     // Remove element from tab index
@@ -60,7 +60,7 @@ export default class WrappedElement {
 
   reveal(): void {
     // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
+    this.element.classList.remove(...getClassNames(this.classNames.input));
     this.element.hidden = false;
     this.element.removeAttribute('tabindex');
 

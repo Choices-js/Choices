@@ -1098,7 +1098,7 @@ var Choices = /** @class */function () {
     if (setLoading === void 0) {
       setLoading = true;
     }
-    var placeholderItem = this.itemList.getChild(".".concat(this.config.classNames.placeholder));
+    var placeholderItem = this.itemList.getChild((0, utils_1.getClassNamesSelector)(this.config.classNames.placeholder));
     if (setLoading) {
       this.disable();
       this.containerOuter.addLoadingState();
@@ -1371,7 +1371,7 @@ var Choices = /** @class */function () {
       event.preventDefault();
     }
     if (hasActiveDropdown) {
-      var highlightedChoice = this.dropdown.getChild(".".concat(this.config.classNames.highlightedState));
+      var highlightedChoice = this.dropdown.getChild((0, utils_1.getClassNamesSelector)(this.config.classNames.highlightedState));
       if (highlightedChoice) {
         // add enter keyCode value
         if (activeItems[0]) {
@@ -1413,7 +1413,7 @@ var Choices = /** @class */function () {
           nextEl = this.dropdown.element.querySelector(selectableChoiceIdentifier);
         }
       } else {
-        var currentEl = this.dropdown.element.querySelector(".".concat(this.config.classNames.highlightedState));
+        var currentEl = this.dropdown.element.querySelector((0, utils_1.getClassNamesSelector)(this.config.classNames.highlightedState));
         if (currentEl) {
           nextEl = (0, utils_1.getAdjacentEl)(currentEl, selectableChoiceIdentifier, directionInt);
         } else {
@@ -1603,6 +1603,7 @@ var Choices = /** @class */function () {
     this._store.dispatch((0, misc_1.resetTo)(this._initialState));
   };
   Choices.prototype._highlightChoice = function (el) {
+    var _a;
     var _this = this;
     if (el === void 0) {
       el = null;
@@ -1612,10 +1613,11 @@ var Choices = /** @class */function () {
       return;
     }
     var passedEl = el;
-    var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll(".".concat(this.config.classNames.highlightedState)));
+    var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll((0, utils_1.getClassNamesSelector)(this.config.classNames.highlightedState)));
     // Remove any highlighted choices
     highlightedChoices.forEach(function (choice) {
-      choice.classList.remove(_this.config.classNames.highlightedState);
+      var _a;
+      (_a = choice.classList).remove.apply(_a, (0, utils_1.getClassNames)(_this.config.classNames.highlightedState));
       choice.setAttribute('aria-selected', 'false');
     });
     if (passedEl) {
@@ -1633,7 +1635,7 @@ var Choices = /** @class */function () {
         passedEl = choices[0];
       }
     }
-    passedEl.classList.add(this.config.classNames.highlightedState);
+    (_a = passedEl.classList).add.apply(_a, (0, utils_1.getClassNames)(this.config.classNames.highlightedState));
     passedEl.setAttribute('aria-selected', 'true');
     this.passedElement.triggerEvent(constants_1.EVENTS.highlightChoice, {
       el: passedEl
@@ -2134,22 +2136,24 @@ var Container = /** @class */function () {
     this.element.removeAttribute('aria-activedescendant');
   };
   Container.prototype.open = function (dropdownPos) {
-    this.element.classList.add(this.classNames.openState);
+    var _a, _b;
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.openState));
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
     if (this.shouldFlip(dropdownPos)) {
-      this.element.classList.add(this.classNames.flippedState);
+      (_b = this.element.classList).add.apply(_b, (0, utils_1.getClassNames)(this.classNames.flippedState));
       this.isFlipped = true;
     }
   };
   Container.prototype.close = function () {
-    this.element.classList.remove(this.classNames.openState);
+    var _a, _b;
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.openState));
     this.element.setAttribute('aria-expanded', 'false');
     this.removeActiveDescendant();
     this.isOpen = false;
     // A dropdown flips if it does not have space within the page
     if (this.isFlipped) {
-      this.element.classList.remove(this.classNames.flippedState);
+      (_b = this.element.classList).remove.apply(_b, (0, utils_1.getClassNames)(this.classNames.flippedState));
       this.isFlipped = false;
     }
   };
@@ -2159,13 +2163,16 @@ var Container = /** @class */function () {
     }
   };
   Container.prototype.addFocusState = function () {
-    this.element.classList.add(this.classNames.focusState);
+    var _a;
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.focusState));
   };
   Container.prototype.removeFocusState = function () {
-    this.element.classList.remove(this.classNames.focusState);
+    var _a;
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.focusState));
   };
   Container.prototype.enable = function () {
-    this.element.classList.remove(this.classNames.disabledState);
+    var _a;
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.disabledState));
     this.element.removeAttribute('aria-disabled');
     if (this.type === constants_1.SELECT_ONE_TYPE) {
       this.element.setAttribute('tabindex', '0');
@@ -2173,7 +2180,8 @@ var Container = /** @class */function () {
     this.isDisabled = false;
   };
   Container.prototype.disable = function () {
-    this.element.classList.add(this.classNames.disabledState);
+    var _a;
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.disabledState));
     this.element.setAttribute('aria-disabled', 'true');
     if (this.type === constants_1.SELECT_ONE_TYPE) {
       this.element.setAttribute('tabindex', '-1');
@@ -2192,12 +2200,14 @@ var Container = /** @class */function () {
     }
   };
   Container.prototype.addLoadingState = function () {
-    this.element.classList.add(this.classNames.loadingState);
+    var _a;
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.loadingState));
     this.element.setAttribute('aria-busy', 'true');
     this.isLoading = true;
   };
   Container.prototype.removeLoadingState = function () {
-    this.element.classList.remove(this.classNames.loadingState);
+    var _a;
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.loadingState));
     this.element.removeAttribute('aria-busy');
     this.isLoading = false;
   };
@@ -2214,13 +2224,14 @@ exports["default"] = Container;
 /***/ }),
 
 /***/ 217:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+var utils_1 = __webpack_require__(799);
 var Dropdown = /** @class */function () {
   function Dropdown(_a) {
     var element = _a.element,
@@ -2248,7 +2259,8 @@ var Dropdown = /** @class */function () {
    * Show dropdown to user by adding active state class
    */
   Dropdown.prototype.show = function () {
-    this.element.classList.add(this.classNames.activeState);
+    var _a;
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.activeState));
     this.element.setAttribute('aria-expanded', 'true');
     this.isActive = true;
     return this;
@@ -2257,7 +2269,8 @@ var Dropdown = /** @class */function () {
    * Hide dropdown from user
    */
   Dropdown.prototype.hide = function () {
-    this.element.classList.remove(this.classNames.activeState);
+    var _a;
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.activeState));
     this.element.setAttribute('aria-expanded', 'false');
     this.isActive = false;
     return this;
@@ -2569,8 +2582,9 @@ var WrappedElement = /** @class */function () {
     configurable: true
   });
   WrappedElement.prototype.conceal = function () {
+    var _a;
     // Hide passed input
-    this.element.classList.add(this.classNames.input);
+    (_a = this.element.classList).add.apply(_a, (0, utils_1.getClassNames)(this.classNames.input));
     this.element.hidden = true;
     // Remove element from tab index
     this.element.tabIndex = -1;
@@ -2582,8 +2596,9 @@ var WrappedElement = /** @class */function () {
     this.element.setAttribute('data-choice', 'active');
   };
   WrappedElement.prototype.reveal = function () {
+    var _a;
     // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
+    (_a = this.element.classList).remove.apply(_a, (0, utils_1.getClassNames)(this.classNames.input));
     this.element.hidden = false;
     this.element.removeAttribute('tabindex');
     // Recover original styles if any
@@ -2853,7 +2868,7 @@ exports.DEFAULT_CLASSNAMES = {
   itemSelectable: 'choices__item--selectable',
   itemDisabled: 'choices__item--disabled',
   itemChoice: 'choices__item--choice',
-  placeholder: 'choices__placeholder',
+  placeholder: ['choices__placeholder'],
   group: 'choices__group',
   groupHeading: 'choices__heading',
   button: 'choices__button',
@@ -3146,7 +3161,7 @@ Object.defineProperty(exports, "__esModule", ({
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.parseCustomProperties = exports.diff = exports.cloneObject = exports.existsInArray = exports.dispatchEvent = exports.sortByScore = exports.sortByAlpha = exports.strToEl = exports.sanitise = exports.isScrolledIntoView = exports.getAdjacentEl = exports.wrap = exports.isType = exports.getType = exports.generateId = exports.generateChars = exports.getRandomNumber = void 0;
+exports.parseCustomProperties = exports.getClassNamesSelector = exports.getClassNames = exports.diff = exports.cloneObject = exports.existsInArray = exports.dispatchEvent = exports.sortByScore = exports.sortByAlpha = exports.strToEl = exports.sanitise = exports.isScrolledIntoView = exports.getAdjacentEl = exports.wrap = exports.isType = exports.getType = exports.generateId = exports.generateChars = exports.getRandomNumber = void 0;
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
@@ -3301,6 +3316,19 @@ var diff = function (a, b) {
   });
 };
 exports.diff = diff;
+var getClassNames = function (ClassNames) {
+  return Array.isArray(ClassNames) ? ClassNames : [ClassNames];
+};
+exports.getClassNames = getClassNames;
+var getClassNamesSelector = function (option) {
+  if (option && Array.isArray(option)) {
+    return option.map(function (item) {
+      return ".".concat(item);
+    }).join(' ');
+  }
+  return ".".concat(option);
+};
+exports.getClassNamesSelector = getClassNamesSelector;
 var parseCustomProperties = function (customProperties) {
   if (typeof customProperties !== 'undefined') {
     try {
@@ -3504,7 +3532,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports.defaultState = void 0;
-var redux_1 = __webpack_require__(791);
+var redux_1 = __webpack_require__(857);
 var items_1 = __importDefault(__webpack_require__(52));
 var groups_1 = __importDefault(__webpack_require__(871));
 var choices_1 = __importDefault(__webpack_require__(273));
@@ -3675,7 +3703,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 /* eslint-disable @typescript-eslint/no-explicit-any */
-var redux_1 = __webpack_require__(791);
+var redux_1 = __webpack_require__(857);
 var index_1 = __importDefault(__webpack_require__(655));
 var Store = /** @class */function () {
   function Store() {
@@ -3853,7 +3881,7 @@ exports["default"] = Store;
 /***/ }),
 
 /***/ 686:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 
@@ -3861,14 +3889,24 @@ exports["default"] = Store;
  * Helpers to create HTML elements used by Choices
  * Can be overridden by providing `callbackOnCreateTemplates` option
  */
+var __spreadArray = this && this.__spreadArray || function (to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+    if (ar || !(i in from)) {
+      if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+      ar[i] = from[i];
+    }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
+var utils_1 = __webpack_require__(799);
 var templates = {
   containerOuter: function (_a, dir, isSelectElement, isSelectOneElement, searchEnabled, passedElementType, labelId) {
     var containerOuter = _a.classNames.containerOuter;
     var div = Object.assign(document.createElement('div'), {
-      className: containerOuter
+      className: (0, utils_1.getClassNames)(containerOuter).join(' ')
     });
     div.dataset.type = passedElementType;
     if (dir) {
@@ -3893,7 +3931,7 @@ var templates = {
   containerInner: function (_a) {
     var containerInner = _a.classNames.containerInner;
     return Object.assign(document.createElement('div'), {
-      className: containerInner
+      className: (0, utils_1.getClassNames)(containerInner).join(' ')
     });
   },
   itemList: function (_a, isSelectOneElement) {
@@ -3902,7 +3940,7 @@ var templates = {
       listSingle = _b.listSingle,
       listItems = _b.listItems;
     return Object.assign(document.createElement('div'), {
-      className: "".concat(list, " ").concat(isSelectOneElement ? listSingle : listItems)
+      className: "".concat((0, utils_1.getClassNames)(list).join(' '), " ").concat(isSelectOneElement ? (0, utils_1.getClassNames)(listSingle).join(' ') : (0, utils_1.getClassNames)(listItems).join(' '))
     });
   },
   placeholder: function (_a, value) {
@@ -3910,18 +3948,18 @@ var templates = {
     var allowHTML = _a.allowHTML,
       placeholder = _a.classNames.placeholder;
     return Object.assign(document.createElement('div'), (_b = {
-      className: placeholder
+      className: (0, utils_1.getClassNames)(placeholder).join(' ')
     }, _b[allowHTML ? 'innerHTML' : 'innerText'] = value, _b));
   },
   item: function (_a, _b, removeItemButton) {
-    var _c, _d;
+    var _c, _d, _e, _f, _g;
     var allowHTML = _a.allowHTML,
-      _e = _a.classNames,
-      item = _e.item,
-      button = _e.button,
-      highlightedState = _e.highlightedState,
-      itemSelectable = _e.itemSelectable,
-      placeholder = _e.placeholder;
+      _h = _a.classNames,
+      item = _h.item,
+      button = _h.button,
+      highlightedState = _h.highlightedState,
+      itemSelectable = _h.itemSelectable,
+      placeholder = _h.placeholder;
     var id = _b.id,
       value = _b.value,
       label = _b.label,
@@ -3931,7 +3969,7 @@ var templates = {
       highlighted = _b.highlighted,
       isPlaceholder = _b.placeholder;
     var div = Object.assign(document.createElement('div'), (_c = {
-      className: item
+      className: (0, utils_1.getClassNames)(item).join(' ')
     }, _c[allowHTML ? 'innerHTML' : 'innerText'] = label, _c));
     Object.assign(div.dataset, {
       item: '',
@@ -3946,20 +3984,20 @@ var templates = {
       div.setAttribute('aria-disabled', 'true');
     }
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      (_d = div.classList).add.apply(_d, (0, utils_1.getClassNames)(placeholder));
     }
-    div.classList.add(highlighted ? highlightedState : itemSelectable);
+    (_e = div.classList).add.apply(_e, highlighted ? (0, utils_1.getClassNames)(highlightedState) : (0, utils_1.getClassNames)(itemSelectable));
     if (removeItemButton) {
       if (disabled) {
-        div.classList.remove(itemSelectable);
+        (_f = div.classList).remove.apply(_f, (0, utils_1.getClassNames)(itemSelectable));
       }
       div.dataset.deletable = '';
       /** @todo This MUST be localizable, not hardcoded! */
       var REMOVE_ITEM_TEXT = 'Remove item';
-      var removeButton = Object.assign(document.createElement('button'), (_d = {
+      var removeButton = Object.assign(document.createElement('button'), (_g = {
         type: 'button',
-        className: button
-      }, _d[allowHTML ? 'innerHTML' : 'innerText'] = REMOVE_ITEM_TEXT, _d));
+        className: (0, utils_1.getClassNames)(button).join(' ')
+      }, _g[allowHTML ? 'innerHTML' : 'innerText'] = REMOVE_ITEM_TEXT, _g));
       removeButton.setAttribute('aria-label', "".concat(REMOVE_ITEM_TEXT, ": '").concat(value, "'"));
       removeButton.dataset.button = '';
       div.appendChild(removeButton);
@@ -3969,7 +4007,7 @@ var templates = {
   choiceList: function (_a, isSelectOneElement) {
     var list = _a.classNames.list;
     var div = Object.assign(document.createElement('div'), {
-      className: list
+      className: (0, utils_1.getClassNames)(list).join(' ')
     });
     if (!isSelectOneElement) {
       div.setAttribute('aria-multiselectable', 'true');
@@ -3988,7 +4026,7 @@ var templates = {
       value = _b.value,
       disabled = _b.disabled;
     var div = Object.assign(document.createElement('div'), {
-      className: "".concat(group, " ").concat(disabled ? itemDisabled : '')
+      className: "".concat((0, utils_1.getClassNames)(group).join(' '), " ").concat(disabled ? (0, utils_1.getClassNames)(itemDisabled).join(' ') : '')
     });
     div.setAttribute('role', 'group');
     Object.assign(div.dataset, {
@@ -4000,20 +4038,20 @@ var templates = {
       div.setAttribute('aria-disabled', 'true');
     }
     div.appendChild(Object.assign(document.createElement('div'), (_c = {
-      className: groupHeading
+      className: (0, utils_1.getClassNames)(groupHeading).join(' ')
     }, _c[allowHTML ? 'innerHTML' : 'innerText'] = value, _c)));
     return div;
   },
   choice: function (_a, _b, selectText) {
-    var _c;
+    var _c, _d, _e, _f, _g;
     var allowHTML = _a.allowHTML,
-      _d = _a.classNames,
-      item = _d.item,
-      itemChoice = _d.itemChoice,
-      itemSelectable = _d.itemSelectable,
-      selectedState = _d.selectedState,
-      itemDisabled = _d.itemDisabled,
-      placeholder = _d.placeholder;
+      _h = _a.classNames,
+      item = _h.item,
+      itemChoice = _h.itemChoice,
+      itemSelectable = _h.itemSelectable,
+      selectedState = _h.selectedState,
+      itemDisabled = _h.itemDisabled,
+      placeholder = _h.placeholder;
     var id = _b.id,
       value = _b.value,
       label = _b.label,
@@ -4024,12 +4062,12 @@ var templates = {
       isPlaceholder = _b.placeholder;
     var div = Object.assign(document.createElement('div'), (_c = {
       id: elementId
-    }, _c[allowHTML ? 'innerHTML' : 'innerText'] = label, _c.className = "".concat(item, " ").concat(itemChoice), _c));
+    }, _c[allowHTML ? 'innerHTML' : 'innerText'] = label, _c.className = "".concat((0, utils_1.getClassNames)(item).join(' '), " ").concat((0, utils_1.getClassNames)(itemChoice).join(' ')), _c));
     if (isSelected) {
-      div.classList.add(selectedState);
+      (_d = div.classList).add.apply(_d, (0, utils_1.getClassNames)(selectedState));
     }
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      (_e = div.classList).add.apply(_e, (0, utils_1.getClassNames)(placeholder));
     }
     div.setAttribute('role', groupId && groupId > 0 ? 'treeitem' : 'option');
     Object.assign(div.dataset, {
@@ -4039,11 +4077,11 @@ var templates = {
       selectText: selectText
     });
     if (isDisabled) {
-      div.classList.add(itemDisabled);
+      (_f = div.classList).add.apply(_f, (0, utils_1.getClassNames)(itemDisabled));
       div.dataset.choiceDisabled = '';
       div.setAttribute('aria-disabled', 'true');
     } else {
-      div.classList.add(itemSelectable);
+      (_g = div.classList).add.apply(_g, (0, utils_1.getClassNames)(itemSelectable));
       div.dataset.choiceSelectable = '';
     }
     return div;
@@ -4055,7 +4093,7 @@ var templates = {
     var inp = Object.assign(document.createElement('input'), {
       type: 'search',
       name: 'search_terms',
-      className: "".concat(input, " ").concat(inputCloned),
+      className: "".concat((0, utils_1.getClassNames)(input).join(' '), " ").concat((0, utils_1.getClassNames)(inputCloned).join(' ')),
       autocomplete: 'off',
       autocapitalize: 'off',
       spellcheck: false
@@ -4066,11 +4104,13 @@ var templates = {
     return inp;
   },
   dropdown: function (_a) {
-    var _b = _a.classNames,
-      list = _b.list,
-      listDropdown = _b.listDropdown;
+    var _b, _c;
+    var _d = _a.classNames,
+      list = _d.list,
+      listDropdown = _d.listDropdown;
     var div = document.createElement('div');
-    div.classList.add(list, listDropdown);
+    (_b = div.classList).add.apply(_b, (0, utils_1.getClassNames)(list));
+    (_c = div.classList).add.apply(_c, (0, utils_1.getClassNames)(listDropdown));
     div.setAttribute('aria-expanded', 'false');
     return div;
   },
@@ -4085,7 +4125,7 @@ var templates = {
     if (type === void 0) {
       type = '';
     }
-    var classes = [item, itemChoice];
+    var classes = __spreadArray(__spreadArray([], (0, utils_1.getClassNames)(item), true), (0, utils_1.getClassNames)(itemChoice), true);
     if (type === 'no-choices') {
       classes.push(noChoices);
     } else if (type === 'no-results') {
@@ -6040,7 +6080,7 @@ Fuse.config = Config;
 
 /***/ }),
 
-/***/ 791:
+/***/ 857:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 // ESM COMPAT FLAG
@@ -6057,39 +6097,8 @@ __webpack_require__.d(__webpack_exports__, {
   "legacy_createStore": function() { return /* binding */ legacy_createStore; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
-
-function _toPrimitive(input, hint) {
-  if (_typeof(input) !== "object" || input === null) return input;
-  var prim = input[Symbol.toPrimitive];
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || "default");
-    if (_typeof(res) !== "object") return res;
-    throw new TypeError("@@toPrimitive must return a primitive value.");
-  }
-  return (hint === "string" ? String : Number)(input);
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
-
-
-function _toPropertyKey(arg) {
-  var key = _toPrimitive(arg, "string");
-  return _typeof(key) === "symbol" ? key : String(key);
-}
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-
 function _defineProperty(obj, key, value) {
-  key = _toPropertyKey(key);
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -6908,6 +6917,7 @@ var __webpack_exports__ = {};
 /* harmony import */ var _scripts_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(883);
 /* harmony import */ var _scripts_defaults__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(789);
 /* harmony import */ var _scripts_templates__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(686);
+/* harmony import */ var _scripts_templates__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_scripts_templates__WEBPACK_IMPORTED_MODULE_4__);
 
 
 

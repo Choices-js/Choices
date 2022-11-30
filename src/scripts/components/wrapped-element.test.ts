@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { getClassNames } from '../lib/utils';
 import { DEFAULT_CLASSNAMES } from '../defaults';
 import WrappedElement from './wrapped-element';
 
@@ -79,8 +80,12 @@ describe('components/wrappedElement', () => {
     it('hides element', () => {
       instance.conceal();
       expect(instance.element.tabIndex).to.equal(-1);
+
+      const classesToCheck = getClassNames(instance.classNames.input);
       expect(
-        instance.element.classList.contains(instance.classNames.input),
+        [...instance.element.classList].some(
+          (className) => classesToCheck.indexOf(className) !== -1,
+        ),
       ).to.equal(true);
       expect(instance.element.hidden).to.be.true;
       expect(instance.element.getAttribute('data-choice')).to.equal('active');
@@ -101,8 +106,12 @@ describe('components/wrappedElement', () => {
     it('shows element', () => {
       instance.reveal();
       expect(instance.element.tabIndex).to.equal(0);
+
+      const classesToCheck = getClassNames(instance.classNames.input);
       expect(
-        instance.element.classList.contains(instance.classNames.input),
+        [...instance.element.classList].some(
+          (className) => classesToCheck.indexOf(className) !== -1,
+        ),
       ).to.equal(false);
       expect(instance.element.hidden).to.be.false;
       expect(instance.element.getAttribute('style')).to.equal(originalStyling);

@@ -700,10 +700,10 @@ const example = new Choices(element, {
     return {
       item: ({ classNames }, data) => {
         return template(`
-          <div class="${classNames.item} ${
-          data.highlighted
+          <div class="${getClassNames(classNames.item).join(' ')} ${
+          getClassNames(data.highlighted
             ? classNames.highlightedState
-            : classNames.itemSelectable
+            : classNames.itemSelectable).join(' ')
         } ${
           data.placeholder ? classNames.placeholder : ''
         }" data-item data-id="${data.id}" data-value="${data.value}" ${
@@ -715,8 +715,8 @@ const example = new Choices(element, {
       },
       choice: ({ classNames }, data) => {
         return template(`
-          <div class="${classNames.item} ${classNames.itemChoice} ${
-          data.disabled ? classNames.itemDisabled : classNames.itemSelectable
+          <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
+          getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
         }" data-select-text="${this.config.itemSelectText}" data-choice ${
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'

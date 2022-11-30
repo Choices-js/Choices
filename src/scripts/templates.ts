@@ -7,6 +7,7 @@ import { Choice } from './interfaces/choice';
 import { Group } from './interfaces/group';
 import { Item } from './interfaces/item';
 import { PassedElementType } from './interfaces/passed-element-type';
+import { getClassNames } from './lib/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TemplateOptions = Record<'classNames' | 'allowHTML', any>;
@@ -22,7 +23,7 @@ const templates = {
     labelId: string,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: containerOuter,
+      className: getClassNames(containerOuter).join(' '),
     });
 
     div.dataset.type = passedElementType;
@@ -55,7 +56,7 @@ const templates = {
     classNames: { containerInner },
   }: TemplateOptions): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: containerInner,
+      className: getClassNames(containerInner).join(' '),
     });
   },
 
@@ -64,7 +65,11 @@ const templates = {
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: `${list} ${isSelectOneElement ? listSingle : listItems}`,
+      className: `${getClassNames(list).join(' ')} ${
+        isSelectOneElement
+          ? getClassNames(listSingle).join(' ')
+          : getClassNames(listItems).join(' ')
+      }`,
     });
   },
 
@@ -73,7 +78,7 @@ const templates = {
     value: string,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: placeholder,
+      className: getClassNames(placeholder).join(' '),
       [allowHTML ? 'innerHTML' : 'innerText']: value,
     });
   },
@@ -102,7 +107,7 @@ const templates = {
     removeItemButton: boolean,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: item,
+      className: getClassNames(item).join(' '),
       [allowHTML ? 'innerHTML' : 'innerText']: label,
     });
 
@@ -122,21 +127,25 @@ const templates = {
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...getClassNames(placeholder));
     }
 
-    div.classList.add(highlighted ? highlightedState : itemSelectable);
+    div.classList.add(
+      ...(highlighted
+        ? getClassNames(highlightedState)
+        : getClassNames(itemSelectable)),
+    );
 
     if (removeItemButton) {
       if (disabled) {
-        div.classList.remove(itemSelectable);
+        div.classList.remove(...getClassNames(itemSelectable));
       }
       div.dataset.deletable = '';
       /** @todo This MUST be localizable, not hardcoded! */
       const REMOVE_ITEM_TEXT = 'Remove item';
       const removeButton = Object.assign(document.createElement('button'), {
         type: 'button',
-        className: button,
+        className: getClassNames(button).join(' '),
         [allowHTML ? 'innerHTML' : 'innerText']: REMOVE_ITEM_TEXT,
       });
       removeButton.setAttribute(
@@ -155,7 +164,7 @@ const templates = {
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: list,
+      className: getClassNames(list).join(' '),
     });
 
     if (!isSelectOneElement) {
@@ -174,7 +183,9 @@ const templates = {
     { id, value, disabled }: Group,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: `${group} ${disabled ? itemDisabled : ''}`,
+      className: `${getClassNames(group).join(' ')} ${
+        disabled ? getClassNames(itemDisabled).join(' ') : ''
+      }`,
     });
 
     div.setAttribute('role', 'group');
@@ -191,7 +202,7 @@ const templates = {
 
     div.appendChild(
       Object.assign(document.createElement('div'), {
-        className: groupHeading,
+        className: getClassNames(groupHeading).join(' '),
         [allowHTML ? 'innerHTML' : 'innerText']: value,
       }),
     );
@@ -226,15 +237,17 @@ const templates = {
     const div = Object.assign(document.createElement('div'), {
       id: elementId,
       [allowHTML ? 'innerHTML' : 'innerText']: label,
-      className: `${item} ${itemChoice}`,
+      className: `${getClassNames(item).join(' ')} ${getClassNames(
+        itemChoice,
+      ).join(' ')}`,
     });
 
     if (isSelected) {
-      div.classList.add(selectedState);
+      div.classList.add(...getClassNames(selectedState));
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...getClassNames(placeholder));
     }
 
     div.setAttribute('role', groupId && groupId > 0 ? 'treeitem' : 'option');
@@ -247,11 +260,11 @@ const templates = {
     });
 
     if (isDisabled) {
-      div.classList.add(itemDisabled);
+      div.classList.add(...getClassNames(itemDisabled));
       div.dataset.choiceDisabled = '';
       div.setAttribute('aria-disabled', 'true');
     } else {
-      div.classList.add(itemSelectable);
+      div.classList.add(...getClassNames(itemSelectable));
       div.dataset.choiceSelectable = '';
     }
 
@@ -265,7 +278,9 @@ const templates = {
     const inp = Object.assign(document.createElement('input'), {
       type: 'search',
       name: 'search_terms',
-      className: `${input} ${inputCloned}`,
+      className: `${getClassNames(input).join(' ')} ${getClassNames(
+        inputCloned,
+      ).join(' ')}`,
       autocomplete: 'off',
       autocapitalize: 'off',
       spellcheck: false,
@@ -283,7 +298,8 @@ const templates = {
   }: TemplateOptions): HTMLDivElement {
     const div = document.createElement('div');
 
-    div.classList.add(list, listDropdown);
+    div.classList.add(...getClassNames(list));
+    div.classList.add(...getClassNames(listDropdown));
     div.setAttribute('aria-expanded', 'false');
 
     return div;
@@ -297,7 +313,7 @@ const templates = {
     innerText: string,
     type: 'no-choices' | 'no-results' | '' = '',
   ): HTMLDivElement {
-    const classes = [item, itemChoice];
+    const classes = [...getClassNames(item), ...getClassNames(itemChoice)];
 
     if (type === 'no-choices') {
       classes.push(noChoices);

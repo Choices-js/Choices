@@ -15,7 +15,7 @@ export const DEFAULT_CLASSNAMES: ClassNames = {
   itemSelectable: 'choices__item--selectable',
   itemDisabled: 'choices__item--disabled',
   itemChoice: 'choices__item--choice',
-  placeholder: 'choices__placeholder',
+  placeholder: ['choices__placeholder'],
   group: 'choices__group',
   groupHeading: 'choices__heading',
   button: 'choices__button',

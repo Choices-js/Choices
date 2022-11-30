@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import templates from './templates';
-import { strToEl } from './lib/utils';
+import { strToEl, getClassNames } from './lib/utils';
 import { DEFAULT_CLASSNAMES, DEFAULT_CONFIG } from './defaults';
 import { Options } from './interfaces/options';
 import { ClassNames } from './interfaces/class-names';
@@ -56,7 +56,9 @@ describe('templates', () => {
 
           const expectedOutput = strToEl(`
             <div
-              class="${options.classNames.containerOuter}"
+              class="${getClassNames(options.classNames.containerOuter).join(
+                ' ',
+              )}"
               data-type="${passedElementType}"
               role="combobox"
               aria-autocomplete="list"
@@ -123,7 +125,9 @@ describe('templates', () => {
 
           const expectedOutput = strToEl(`
             <div
-              class="${options.classNames.containerOuter}"
+              class="${getClassNames(options.classNames.containerOuter).join(
+                ' ',
+              )}"
               data-type="${passedElementType}"
               role="listbox"
               aria-haspopup="true"
@@ -156,7 +160,9 @@ describe('templates', () => {
 
           const expectedOutput = strToEl(`
             <div
-              class="${options.classNames.containerOuter}"
+              class="${getClassNames(options.classNames.containerOuter).join(
+                ' ',
+              )}"
               data-type="${passedElementType}"
               role="listbox"
               tabindex="0"
@@ -191,7 +197,9 @@ describe('templates', () => {
 
         const expectedOutput = strToEl(`
           <div
-            class="${options.classNames.containerOuter}"
+            class="${getClassNames(options.classNames.containerOuter).join(
+              ' ',
+            )}"
             data-type="${passedElementType}"
             aria-haspopup="true"
             aria-expanded="false"
@@ -220,7 +228,9 @@ describe('templates', () => {
         containerInner: 'class-1',
       });
       const expectedOutput = strToEl(
-        `<div class="${innerOptions.classNames.containerInner}"></div>`,
+        `<div class="${getClassNames(
+          innerOptions.classNames.containerInner,
+        ).join(' ')}"></div>`,
       );
       const actualOutput = templates.containerInner(innerOptions);
 
@@ -238,7 +248,11 @@ describe('templates', () => {
     describe('select one element', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(
-          `<div class="${itemOptions.classNames.list} ${itemOptions.classNames.listSingle}"></div>`,
+          `<div class="${getClassNames(itemOptions.classNames.list).join(
+            ' ',
+          )} ${getClassNames(itemOptions.classNames.listSingle).join(
+            ' ',
+          )}"></div>`,
         );
         const actualOutput = templates.itemList(itemOptions, true);
 
@@ -249,7 +263,11 @@ describe('templates', () => {
     describe('non select one element', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(
-          `<div class="${itemOptions.classNames.list} ${itemOptions.classNames.listItems}"></div>`,
+          `<div class="${getClassNames(itemOptions.classNames.list).join(
+            ' ',
+          )} ${getClassNames(itemOptions.classNames.listItems).join(
+            ' ',
+          )}"></div>`,
         );
         const actualOutput = templates.itemList(itemOptions, false);
 
@@ -265,7 +283,9 @@ describe('templates', () => {
       });
       const value = 'test';
       const expectedOutput = strToEl(`
-        <div class="${placeholderOptions.classNames.placeholder}">${value}</div>`);
+        <div class="${getClassNames(
+          placeholderOptions.classNames.placeholder,
+        ).join(' ')}">${value}</div>`);
       const actualOutput = templates.placeholder(placeholderOptions, value);
 
       expectEqualElements(actualOutput, expectedOutput);
@@ -281,7 +301,9 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceListOptions.classNames.list}"
+            class="${getClassNames(choiceListOptions.classNames.list).join(
+              ' ',
+            )}"
             role="listbox"
             >
           </div>
@@ -296,7 +318,9 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceListOptions.classNames.list}"
+            class="${getClassNames(choiceListOptions.classNames.list).join(
+              ' ',
+            )}"
             role="listbox"
             aria-multiselectable="true"
             >
@@ -330,13 +354,15 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-          class="${groupOptions.classNames.group}"
+          class="${getClassNames(groupOptions.classNames.group).join(' ')}"
             data-group
             data-id="${data.id}"
             data-value="${data.value}"
             role="group"
             >
-            <div class="${groupOptions.classNames.groupHeading}">${data.value}</div>
+            <div class="${getClassNames(
+              groupOptions.classNames.groupHeading,
+            ).join(' ')}">${data.value}</div>
           </div>
         `);
         const actualOutput = templates.choiceGroup(groupOptions, data);
@@ -356,14 +382,18 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${groupOptions.classNames.group} ${groupOptions.classNames.itemDisabled}"
+            class="${getClassNames(groupOptions.classNames.group).join(
+              ' ',
+            )} ${getClassNames(groupOptions.classNames.itemDisabled).join(' ')}"
             data-group
             data-id="${data.id}"
             data-value="${data.value}"
             role="group"
             aria-disabled="true"
             >
-            <div class="${groupOptions.classNames.groupHeading}">${data.value}</div>
+            <div class="${getClassNames(
+              groupOptions.classNames.groupHeading,
+            ).join(' ')}">${data.value}</div>
           </div>
         `);
         const actualOutput = templates.choiceGroup(groupOptions, data);
@@ -403,7 +433,11 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceOptions.classNames.item} ${choiceOptions.classNames.itemChoice} ${choiceOptions.classNames.itemSelectable}"
+            class="${getClassNames(choiceOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(choiceOptions.classNames.itemChoice).join(
+          ' ',
+        )} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
             data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
@@ -436,7 +470,11 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceOptions.classNames.item} ${choiceOptions.classNames.itemChoice} ${choiceOptions.classNames.itemDisabled}"
+            class="${getClassNames(choiceOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(choiceOptions.classNames.itemChoice).join(
+          ' ',
+        )} ${getClassNames(choiceOptions.classNames.itemDisabled).join(' ')}"
             data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
@@ -470,7 +508,13 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceOptions.classNames.item} ${choiceOptions.classNames.itemChoice} ${choiceOptions.classNames.selectedState} ${choiceOptions.classNames.itemSelectable}"
+            class="${getClassNames(choiceOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(choiceOptions.classNames.itemChoice).join(
+          ' ',
+        )} ${choiceOptions.classNames.selectedState} ${getClassNames(
+          choiceOptions.classNames.itemSelectable,
+        ).join(' ')}"
             data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
@@ -503,7 +547,13 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceOptions.classNames.item} ${choiceOptions.classNames.itemChoice} ${choiceOptions.classNames.placeholder} ${choiceOptions.classNames.itemSelectable}"
+            class="${getClassNames(choiceOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(choiceOptions.classNames.itemChoice).join(
+          ' ',
+        )} ${choiceOptions.classNames.placeholder} ${getClassNames(
+          choiceOptions.classNames.itemSelectable,
+        ).join(' ')}"
             data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
@@ -536,7 +586,11 @@ describe('templates', () => {
       it('returns expected html', () => {
         const expectedOutput = strToEl(`
           <div
-            class="${choiceOptions.classNames.item} ${choiceOptions.classNames.itemChoice} ${choiceOptions.classNames.itemSelectable}"
+            class="${getClassNames(choiceOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(choiceOptions.classNames.itemChoice).join(
+          ' ',
+        )} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
             data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
@@ -575,7 +629,9 @@ describe('templates', () => {
         <input
           type="search"
           name="search_terms"
-          class="${inputOptions.classNames.input} ${inputOptions.classNames.inputCloned}"
+          class="${getClassNames(inputOptions.classNames.input).join(
+            ' ',
+          )} ${getClassNames(inputOptions.classNames.inputCloned).join(' ')}"
           autocomplete="off"
           role="textbox"
           aria-autocomplete="list"
@@ -596,7 +652,11 @@ describe('templates', () => {
 
     it('returns expected html', () => {
       const expectedOutput = strToEl(
-        `<div class="${dropdownOptions.classNames.list} ${dropdownOptions.classNames.listDropdown}" aria-expanded="false"></div>`,
+        `<div class="${getClassNames(dropdownOptions.classNames.list).join(
+          ' ',
+        )} ${getClassNames(dropdownOptions.classNames.listDropdown).join(
+          ' ',
+        )}" aria-expanded="false"></div>`,
       );
       const actualOutput = templates.dropdown(dropdownOptions);
 
@@ -616,7 +676,9 @@ describe('templates', () => {
 
     it('returns expected html', () => {
       const expectedOutput = strToEl(`
-        <div class="${noticeOptions.classNames.item} ${noticeOptions.classNames.itemChoice}">
+        <div class="${getClassNames(noticeOptions.classNames.item).join(
+          ' ',
+        )} ${getClassNames(noticeOptions.classNames.itemChoice).join(' ')}">
           ${label}
         </div>
       `);
@@ -629,7 +691,11 @@ describe('templates', () => {
       describe('no results', () => {
         it('adds no results classname', () => {
           const expectedOutput = strToEl(`
-            <div class="${noticeOptions.classNames.item} ${noticeOptions.classNames.itemChoice} ${noticeOptions.classNames.noResults}">
+            <div class="${getClassNames(noticeOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(noticeOptions.classNames.itemChoice).join(
+            ' ',
+          )} ${getClassNames(noticeOptions.classNames.noResults).join(' ')}">
               ${label}
             </div>
           `);
@@ -646,7 +712,11 @@ describe('templates', () => {
       describe('no choices', () => {
         it('adds no choices classname', () => {
           const expectedOutput = strToEl(`
-            <div class="${noticeOptions.classNames.item} ${noticeOptions.classNames.itemChoice} ${noticeOptions.classNames.noChoices}">
+            <div class="${getClassNames(noticeOptions.classNames.item).join(
+              ' ',
+            )} ${getClassNames(noticeOptions.classNames.itemChoice).join(
+            ' ',
+          )} ${getClassNames(noticeOptions.classNames.noChoices).join(' ')}">
               ${label}
             </div>
           `);

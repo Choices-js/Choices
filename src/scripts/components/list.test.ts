@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { getClassNames } from '../lib/utils';
 import List from './list';
 
 describe('components/list', () => {
@@ -41,7 +42,7 @@ describe('components/list', () => {
     it('appends passed node to element', () => {
       const elementToAppend = document.createElement('span');
       const childClass = 'test-element';
-      elementToAppend.classList.add(childClass);
+      elementToAppend.classList.add(...getClassNames(childClass));
       expect(instance.element.querySelector(`.${childClass}`)).to.equal(null);
       instance.append(elementToAppend);
       expect(instance.element.querySelector(`.${childClass}`)).to.equal(
@@ -56,7 +57,7 @@ describe('components/list', () => {
 
     beforeEach(() => {
       childElement = document.createElement('span');
-      childElement.classList.add(childClass);
+      childElement.classList.add(...getClassNames(childClass));
       instance.element.appendChild(childElement);
     });
 

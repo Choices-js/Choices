@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { DEFAULT_CLASSNAMES } from '../defaults';
+import { getClassNamesSelector } from '../lib/utils';
 import Dropdown from './dropdown';
 
 describe('components/dropdown', () => {
@@ -76,7 +77,9 @@ describe('components/dropdown', () => {
 
     it('returns child element', () => {
       const expectedResponse = childElement;
-      const actualResponse = instance.getChild(`.${childClass}`);
+      const actualResponse = instance.getChild(
+        getClassNamesSelector(childClass),
+      );
       expect(expectedResponse).to.eql(actualResponse);
     });
   });

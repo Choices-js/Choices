@@ -181,6 +181,26 @@ export const diff = (
   return aKeys.filter((i) => bKeys.indexOf(i) < 0);
 };
 
+export const getClassNames = (
+  ClassNames: Array<string> | string,
+): Array<string> => {
+  return Array.isArray(ClassNames) ? ClassNames : [ClassNames];
+};
+
+export const getClassNamesSelector = (
+  option: string | Array<string> | null,
+) => {
+  if (option && Array.isArray(option)) {
+    return option
+      .map((item) => {
+        return `.${item}`;
+      })
+      .join(' ');
+  }
+
+  return `.${option}`;
+};
+
 export const parseCustomProperties = (customProperties): any => {
   if (typeof customProperties !== 'undefined') {
     try {
