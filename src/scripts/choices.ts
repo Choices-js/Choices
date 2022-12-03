@@ -1456,10 +1456,10 @@ class Choices implements Choices {
       PAGE_DOWN_KEY,
     } = KEY_CODES;
 
-    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar && event.key.length === 1) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
       this.showDropdown();
 
-      if (!this.input.isFocussed) {
+      if (!this.input.isFocussed && event.key.length === 1) {
         /*
           We update the input value with the pressed key as
           the input was not focussed at the time of key press
