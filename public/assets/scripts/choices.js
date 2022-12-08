@@ -4101,7 +4101,7 @@ var templates = {
       disabled = _a.disabled;
     var opt = new Option(label, value, false, active);
     if (customProperties) {
-      opt.dataset.customProperties = "".concat(customProperties);
+      opt.dataset.customProperties = "".concat(JSON.stringify(customProperties));
     }
     opt.disabled = !!disabled;
     return opt;
