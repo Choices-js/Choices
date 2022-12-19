@@ -1459,7 +1459,7 @@ class Choices implements Choices {
     if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
       this.showDropdown();
 
-      if (!this.input.isFocussed) {
+      if (!this.input.isFocussed && event.key.length === 1) {
         /*
           We update the input value with the pressed key as
           the input was not focussed at the time of key press
