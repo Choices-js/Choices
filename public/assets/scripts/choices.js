@@ -1,4 +1,4 @@
-/*! choices.js v10.2.0 | © 2022 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v10.2.0 | © 2023 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1275,7 +1275,7 @@ var Choices = /** @class */function () {
       DOWN_KEY = constants_1.KEY_CODES.DOWN_KEY,
       PAGE_UP_KEY = constants_1.KEY_CODES.PAGE_UP_KEY,
       PAGE_DOWN_KEY = constants_1.KEY_CODES.PAGE_DOWN_KEY;
-    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar && event.key.length === 1) {
       this.showDropdown();
       if (!this.input.isFocussed) {
         /*
