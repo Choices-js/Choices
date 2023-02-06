@@ -1,4 +1,4 @@
-/*! choices.js v10.2.0 | © 2022 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v10.2.0 | © 2023 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -1263,9 +1263,30 @@ var Choices = /** @class */function () {
     var hasFocusedInput = this.input.isFocussed;
     var hasActiveDropdown = this.dropdown.isActive;
     var hasItems = this.itemList.hasChildren();
-    var keyString = String.fromCharCode(keyCode);
-    // eslint-disable-next-line no-control-regex
-    var wasPrintableChar = /[^\x00-\x1F]/.test(keyString);
+    /*
+    See:
+    https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+    https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
+    https://en.wikipedia.org/wiki/UTF-16#Code_points_from_U+010000_to_U+10FFFF - UTF-16 surrogate pairs
+    https://stackoverflow.com/a/70866532 - "Unidentified" for mobile
+    http://www.unicode.org/versions/Unicode5.2.0/ch16.pdf#G19635 - U+FFFF is reserved (Section 16.7)
+         Logic: when a key event is sent, `event.key` represents its printable value _or_ one
+    of a large list of special values indicating meta keys/functionality. In addition,
+    key events for compose functionality contain a value of `Dead` when mid-composition.
+         I can't quite verify it, but non-English IMEs may also be able to generate key codes
+    for code points in the surrogate-pair range, which could potentially be seen as having
+    key.length > 1. Since `Fn` is one of the special keys, we can't distinguish by that
+    alone.
+         Here, key.length === 1 means we know for sure the input was printable and not a special
+    `key` value. When the length is greater than 1, it could be either a printable surrogate
+    pair or a special `key` value. We can tell the difference by checking if the _character
+    code_ value (not code point!) is in the "surrogate pair" range or not.
+         We don't use .codePointAt because an invalid code point would return 65535, which wouldn't
+    pass the >= 0x10000 check we would otherwise use.
+         > ...The Unicode Standard sets aside 66 noncharacter code points. The last two code points
+    > of each plane are noncharacters: U+FFFE and U+FFFF on the BMP...
+    */
+    var wasPrintableChar = event.key.length === 1 || event.key.length === 2 && event.key.charCodeAt(0) >= 0xD800 || event.key === 'Unidentified';
     var BACK_KEY = constants_1.KEY_CODES.BACK_KEY,
       DELETE_KEY = constants_1.KEY_CODES.DELETE_KEY,
       ENTER_KEY = constants_1.KEY_CODES.ENTER_KEY,
@@ -1275,15 +1296,15 @@ var Choices = /** @class */function () {
       DOWN_KEY = constants_1.KEY_CODES.DOWN_KEY,
       PAGE_UP_KEY = constants_1.KEY_CODES.PAGE_UP_KEY,
       PAGE_DOWN_KEY = constants_1.KEY_CODES.PAGE_DOWN_KEY;
-    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
+    if (!this._isTextElement && !hasActiveDropdown) {
       this.showDropdown();
-      if (!this.input.isFocussed) {
+      if (!this.input.isFocussed && wasPrintableChar) {
         /*
           We update the input value with the pressed key as
           the input was not focussed at the time of key press
           therefore does not have the value of the key.
         */
-        this.input.value += event.key.toLowerCase();
+        this.input.value += event.key;
       }
     }
     switch (keyCode) {

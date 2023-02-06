@@ -2196,16 +2196,17 @@ describe('choices', () => {
 
       describe('direction key', () => {
         const keyCodes = [
-          KEY_CODES.UP_KEY,
-          KEY_CODES.DOWN_KEY,
-          KEY_CODES.PAGE_UP_KEY,
-          KEY_CODES.PAGE_DOWN_KEY,
+          [KEY_CODES.UP_KEY, 'ArrowUp'],
+          [KEY_CODES.DOWN_KEY, 'ArrowDown'],
+          [KEY_CODES.PAGE_UP_KEY, 'PageUp'],
+          [KEY_CODES.PAGE_DOWN_KEY, 'PageDown'],
         ];
 
-        keyCodes.forEach((keyCode) => {
+        keyCodes.forEach(([keyCode, key]) => {
           it(`calls _onDirectionKey with the expected arguments`, () => {
             const event = {
               keyCode,
+              key,
             };
 
             instance._onKeyDown(event);
@@ -2222,6 +2223,7 @@ describe('choices', () => {
         it(`calls _onSelectKey with the expected arguments`, () => {
           const event = {
             keyCode: KEY_CODES.A_KEY,
+            key: 'A',
           };
 
           instance._onKeyDown(event);
@@ -2237,6 +2239,7 @@ describe('choices', () => {
         it(`calls _onEnterKey with the expected arguments`, () => {
           const event = {
             keyCode: KEY_CODES.ENTER_KEY,
+            key: 'Enter',
           };
 
           instance._onKeyDown(event);
@@ -2250,12 +2253,20 @@ describe('choices', () => {
       });
 
       describe('delete key', () => {
-        const keyCodes = [KEY_CODES.DELETE_KEY, KEY_CODES.BACK_KEY];
+        // this is not an error; the constants are named the reverse of their assigned key names, according
+        // to their actual values, which appear to conform to the Windows VK mappings:
+        // 0x08 = 'Backspace', 0x2E = 'Delete'
+        // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values#editing_keys
+        const keyCodes = [
+          [KEY_CODES.DELETE_KEY, 'Backspace'],
+          [KEY_CODES.BACK_KEY, 'Delete'],
+        ];
 
-        keyCodes.forEach((keyCode) => {
+        keyCodes.forEach(([keyCode, key]) => {
           it(`calls _onDeleteKey with the expected arguments`, () => {
             const event = {
               keyCode,
+              key
             };
 
             instance._onKeyDown(event);
