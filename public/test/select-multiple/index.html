@@ -283,6 +283,23 @@
             </optgroup>
           </select>
         </div>
+        <div data-test-hook="mixed-groups">
+          <label for="choices-groups"
+            >Choice groups with some elements without a group</label
+          >
+          <select
+            class="form-control"
+            name="mixed-choices-groups"
+            id="mixed-choices-groups"
+            multiple
+          >
+            <optgroup label="UK">
+              <option value="London">London</option>
+            </optgroup>
+            <option value="Paris">Paris</option>
+            <option value="Lyon">Lyon</option>
+          </select>
+        </div>
 
         <div data-test-hook="custom-properties">
           <label for="choices-custom-properties">Custom properties</label>
@@ -479,6 +496,10 @@
 
         new Choices('#choices-groups', {
           allowHTML: true,
+        });
+
+        new Choices('#mixed-choices-groups', {
+          allowHTML: false,
         });
 
         new Choices('#choices-custom-properties', {

@@ -702,6 +702,19 @@ describe('Choices - select multiple', () => {
       });
     });
 
+    describe('some options with a group and some without', () => {
+      it('Shows all options, whether they are in a group or not', () => {
+        cy.get('[data-test-hook=mixed-groups]')
+          .find('.choices__input--cloned')
+          .focus();
+        cy.get('[data-test-hook=mixed-groups]')
+          .find('.choices__list--dropdown .choices__item')
+          .should(($choices) => {
+            expect($choices.length).to.equal(3);
+          });
+      });
+    });
+
     describe('custom properties', () => {
       beforeEach(() => {
         cy.get('[data-test-hook=custom-properties]')

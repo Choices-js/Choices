@@ -1,6 +1,10 @@
+import { Choice } from '../interfaces/choice';
+import { parseCustomProperties } from '../lib/utils';
 import { ClassNames } from '../interfaces/class-names';
 import { Item } from '../interfaces/item';
 import WrappedElement from './wrapped-element';
+import { isHTMLOptgroup } from '../lib/htmlElementGuards';
+import { isHTMLOption } from '../lib/htmlElementGuards';
 
 export default class WrappedSelect extends WrappedElement {
   element: HTMLSelectElement;
@@ -51,6 +55,42 @@ export default class WrappedSelect extends WrappedElement {
     options.forEach((optionData) => addOptionToFragment(optionData));
 
     this.appendDocFragment(fragment);
+  }
+
+  optionsAsChoices(): Partial<Choice>[] {
+    const choices: Partial<Choice>[] = [];
+
+    for (const e of Array.from(this.element.querySelectorAll(':scope > *'))) {
+      if (isHTMLOption(e)) {
+        choices.push(this._optionToChoice(e as HTMLOptionElement));
+      } else if (isHTMLOptgroup(e)) {
+        choices.push(this._optgroupToChoice(e as HTMLOptGroupElement));
+      }
+      // There should only be those two in a <select> and we wouldn't care about others anyways
+    }
+
+    return choices;
+  }
+
+  _optionToChoice(option: HTMLOptionElement): Choice {
+    return {
+      value: option.value,
+      label: option.innerHTML,
+      selected: !!option.selected,
+      disabled: option.disabled || this.element.disabled,
+      placeholder: option.value === '' || option.hasAttribute('placeholder'),
+      customProperties: parseCustomProperties(option.dataset.customProperties),
+    };
+  }
+
+  _optgroupToChoice(optgroup: HTMLOptGroupElement): Partial<Choice> {
+    return {
+      label: optgroup.label || '',
+      disabled: !!optgroup.disabled,
+      choices: Array.from(optgroup.querySelectorAll('option')).map((option) =>
+        this._optionToChoice(option),
+      ),
+    };
   }
 
   appendDocFragment(fragment: DocumentFragment): void {

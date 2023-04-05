@@ -46,7 +46,6 @@ import {
   isType,
   sortByScore,
   strToEl,
-  parseCustomProperties,
 } from './lib/utils';
 import { defaultState } from './reducers';
 import Store from './store/store';
@@ -283,19 +282,10 @@ class Choices implements Choices {
     }
     // Create array of choices from option elements
     if ((this.passedElement as WrappedSelect).options) {
-      (this.passedElement as WrappedSelect).options.forEach((option) => {
-        this._presetChoices.push({
-          value: option.value,
-          label: option.innerHTML,
-          selected: !!option.selected,
-          disabled: option.disabled || option.parentNode.disabled,
-          placeholder:
-            option.value === '' || option.hasAttribute('placeholder'),
-          customProperties: parseCustomProperties(
-            option.dataset.customProperties,
-          ),
-        });
-      });
+      const choicesFromOptions = (
+        this.passedElement as WrappedSelect
+      ).optionsAsChoices();
+      this._presetChoices.push(...choicesFromOptions);
     }
 
     this._render = this._render.bind(this);
@@ -901,6 +891,13 @@ class Choices implements Choices {
     // If sorting is enabled, filter groups
     if (this.config.shouldSort) {
       groups.sort(this.config.sorter);
+    }
+
+    // Add Choices without group first, regardless of sort, otherwise they won't be distinguishable
+    // from the last group
+    const choicesWithoutGroup = choices.filter((c) => c.groupId == -1);
+    if (choicesWithoutGroup.length > 0) {
+      this._createChoicesFragment(choicesWithoutGroup, fragment, false);
     }
 
     groups.forEach((group) => {
@@ -2216,12 +2213,7 @@ class Choices implements Choices {
       this._highlightPosition = 0;
       this._isSearching = false;
       this._startLoading();
-
-      if (this._presetGroups.length) {
-        this._addPredefinedGroups(this._presetGroups);
-      } else {
-        this._addPredefinedChoices(this._presetChoices);
-      }
+      this._addPredefinedChoices(this._presetChoices);
 
       this._stopLoading();
     }
