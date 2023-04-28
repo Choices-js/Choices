@@ -37,6 +37,7 @@ export const DEFAULT_CONFIG: Options = {
   silent: false,
   renderChoiceLimit: -1,
   maxItemCount: -1,
+  addChoices: false,
   addItems: true,
   addItemFilter: null,
   removeItems: true,

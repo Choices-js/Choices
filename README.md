@@ -122,6 +122,7 @@ Or include Choices directly:
     choices: [],
     renderChoiceLimit: -1,
     maxItemCount: -1,
+    addChoices: false,
     addItems: true,
     addItemFilter: null,
     removeItems: true,
@@ -303,6 +304,15 @@ Pass an array of objects:
 **Input types affected:** `text`, `select-multiple`
 
 **Usage:** The amount of items a user can input/select ("-1" indicates no limit).
+
+### addChoices
+**Type**: `Boolean` **Default:** `false`
+
+**Input types affected:** `select-multiple`, `select-one`
+
+**Usage:** Whether a user can add choices
+
+**Note:** `addItems` must also be `true`
 
 ### addItems
 

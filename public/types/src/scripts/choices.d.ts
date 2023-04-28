@@ -150,6 +150,7 @@ declare class Choices implements Choices {
     _stopLoading(): void;
     _handleLoadingState(setLoading?: boolean): void;
     _handleSearch(value: string): void;
+    _canAddChoice(activeItems: Item[], value: string): Notice;
     _canAddItem(activeItems: Item[], value: string): Notice;
     _searchChoices(value: string): number;
     _addEventListeners(): void;

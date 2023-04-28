@@ -1,4 +1,4 @@
-/*! choices.js v10.2.0 | © 2022 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v10.2.0 | © 2023 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -807,9 +807,8 @@ var Choices = /** @class */function () {
     } else if (activeChoices.length >= 1) {
       choiceListFragment = this._createChoicesFragment(activeChoices, choiceListFragment);
     }
-    // If we have choices to show
+    var activeItems = this._store.activeItems; // If we have choices to show
     if (choiceListFragment.childNodes && choiceListFragment.childNodes.length > 0) {
-      var activeItems = this._store.activeItems;
       var canAddItem = this._canAddItem(activeItems, this.input.value);
       // ...and we can select them
       if (canAddItem.response) {
@@ -822,13 +821,15 @@ var Choices = /** @class */function () {
       }
     } else {
       // Otherwise show a notice
+      var canAddChoice = this._canAddChoice(activeItems, this.input.value);
       var dropdownItem = void 0;
-      var notice = void 0;
-      if (this._isSearching) {
-        notice = typeof this.config.noResultsText === 'function' ? this.config.noResultsText() : this.config.noResultsText;
+      if (canAddChoice.response) {
+        dropdownItem = this._getTemplate('notice', canAddChoice.notice);
+      } else if (this._isSearching) {
+        var notice = typeof this.config.noResultsText === 'function' ? this.config.noResultsText() : this.config.noResultsText;
         dropdownItem = this._getTemplate('notice', notice, 'no-results');
       } else {
-        notice = typeof this.config.noChoicesText === 'function' ? this.config.noChoicesText() : this.config.noChoicesText;
+        var notice = typeof this.config.noChoicesText === 'function' ? this.config.noChoicesText() : this.config.noChoicesText;
         dropdownItem = this._getTemplate('notice', notice, 'no-choices');
       }
       this.choiceList.append(dropdownItem);
@@ -1151,6 +1152,11 @@ var Choices = /** @class */function () {
       this._store.dispatch((0, choices_1.activateChoices)(true));
     }
   };
+  Choices.prototype._canAddChoice = function (activeItems, value) {
+    var canAddItem = this._canAddItem(activeItems, value);
+    canAddItem.response = this.config.addChoices && canAddItem.response;
+    return canAddItem;
+  };
   Choices.prototype._canAddItem = function (activeItems, value) {
     var canAddItem = true;
     var notice = typeof this.config.addItemText === 'function' ? this.config.addItemText(value) : this.config.addItemText;
@@ -1354,16 +1360,19 @@ var Choices = /** @class */function () {
     var target = event.target;
     var enterKey = constants_1.KEY_CODES.ENTER_KEY;
     var targetWasButton = target && target.hasAttribute('data-button');
-    if (this._isTextElement && target && target.value) {
+    var addedItem = false;
+    if (target && target.value) {
       var value = this.input.value;
       var canAddItem = this._canAddItem(activeItems, value);
-      if (canAddItem.response) {
+      var canAddChoice = this._canAddChoice(activeItems, value);
+      if (this._isTextElement && canAddItem.response || !this._isTextElement && canAddChoice.response) {
         this.hideDropdown(true);
         this._addItem({
           value: value
         });
         this._triggerChange(value);
         this.clearInput();
+        addedItem = true;
       }
     }
     if (targetWasButton) {
@@ -1373,12 +1382,16 @@ var Choices = /** @class */function () {
     if (hasActiveDropdown) {
       var highlightedChoice = this.dropdown.getChild(".".concat(this.config.classNames.highlightedState));
       if (highlightedChoice) {
-        // add enter keyCode value
-        if (activeItems[0]) {
-          activeItems[0].keyCode = enterKey; // eslint-disable-line no-param-reassign
-        }
+        if (addedItem) {
+          this.unhighlightAll();
+        } else {
+          if (activeItems[0]) {
+            // add enter keyCode value
+            activeItems[0].keyCode = enterKey; // eslint-disable-line no-param-reassign
+          }
 
-        this._handleChoiceAction(activeItems, highlightedChoice);
+          this._handleChoiceAction(activeItems, highlightedChoice);
+        }
       }
       event.preventDefault();
     } else if (this._isSelectOneElement) {
@@ -2874,6 +2887,7 @@ exports.DEFAULT_CONFIG = {
   silent: false,
   renderChoiceLimit: -1,
   maxItemCount: -1,
+  addChoices: false,
   addItems: true,
   addItemFilter: null,
   removeItems: true,
@@ -4168,7 +4182,7 @@ function getMergeFunction(key, options) {
 function getEnumerableOwnPropertySymbols(target) {
 	return Object.getOwnPropertySymbols
 		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
-			return target.propertyIsEnumerable(symbol)
+			return Object.propertyIsEnumerable.call(target, symbol)
 		})
 		: []
 }
@@ -6815,15 +6829,6 @@ function applyMiddleware() {
     };
   };
 }
-
-/*
- * This is a dummy function to check if the function name has been altered by minification.
- * If the function has been minified and NODE_ENV !== 'production', warn the user.
- */
-
-function isCrushed() {}
-
-if (false) {}
 
 
 

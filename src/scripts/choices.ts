@@ -825,12 +825,12 @@ class Choices implements Choices {
       );
     }
 
-    // If we have choices to show
+    const { activeItems } = this._store; // If we have choices to show
+
     if (
       choiceListFragment.childNodes &&
       choiceListFragment.childNodes.length > 0
     ) {
-      const { activeItems } = this._store;
       const canAddItem = this._canAddItem(activeItems, this.input.value);
 
       // ...and we can select them
@@ -844,18 +844,21 @@ class Choices implements Choices {
       }
     } else {
       // Otherwise show a notice
-      let dropdownItem;
-      let notice;
+      const canAddChoice = this._canAddChoice(activeItems, this.input.value);
 
-      if (this._isSearching) {
-        notice =
+      let dropdownItem;
+
+      if (canAddChoice.response) {
+        dropdownItem = this._getTemplate('notice', canAddChoice.notice);
+      } else if (this._isSearching) {
+        const notice =
           typeof this.config.noResultsText === 'function'
             ? this.config.noResultsText()
             : this.config.noResultsText;
 
         dropdownItem = this._getTemplate('notice', notice, 'no-results');
       } else {
-        notice =
+        const notice =
           typeof this.config.noChoicesText === 'function'
             ? this.config.noChoicesText()
             : this.config.noChoicesText;
@@ -1260,6 +1263,14 @@ class Choices implements Choices {
     }
   }
 
+  _canAddChoice(activeItems: Item[], value: string): Notice {
+    const canAddItem = this._canAddItem(activeItems, value);
+
+    canAddItem.response = this.config.addChoices && canAddItem.response;
+
+    return canAddItem;
+  }
+
   _canAddItem(activeItems: Item[], value: string): Notice {
     let canAddItem = true;
     let notice =
@@ -1555,16 +1566,22 @@ class Choices implements Choices {
     const { ENTER_KEY: enterKey } = KEY_CODES;
     const targetWasButton =
       target && (target as HTMLElement).hasAttribute('data-button');
+    let addedItem = false;
 
-    if (this._isTextElement && target && (target as HTMLInputElement).value) {
+    if (target && (target as HTMLInputElement).value) {
       const { value } = this.input;
       const canAddItem = this._canAddItem(activeItems, value);
+      const canAddChoice = this._canAddChoice(activeItems, value);
 
-      if (canAddItem.response) {
+      if (
+        (this._isTextElement && canAddItem.response) ||
+        (!this._isTextElement && canAddChoice.response)
+      ) {
         this.hideDropdown(true);
         this._addItem({ value });
         this._triggerChange(value);
         this.clearInput();
+        addedItem = true;
       }
     }
 
@@ -1579,11 +1596,15 @@ class Choices implements Choices {
       );
 
       if (highlightedChoice) {
-        // add enter keyCode value
-        if (activeItems[0]) {
-          activeItems[0].keyCode = enterKey; // eslint-disable-line no-param-reassign
+        if (addedItem) {
+          this.unhighlightAll();
+        } else {
+          if (activeItems[0]) {
+            // add enter keyCode value
+            activeItems[0].keyCode = enterKey; // eslint-disable-line no-param-reassign
+          }
+          this._handleChoiceAction(activeItems, highlightedChoice);
         }
-        this._handleChoiceAction(activeItems, highlightedChoice);
       }
 
       event.preventDefault();
