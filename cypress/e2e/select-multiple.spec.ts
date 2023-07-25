@@ -282,6 +282,41 @@ describe('Choices - select multiple', () => {
       });
     });
 
+    describe('unique values only', () => {
+      describe('unique values', () => {
+        beforeEach(() => {
+          cy.get('[data-test-hook=unique-values]')
+            .find('.choices__input--cloned')
+            .type('Choice 1')
+            .type('{enter}');
+        });
+
+        it('only allows me to input unique values', () => {
+          cy.get('[data-test-hook=unique-values]')
+            .find('.choices__list--multiple')
+            .first()
+            .children()
+            .should($items => {
+              expect($items.length).to.equal(1);
+            });
+        });
+
+        describe('inputting a non-unique value', () => {
+          it('displays dropdown prompt', () => {
+            cy.get('[data-test-hook=unique-values]')
+              .find('.choices__list--dropdown')
+              .should('be.visible')
+              .should($dropdown => {
+                const dropdownText = $dropdown.text().trim();
+                expect(dropdownText).to.equal(
+                  'Only unique values can be added',
+                );
+              });
+          });
+        });
+      });
+    });
+
     describe('disabled choice', () => {
       describe('selecting a disabled choice', () => {
         beforeEach(() => {
@@ -308,26 +343,56 @@ describe('Choices - select multiple', () => {
       });
     });
 
+    describe('adding user-created choices', () => {
+      it('allows the user to add choices', () => {
+        const newChoice = 'New Choice';
+
+        cy.get('[data-test-hook=add-items]')
+          .find('.choices__input--cloned')
+          .type(newChoice)
+          .type('{enter}');
+
+        cy.get('[data-test-hook=add-items]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.contain(newChoice);
+          });
+      });
+    });
+
     describe('adding items disabled', () => {
       /*
         {
           addItems: false,
         }
       */
-      it('disables the search input', () => {
+      it('disables adding new items', () => {
+        const newChoice = 'New Choice';
         cy.get('[data-test-hook=add-items-disabled]')
           .find('.choices__input--cloned')
-          .should('be.disabled');
+          .type(newChoice)
+          .type('{enter}');
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.not.contain(newChoice);
+          });
       });
 
-      describe('on click', () => {
-        it('does not open choice dropdown', () => {
-          cy.get('[data-test-hook=add-items-disabled]')
-            .find('.choices')
-            .click()
-            .find('.choices__list--dropdown')
-            .should('not.have.class', 'is-active');
-        });
+      it('allows selecting items', () => {
+        const choice = 'Choice 2';
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__input--cloned')
+          .type(choice)
+          .type('{enter}');
+        cy.get('[data-test-hook=add-items-disabled]')
+          .find('.choices__list--multiple')
+          .last()
+          .should($el => {
+            expect($el).to.contain(choice);
+          });
       });
     });
 

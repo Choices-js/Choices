@@ -88,6 +88,22 @@
           </select>
         </div>
 
+        <div data-test-hook="unique-values">
+          <label for="choices-unique-values">Unique values</label>
+          <select
+            class="form-control"
+            name="choices-unique-values"
+            id="choices-unique-values"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+          </select>
+        </div>
+
         <div data-test-hook="disabled-choice">
           <label for="choices-disabled-choice">Disabled choice</label>
           <select
@@ -100,6 +116,20 @@
             <option value="Choice 2">Choice 2</option>
             <option value="Choice 3">Choice 3</option>
             <option value="Choice 4" disabled>Choice 4</option>
+          </select>
+        </div>
+
+        <div data-test-hook="add-items">
+          <label for="choices-add">Add user-created choices</label>
+          <select
+            class="form-control"
+            name="choices-add-items"
+            id="choices-add-items"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
           </select>
         </div>
 
@@ -401,9 +431,7 @@
     </div>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const choicesBasic = new Choices('#choices-basic', {
-          allowHTML: true,
-        });
+        const choicesBasic = new Choices('#choices-basic', { addItems: false, allowHTML: true, });
 
         document
           .querySelector('button.disable')
@@ -424,6 +452,13 @@
 
         new Choices('#choices-disabled-choice', {
           allowHTML: true,
+        });
+        new Choices('#choices-unique-values', {
+          duplicateItemsAllowed: false,
+        });
+
+        new Choices('#choices-add-items', {
+          addItems: true,
         });
 
         new Choices('#choices-add-items-disabled', {
@@ -555,7 +590,8 @@
 
         new Choices('#choices-search-by-label', {
           allowHTML: true,
-          searchFields: ['label']
+          searchFields: ['label'],
+          addItems: false,
         });
 
         new Choices('#choices-allowhtml-undefined', {
