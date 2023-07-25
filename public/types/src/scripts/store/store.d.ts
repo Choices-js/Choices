@@ -39,6 +39,10 @@ export default class Store {
      */
     get activeChoices(): Choice[];
     /**
+     * Get disabled choices from store
+     */
+    get disabledChoices(): Choice[];
+    /**
      * Get selectable choices from store
      */
     get selectableChoices(): Choice[];

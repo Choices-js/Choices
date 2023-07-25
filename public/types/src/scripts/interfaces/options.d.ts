@@ -97,9 +97,9 @@ export interface Options {
      */
     maxItemCount: number;
     /**
-     * Whether a user can add items.
+     * Whether a user can add new items.
      *
-     * **Input types affected:** text
+     * **Input types affected:** text, select, select-multiple
      *
      * @default true
      */
