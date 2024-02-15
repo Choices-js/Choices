@@ -311,6 +311,22 @@
           <option value="Choice 3">Choice 3</option>
         </select>
 
+        <select
+          class="form-control"
+          name="choices-single-allow-html"
+          id="choices-single-allow-html"
+          placeholder="This is a search placeholder"
+          data-choices-container="choices-choices"
+        >
+        </select>
+
+        <div id="choices-choices">
+          <div value="">This is a placeholder<a>hi</a></div>
+          <div value="Choice 1">Choice 1</div>
+          <div value="Choice 2">Choice 2</div>
+          <div value="Choice 3">Choice 3</div>
+        </div>
+
         <p>
           <small
             >If the following two examples do not load, the Discogs rate limit
@@ -557,6 +573,10 @@
             searchPlaceholderValue: 'This is a search placeholder',
           });
         }
+
+        var textAllowHtml = new Choices('#choices-single-allow-html', {
+          allowHTML: true,
+        });
 
         var textRemove = new Choices(
           document.getElementById('choices-text-remove-button'),

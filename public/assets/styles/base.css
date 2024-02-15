@@ -178,4 +178,21 @@ label + p {
   margin-bottom: 24px;
 }
 
+.d-none {
+  display: none;
+}
+
+.pill-badge {
+  float: right;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 2.5px;
+  border: 1px solid #00bcd4;
+  background-color: lightblue;
+  color: #333;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
 /* =====  End of Section comment block  ====== */

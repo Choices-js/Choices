@@ -34,6 +34,7 @@ export const DEFAULT_CLASSNAMES: ClassNames = {
 export const DEFAULT_CONFIG: Options = {
   items: [],
   choices: [],
+  choicesContainer: null,
   silent: false,
   renderChoiceLimit: -1,
   maxItemCount: -1,

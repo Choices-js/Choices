@@ -85,6 +85,14 @@ export interface Options {
   choices: Choice[];
 
   /**
+   * You can't place HTML directly inside option or select tags.
+   * This is a security feature, as it prevents XSS (cross-site scripting) attacks.
+   * If you want to do it regardless, you can set `allowHTML` to `true`, and set the choicesContainer to a valid query selector string or html element.
+   * The children of the `choicesContainer` will be used instead of the option tags inside the select.
+   */
+  choicesContainer: HTMLElement | string | null;
+
+  /**
    * The amount of choices to be rendered within the dropdown list `("-1" indicates no limit)`. This is useful if you have a lot of choices where it is easier for a user to use the search area to find a choice.
    *
    * **Input types affected:** select-one, select-multiple

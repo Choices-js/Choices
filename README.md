@@ -221,6 +221,13 @@ Choices works with the following input types, referenced in the documentation as
 
 ## Configuration Options
 
+If you want to set global defaults for all instances of Choices, you can use the `Choices.defaults.options` object.
+This works with every option.
+
+```js
+Choices.defaults.options.noResultsText = 'No results found';
+```
+
 ### silent
 
 **Type:** `Boolean` **Default:** `false`
@@ -287,6 +294,13 @@ Pass an array of objects:
   },
 }]
 ```
+
+### choicesContainer
+
+You can't place HTML directly inside option or select tags.
+This is a security feature, as it prevents XSS (cross-site scripting) attacks.
+If you want to do it regardless, you can set `allowHTML` to `true`, and set the choicesContainer to a valid query selector string or html element.
+The children of the `choicesContainer` will be used instead of the option tags inside the select.
 
 ### renderChoiceLimit
 
