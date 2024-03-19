@@ -1,4 +1,4 @@
-/*! choices.js v10.2.0 | © 2022 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v10.2.0 | © 2024 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -884,12 +884,20 @@ var Choices = /** @class */function () {
     var _a = this.config,
       renderSelectedChoices = _a.renderSelectedChoices,
       searchResultLimit = _a.searchResultLimit,
-      renderChoiceLimit = _a.renderChoiceLimit;
+      renderChoiceLimit = _a.renderChoiceLimit,
+      appendGroupInSearch = _a.appendGroupInSearch;
     var filter = this._isSearching ? utils_1.sortByScore : this.config.sorter;
     var appendChoice = function (choice) {
+      var groupName;
+      _this._store.groups.forEach(function (group) {
+        return group.id === choice.groupId ? groupName = group.value : false;
+      });
       var shouldRender = renderSelectedChoices === 'auto' ? _this._isSelectOneElement || !choice.selected : true;
       if (shouldRender) {
         var dropdownItem = _this._getTemplate('choice', choice, _this.config.itemSelectText);
+        if (appendGroupInSearch && groupName && _this._isSearching) {
+          dropdownItem.innerHTML += " (".concat(groupName, ")");
+        }
         fragment.appendChild(dropdownItem);
       }
     };
@@ -2920,7 +2928,8 @@ exports.DEFAULT_CONFIG = {
   labelId: '',
   callbackOnInit: null,
   callbackOnCreateTemplates: null,
-  classNames: exports.DEFAULT_CLASSNAMES
+  classNames: exports.DEFAULT_CLASSNAMES,
+  appendGroupInSearch: false
 };
 
 /***/ }),

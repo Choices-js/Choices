@@ -504,4 +504,6 @@ export interface Options {
    * @default null
    */
   callbackOnCreateTemplates: ((template: Types.StrToEl) => void) | null;
+
+  appendGroupInSearch: false;
 }

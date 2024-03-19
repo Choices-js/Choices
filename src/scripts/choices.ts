@@ -921,10 +921,12 @@ class Choices implements Choices {
     withinGroup = false,
   ): DocumentFragment {
     // Create a fragment to store our list items (so we don't have to update the DOM for each item)
-    const { renderSelectedChoices, searchResultLimit, renderChoiceLimit } =
+    const { renderSelectedChoices, searchResultLimit, renderChoiceLimit, appendGroupInSearch } =
       this.config;
     const filter = this._isSearching ? sortByScore : this.config.sorter;
     const appendChoice = (choice: Choice): void => {
+      let groupName;
+      this._store.groups.forEach((group) => group.id === choice.groupId ? groupName = group.value : false);
       const shouldRender =
         renderSelectedChoices === 'auto'
           ? this._isSelectOneElement || !choice.selected
@@ -936,7 +938,9 @@ class Choices implements Choices {
           choice,
           this.config.itemSelectText,
         );
-
+        if (appendGroupInSearch && groupName && this._isSearching) {
+          dropdownItem.innerHTML += ` (${groupName})`;
+        }
         fragment.appendChild(dropdownItem);
       }
     };

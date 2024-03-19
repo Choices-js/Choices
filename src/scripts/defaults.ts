@@ -78,4 +78,5 @@ export const DEFAULT_CONFIG: Options = {
   callbackOnInit: null,
   callbackOnCreateTemplates: null,
   classNames: DEFAULT_CLASSNAMES,
+  appendGroupInSearch: false,
 };
