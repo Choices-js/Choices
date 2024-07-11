@@ -1107,12 +1107,12 @@ example.setChoiceByValue('Two'); // Choice with value of 'Two' has now been sele
 Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/jshjohnson/Choices/blob/master/.browserslistrc) and expecting that features [listed below](https://github.com/jshjohnson/Choices/blob/master/.eslintrc.json#L62) are available or polyfilled in browser.
 You may see exact list of target browsers by running `npx browserslist` within this repository folder.
 If you need to support a browser that does not have one of the features listed below,
-I suggest including a polyfill from the very good [polyfill.io](https://polyfill.io/v3/):
+I suggest including a polyfill from the very good [polyfill.io (cloudflare.com)](https://blog.cloudflare.com/polyfill-io-now-available-on-cdnjs-reduce-your-supply-chain-risk):
 
 **Polyfill example used for the demo:**
 
 ```html
-<script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=Array.from%2Ces5%2Ces6%2CSymbol%2CSymbol.iterator%2CDOMTokenList%2CObject.assign%2CCustomEvent%2CElement.prototype.classList%2CElement.prototype.closest%2CElement.prototype.dataset%2CArray.prototype.find%2CArray.prototype.includes"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=Array.from%2Ces5%2Ces6%2CSymbol%2CSymbol.iterator%2CDOMTokenList%2CObject.assign%2CCustomEvent%2CElement.prototype.classList%2CElement.prototype.closest%2CElement.prototype.dataset%2CArray.prototype.find%2CArray.prototype.includes"></script>
 ```
 
 **Features used in Choices:**
