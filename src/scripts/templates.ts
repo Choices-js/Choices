@@ -321,7 +321,9 @@ const templates = {
     const opt = new Option(label, value, false, active);
 
     if (customProperties) {
-      opt.dataset.customProperties = `${JSON.stringify(customProperties)}`;
+      opt.dataset.customProperties = `${JSON.stringify(
+        customProperties || {},
+      )}`;
     }
 
     opt.disabled = !!disabled;

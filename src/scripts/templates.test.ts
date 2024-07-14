@@ -733,4 +733,19 @@ describe('templates', () => {
       );
     });
   });
+
+  describe('empty customProperties', () => {
+    const choices = [
+      {
+        label: 'test',
+        value: 'test',
+        customProperties: {},
+      },
+    ];
+
+    it('does not set custom properties', () => {
+      const output = templates.option(choices[0]);
+      expect(output.dataset.customProperties).to.equal('{}');
+    });
+  });
 });
