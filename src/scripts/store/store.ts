@@ -74,6 +74,13 @@ export default class Store {
   }
 
   /**
+   * Get disabled choices from store
+   */
+  get disabledChoices(): Choice[] {
+    return this.choices.filter(choice => choice.disabled === true);
+  }
+
+  /**
    * Get selectable choices from store
    */
   get selectableChoices(): Choice[] {

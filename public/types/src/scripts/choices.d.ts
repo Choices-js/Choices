@@ -157,9 +157,9 @@ declare class Choices implements Choices {
     _onKeyDown(event: KeyboardEvent): void;
     _onKeyUp({ target, keyCode, }: Pick<KeyboardEvent, 'target' | 'keyCode'>): void;
     _onSelectKey(event: KeyboardEvent, hasItems: boolean): void;
-    _onEnterKey(event: KeyboardEvent, activeItems: Item[], hasActiveDropdown: boolean): void;
+    _onEnterKey(event: KeyboardEvent, activeItems: Item[], nonproducibleChoices: Choice[], hasActiveDropdown: boolean): void;
     _onEscapeKey(hasActiveDropdown: boolean): void;
-    _onDirectionKey(event: KeyboardEvent, hasActiveDropdown: boolean): void;
+    _onDirectionKey(event: KeyboardEvent, activeItems: Item[], nonproducibleChoices: Choice[], hasActiveDropdown: boolean): void;
     _onDeleteKey(event: KeyboardEvent, activeItems: Item[], hasFocusedInput: boolean): void;
     _onTouchMove(): void;
     _onTouchEnd(event: TouchEvent): void;
