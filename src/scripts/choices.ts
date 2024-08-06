@@ -1456,7 +1456,7 @@ class Choices implements Choices {
       PAGE_DOWN_KEY,
     } = KEY_CODES;
 
-    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar) {
+    if (!this._isTextElement && !hasActiveDropdown && wasPrintableChar && event.key.length === 1) {
       this.showDropdown();
 
       if (!this.input.isFocussed) {
