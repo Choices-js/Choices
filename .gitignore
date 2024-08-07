@@ -10,3 +10,6 @@ tests/results
 coverage
 cypress/videos
 cypress/screenshots
+
+# for testing in smaller files
+public/_**.html
