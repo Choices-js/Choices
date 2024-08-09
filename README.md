@@ -1,6 +1,6 @@
 # Choices.js [![Actions Status](https://github.com/jshjohnson/Choices/workflows/Build%20and%20test/badge.svg)](https://github.com/jshjohnson/Choices/actions) [![Actions Status](https://github.com/jshjohnson/Choices/workflows/Bundle%20size%20checks/badge.svg)](https://github.com/jshjohnson/Choices/actions) [![npm](https://img.shields.io/npm/v/choices.js.svg)](https://www.npmjs.com/package/choices.js)
 
-A vanilla, lightweight (~19kb gzipped 🎉), configurable select box/text input plugin. Similar to Select2 and Selectize but without the jQuery dependency.
+A vanilla, lightweight (~20.4kb gzipped 🎉), configurable select box/text input plugin. Similar to Select2 and Selectize but without the jQuery dependency.
 
 [Demo](https://choices-js.github.io/Choices/)
 
@@ -122,12 +122,14 @@ Or include Choices directly:
     choices: [],
     renderChoiceLimit: -1,
     maxItemCount: -1,
+    addChoices: false,
     addItems: true,
     addItemFilter: null,
     removeItems: true,
     removeItemButton: false,
+    removeItemButtonAlignLeft: false,
     editItems: false,
-    allowHTML: true,
+    allowHTML: false,
     duplicateItemsAllowed: true,
     delimiter: ',',
     paste: true,
@@ -154,8 +156,10 @@ Or include Choices directly:
     uniqueItemText: 'Only unique values can be added',
     customAddItemText: 'Only values matching specific conditions can be added',
     addItemText: (value) => {
-      return `Press Enter to add <b>"${value}"</b>`;
+      return `Press Enter to add <b>"${sanitise(value)}"</b>`;
     },
+    removeItemIconText: () => `Remove item`,
+    removeItemLabelText: (value) => `Remove item: ${sanitise(value)}`,
     maxItemText: (maxItemCount) => {
       return `Only ${maxItemCount} values can be added`;
     },
@@ -163,32 +167,32 @@ Or include Choices directly:
       return value1 === value2;
     },
     classNames: {
-      containerOuter: 'choices',
-      containerInner: 'choices__inner',
-      input: 'choices__input',
-      inputCloned: 'choices__input--cloned',
-      list: 'choices__list',
-      listItems: 'choices__list--multiple',
-      listSingle: 'choices__list--single',
-      listDropdown: 'choices__list--dropdown',
-      item: 'choices__item',
-      itemSelectable: 'choices__item--selectable',
-      itemDisabled: 'choices__item--disabled',
-      itemChoice: 'choices__item--choice',
-      placeholder: 'choices__placeholder',
-      group: 'choices__group',
-      groupHeading: 'choices__heading',
-      button: 'choices__button',
-      activeState: 'is-active',
-      focusState: 'is-focused',
-      openState: 'is-open',
-      disabledState: 'is-disabled',
-      highlightedState: 'is-highlighted',
-      selectedState: 'is-selected',
-      flippedState: 'is-flipped',
-      loadingState: 'is-loading',
-      noResults: 'has-no-results',
-      noChoices: 'has-no-choices'
+      containerOuter: ['choices'],
+      containerInner: ['choices__inner'],
+      input: ['choices__input'],
+      inputCloned: ['choices__input--cloned'],
+      list: ['choices__list'],
+      listItems: ['choices__list--multiple'],
+      listSingle: ['choices__list--single'],
+      listDropdown: ['choices__list--dropdown'],
+      item: ['choices__item'],
+      itemSelectable: ['choices__item--selectable'],
+      itemDisabled: ['choices__item--disabled'],
+      itemChoice: ['choices__item--choice'],
+      placeholder: ['choices__placeholder'],
+      group: ['choices__group'],
+      groupHeading: ['choices__heading'],
+      button: ['choices__button'],
+      activeState: ['is-active'],
+      focusState: ['is-focused'],
+      openState: ['is-open'],
+      disabledState: ['is-disabled'],
+      highlightedState: ['is-highlighted'],
+      selectedState: ['is-selected'],
+      flippedState: ['is-flipped'],
+      loadingState: ['is-loading'],
+      noResults: ['has-no-results'],
+      noChoices: ['has-no-choices']
     },
     // Choices uses the great Fuse library for searching. You
     // can find more options here: https://fusejs.io/api/options.html
@@ -304,6 +308,23 @@ Pass an array of objects:
 
 **Usage:** The amount of items a user can input/select ("-1" indicates no limit).
 
+### singleModeForMultiSelect
+
+**Type:** `Boolean` **Default:** `false`
+
+**Input types affected:** select-one, select-multiple
+
+**Usage:** Make select-multiple with a max item count of 1 work similar to select-one does. Selecting an item will auto-close the dropdown and swap any existing item for the just selected choice. If applied to a select-one, it functions as above and not the standard select-one.
+
+### addChoices
+**Type**: `Boolean` **Default:** `false`
+
+**Input types affected:** `select-multiple`, `select-one`
+
+**Usage:** Whether a user can add choices
+
+**Note:** `addItems` must also be `true`
+
 ### addItems
 
 **Type:** `Boolean` **Default:** `true`
@@ -328,6 +349,14 @@ Pass an array of objects:
 
 **Usage:** Whether each item should have a remove button.
 
+### removeItemButtonAlignLeft
+
+**Type:** `Boolean` **Default:** `false`
+
+**Input types affected:** `text`, `select-one`, `select-multiple`
+
+**Usage:** Align item remove button left vs right
+
 ### editItems
 
 **Type:** `Boolean` **Default:** `false`
@@ -338,13 +367,19 @@ Pass an array of objects:
 
 ### allowHTML
 
-**Type:** `Boolean` **Default:** `true`
+**Type:** `Boolean` **Default:** `false`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** Whether HTML should be rendered in all Choices elements. If `false`, all elements (placeholder, items, etc.) will be treated as plain text. If `true`, this can be used to perform XSS scripting attacks if you load choices from a remote source.
 
-**Deprecation Warning:** This will default to `false` in a future release.
+### allowHtmlUserInput
+
+**Type:** `Boolean` **Default:** `false`
+
+**Input types affected:** `text`, `select-one`, `select-multiple`
+
+**Usage:** Whether HTML should be escaped on input when `addItems` or `addChoices` is true. If `false`, user input will be treated as plain text. If `true`, this can be used to perform XSS scripting attacks if you load choices from a remote source.
 
 ### duplicateItemsAllowed
 
@@ -374,9 +409,9 @@ Pass an array of objects:
 
 **Type:** `Boolean` **Default:** `true`
 
-**Input types affected:** `select-one`
+**Input types affected:** `select-one`, `select-multiple`
 
-**Usage:** Whether a search area should be shown. **Note:** Multiple select boxes will _always_ show search areas.
+**Usage:** Whether a search area should be shown.
 
 ### searchChoices
 
@@ -409,6 +444,25 @@ Pass an array of objects:
 **Input types affected:** `select-one`, `select-multiple`
 
 **Usage:** The maximum amount of search results to show.
+
+### shadowRoot
+
+**Type:** Document Element **Default:** null
+
+**Input types affected:** `select-one`, `select-multiple`
+
+**Usage:** You can pass along the shadowRoot from your application like so.
+
+```js
+var shadowRoot = document
+  .getElementById('wrapper')
+  .attachShadow({ mode: 'open' });
+...
+var el = shadowRoot.querySelector(...);
+var choices = new Choices(el, {
+  shadowRoot: shadowRoot,
+});
+```
 
 ### position
 
@@ -583,9 +637,31 @@ For backward compatibility, `<option placeholder>This is a placeholder</option>`
 
 **Type:** `String/Function` **Default:** `Press Enter to add "${value}"`
 
-**Input types affected:** `text`
+**Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** The text that is shown when a user has inputted a new item but has not pressed the enter key. To access the current input value, pass a function with a `value` argument (see the [default config](https://github.com/jshjohnson/Choices#setup) for an example), otherwise pass a string.
+
+Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+
+### removeItemIconText
+
+**Type:** `String/Function` **Default:** `Remove item"`
+
+**Input types affected:** `text`, `select-one`, `select-multiple`
+
+**Usage:** The text/icon for the remove button. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+
+Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+
+### removeItemLabelText
+
+**Type:** `String/Function` **Default:** `Remove item: ${value}"`
+
+**Input types affected:** `text`, `select-one`, `select-multiple`
+
+**Usage:** The text for the remove button's aria label. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+
+Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
 
 ### maxItemText
 
@@ -625,29 +701,34 @@ const example = new Choices(element, {
 
 ```
 classNames: {
-  containerOuter: 'choices',
-  containerInner: 'choices__inner',
-  input: 'choices__input',
-  inputCloned: 'choices__input--cloned',
-  list: 'choices__list',
-  listItems: 'choices__list--multiple',
-  listSingle: 'choices__list--single',
-  listDropdown: 'choices__list--dropdown',
-  item: 'choices__item',
-  itemSelectable: 'choices__item--selectable',
-  itemDisabled: 'choices__item--disabled',
-  itemOption: 'choices__item--choice',
-  group: 'choices__group',
-  groupHeading : 'choices__heading',
-  button: 'choices__button',
-  activeState: 'is-active',
-  focusState: 'is-focused',
-  openState: 'is-open',
-  disabledState: 'is-disabled',
-  highlightedState: 'is-highlighted',
-  selectedState: 'is-selected',
-  flippedState: 'is-flipped',
-  selectedState: 'is-highlighted',
+  containerOuter: ['choices'],
+  containerInner: ['choices__inner'],
+  input: ['choices__input'],
+  inputCloned: ['choices__input--cloned'],
+  list: ['choices__list'],
+  listItems: ['choices__list--multiple'],
+  listSingle: ['choices__list--single'],
+  listDropdown: ['choices__list--dropdown'],
+  item: ['choices__item'],
+  itemSelectable: ['choices__item--selectable'],
+  itemDisabled: ['choices__item--disabled'],
+  itemChoice: ['choices__item--choice'],
+  description: ['choices__description'],
+  placeholder: ['choices__placeholder'],
+  group: ['choices__group'],
+  groupHeading: ['choices__heading'],
+  button: ['choices__button'],
+  activeState: ['is-active'],
+  focusState: ['is-focused'],
+  openState: ['is-open'],
+  disabledState: ['is-disabled'],
+  highlightedState: ['is-highlighted'],
+  selectedState: ['is-selected'],
+  flippedState: ['is-flipped'],
+  loadingState: ['is-loading'],
+  addChoice: ['choices__item', 'choices__item--selectable', 'add-choice'],
+  noResults: ['has-no-results'],
+  noChoices: ['has-no-choices'],
 }
 ```
 
@@ -667,9 +748,9 @@ classNames: {
 
 **Usage:** Function to run once Choices initialises.
 
-### callbackOnCreateTemplates
+### callbackOnCreateTemplates(strToEl: (str: string) => HTMLElement, escapeForTemplate: (allowHTML: boolean, s: StringUntrusted | StringPreEscaped | string) => string)
 
-**Type:** `Function` **Default:** `null` **Arguments:** `template`
+**Type:** `Function` **Default:** `null` **Arguments:** `strToEl`, `escapeForTemplate`
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
@@ -683,7 +764,7 @@ Templates receive the full Choices config as the first argument to any template,
 
 ```js
 const example = new Choices(element, {
-  callbackOnCreateTemplates: () => ({
+  callbackOnCreateTemplates: (strToEl, escapeForTemplate) => ({
     input: (...args) =>
       Object.assign(Choices.defaults.templates.input.call(this, ...args), {
         type: 'email',
@@ -696,14 +777,14 @@ or more complex:
 
 ```js
 const example = new Choices(element, {
-  callbackOnCreateTemplates: function(template) {
+  callbackOnCreateTemplates: function(strToEl, escapeForTemplate) {
     return {
       item: ({ classNames }, data) => {
         return template(`
-          <div class="${classNames.item} ${
-          data.highlighted
+          <div class="${getClassNames(classNames.item).join(' ')} ${
+          getClassNames(data.highlighted
             ? classNames.highlightedState
-            : classNames.itemSelectable
+            : classNames.itemSelectable).join(' ')
         } ${
           data.placeholder ? classNames.placeholder : ''
         }" data-item data-id="${data.id}" data-value="${data.value}" ${
@@ -715,8 +796,8 @@ const example = new Choices(element, {
       },
       choice: ({ classNames }, data) => {
         return template(`
-          <div class="${classNames.item} ${classNames.itemChoice} ${
-          data.disabled ? classNames.itemDisabled : classNames.itemSelectable
+          <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
+          getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
         }" data-select-text="${this.config.itemSelectText}" data-choice ${
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'
@@ -892,6 +973,12 @@ choices.disable();
 
 **Note:** This is called implicitly when a new instance of Choices is created. This would be used after a Choices instance had already been destroyed (using `destroy()`).
 
+### refresh(withEvents: boolean = false, selectFirstOption: boolean = false);
+
+**Input types affected:** `select-multiple`, `select-one`
+
+**Usage:** Reads options from backing `<select>` element, and recreates choices. Existing items are preserved. When `withEvents` only addItem events are generated.
+
 ### highlightAll();
 
 **Input types affected:** `text`, `select-multiple`
@@ -904,37 +991,43 @@ choices.disable();
 
 **Usage:** Un-highlight each chosen item.
 
-### removeActiveItemsByValue(value);
+### removeActiveItemsByValue(value: string);
 
 **Input types affected:** `text`, `select-multiple`
 
 **Usage:** Remove each item by a given value.
 
-### removeActiveItems(excludedId);
+### removeActiveItems(excludedId: number);
 
 **Input types affected:** `text`, `select-multiple`
 
 **Usage:** Remove each selectable item.
 
-### removeHighlightedItems();
+## removeChoice(value: string);
+
+**Input types affected:** `text`, `select-multiple`, `select-one`
+
+**Usage:** Remove an option/item by value
+
+### removeHighlightedItems(runEvent?: boolean);
 
 **Input types affected:** `text`, `select-multiple`
 
 **Usage:** Remove each item the user has selected.
 
-### showDropdown();
+### showDropdown(preventInputFocus?: boolean);
 
 **Input types affected:** `select-one`, `select-multiple`
 
-**Usage:** Show option list dropdown (only affects select inputs).
+**Usage:** Show choices list dropdown.
 
-### hideDropdown();
+### hideDropdown(preventInputFocus?: boolean);
 
-**Input types affected:** `text`, `select-multiple`
+**Input types affected:** ``select-one`, `select-multiple`
 
-**Usage:** Hide option list dropdown (only affects select inputs).
+**Usage:** Hide choices list dropdown.
 
-### setChoices(choices, value, label, replaceChoices);
+### setChoices(choicesArrayOrFetcher?: (InputChoice | InputGroup)[] | ((instance: Choices) => (InputChoice | InputGroup)[] | Promise<(InputChoice | InputGroup)[]>), value?: string | null, label?: string, replaceChoices?: boolean): this | Promise<this>;
 
 **Input types affected:** `select-one`, `select-multiple`
 
@@ -1022,7 +1115,7 @@ example.setChoices(
 
 **Usage:** Clear all choices from select
 
-### getValue(valueOnly)
+### getValue(valueOnly?: boolean): string[] | EventChoice[] | EventChoice | string;
 
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
@@ -1036,9 +1129,9 @@ const values = example.getValue(true); // returns ['value 1', 'value 2'];
 const valueArray = example.getValue(); // returns [{ active: true, choiceId: 1, highlighted: false, id: 1, label: 'Label 1', value: 'Value 1'},  { active: true, choiceId: 2, highlighted: false, id: 2, label: 'Label 2', value: 'Value 2'}];
 ```
 
-### setValue(items);
+### setValue(items: string[] | InputChoice[]): this;
 
-**Input types affected:** `text`
+**Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** Set value of input based on an array of objects or strings. This behaves exactly the same as passing items via the `items` option but can be called after initialising Choices.
 
@@ -1058,7 +1151,7 @@ example.setValue([
 example.setValue(['Four', 'Five', 'Six']);
 ```
 
-### setChoiceByValue(value);
+### setChoiceByValue(value: string | string[]);
 
 **Input types affected:** `select-one`, `select-multiple`
 
@@ -1105,7 +1198,7 @@ example.setChoiceByValue('Two'); // Choice with value of 'Two' has now been sele
 ## Browser compatibility
 
 Choices is compiled using [Babel](https://babeljs.io/) targeting browsers [with more than 1% of global usage](https://github.com/jshjohnson/Choices/blob/master/.browserslistrc) and expecting that features [listed below](https://github.com/jshjohnson/Choices/blob/master/.eslintrc.json#L62) are available or polyfilled in browser.
-You may see exact list of target browsers by running `npx browserslist` within this repository folder.
+You may see exact list of target browsers by running `npm exec browserslist` within this repository folder.
 If you need to support a browser that does not have one of the features listed below,
 I suggest including a polyfill from [cdnjs.cloudflare.com/polyfill](https://cdnjs.cloudflare.com/polyfill):
 

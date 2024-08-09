@@ -15,30 +15,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mocha Current File",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
-      "args": ["-u", "bdd", "--timeout", "999999", "--colors", "${file}"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "NODE_ENV": "test"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Mocha All",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["-u", "bdd", "--timeout", "999999", "--colors"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
-      "env": {
-        "NODE_ENV": "test"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Cypress Current File",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/cypress",
       "windows": {

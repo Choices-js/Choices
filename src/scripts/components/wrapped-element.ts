@@ -1,9 +1,11 @@
 import { ClassNames } from '../interfaces/class-names';
 import { EventType } from '../interfaces/event-type';
-import { dispatchEvent } from '../lib/utils';
+import { dispatchEvent, getClassNames } from '../lib/utils';
 
-export default class WrappedElement {
-  element: HTMLInputElement | HTMLSelectElement;
+export default class WrappedElement<
+  T extends HTMLInputElement | HTMLSelectElement,
+> {
+  element: T;
 
   classNames: ClassNames;
 
@@ -12,14 +14,6 @@ export default class WrappedElement {
   constructor({ element, classNames }) {
     this.element = element;
     this.classNames = classNames;
-
-    if (
-      !(element instanceof HTMLInputElement) &&
-      !(element instanceof HTMLSelectElement)
-    ) {
-      throw new TypeError('Invalid element passed');
-    }
-
     this.isDisabled = false;
   }
 
@@ -36,13 +30,13 @@ export default class WrappedElement {
   }
 
   set value(value: string) {
-    // you must define setter here otherwise it will be readonly property
+    this.element.setAttribute('value', value);
     this.element.value = value;
   }
 
   conceal(): void {
     // Hide passed input
-    this.element.classList.add(this.classNames.input);
+    this.element.classList.add(...getClassNames(this.classNames.input));
     this.element.hidden = true;
 
     // Remove element from tab index
@@ -60,7 +54,7 @@ export default class WrappedElement {
 
   reveal(): void {
     // Reinstate passed element
-    this.element.classList.remove(this.classNames.input);
+    this.element.classList.remove(...getClassNames(this.classNames.input));
     this.element.hidden = false;
     this.element.removeAttribute('tabindex');
 

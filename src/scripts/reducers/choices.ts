@@ -1,16 +1,17 @@
 import {
   AddChoiceAction,
+  RemoveChoiceAction,
   FilterChoicesAction,
   ActivateChoicesAction,
   ClearChoicesAction,
 } from '../actions/choices';
 import { AddItemAction, RemoveItemAction } from '../actions/items';
-import { Choice } from '../interfaces/choice';
-
-export const defaultState = [];
+import { ChoiceFull } from '../interfaces/choice-full';
+import { ActionType } from '../interfaces';
 
 type ActionTypes =
   | AddChoiceAction
+  | RemoveChoiceAction
   | FilterChoicesAction
   | ActivateChoicesAction
   | ClearChoicesAction
@@ -19,80 +20,55 @@ type ActionTypes =
   | Record<string, never>;
 
 export default function choices(
-  state: Choice[] = defaultState,
+  state: ChoiceFull[] = [],
   action: ActionTypes = {},
-): Choice[] {
+): ChoiceFull[] {
   switch (action.type) {
-    case 'ADD_CHOICE': {
-      const addChoiceAction = action as AddChoiceAction;
-      const choice = {
-        id: addChoiceAction.id,
-        elementId: addChoiceAction.elementId,
-        groupId: addChoiceAction.groupId,
-        value: addChoiceAction.value,
-        label: addChoiceAction.label || addChoiceAction.value,
-        disabled: addChoiceAction.disabled || false,
-        selected: false,
-        active: true,
-        score: 9999,
-        customProperties: addChoiceAction.customProperties,
-        placeholder: addChoiceAction.placeholder || false,
-      };
+    case ActionType.ADD_CHOICE: {
+      const { choice } = action as AddChoiceAction;
 
       /*
         A disabled choice appears in the choice dropdown but cannot be selected
         A selected choice has been added to the passed input's value (added as an item)
         An active choice appears within the choice dropdown
       */
-      return [...state, choice as Choice];
+      return [...state, choice];
     }
 
-    case 'ADD_ITEM': {
-      const addItemAction = action as AddItemAction;
+    case ActionType.REMOVE_CHOICE: {
+      const { choice } = action as RemoveChoiceAction;
 
-      // When an item is added and it has an associated choice,
-      // we want to disable it so it can't be chosen again
-      if (addItemAction.choiceId > -1) {
-        return state.map((obj) => {
-          const choice = obj;
-          if (choice.id === parseInt(`${addItemAction.choiceId}`, 10)) {
-            choice.selected = true;
-          }
+      return state.filter((obj) => obj.id !== choice.id);
+    }
 
-          return choice;
-        });
+    case ActionType.ADD_ITEM: {
+      const { item } = action as AddItemAction;
+      // trigger a rebuild of the choices list as the item can not be added multiple times
+      if (item.id && item.selected) {
+        return [...state];
       }
 
       return state;
     }
 
-    case 'REMOVE_ITEM': {
-      const removeItemAction = action as RemoveItemAction;
-
-      // When an item is removed and it has an associated choice,
-      // we want to re-enable it so it can be chosen again
-      if (removeItemAction.choiceId && removeItemAction.choiceId > -1) {
-        return state.map((obj) => {
-          const choice = obj;
-          if (choice.id === parseInt(`${removeItemAction.choiceId}`, 10)) {
-            choice.selected = false;
-          }
-
-          return choice;
-        });
+    case ActionType.REMOVE_ITEM: {
+      const { item } = action as RemoveItemAction;
+      // trigger a rebuild of the choices list as the item can be added
+      if (item.id && !item.selected) {
+        return [...state];
       }
 
       return state;
     }
 
-    case 'FILTER_CHOICES': {
-      const filterChoicesAction = action as FilterChoicesAction;
+    case ActionType.FILTER_CHOICES: {
+      const { results } = action as FilterChoicesAction;
 
       return state.map((obj) => {
         const choice = obj;
         // Set active state based on whether choice is
         // within filtered results
-        choice.active = filterChoicesAction.results.some(({ item, score }) => {
+        choice.active = results.some(({ item, score }) => {
           if (item.id === choice.id) {
             choice.score = score;
 
@@ -106,19 +82,19 @@ export default function choices(
       });
     }
 
-    case 'ACTIVATE_CHOICES': {
-      const activateChoicesAction = action as ActivateChoicesAction;
+    case ActionType.ACTIVATE_CHOICES: {
+      const { active } = action as ActivateChoicesAction;
 
       return state.map((obj) => {
         const choice = obj;
-        choice.active = activateChoicesAction.active;
+        choice.active = active;
 
         return choice;
       });
     }
 
-    case 'CLEAR_CHOICES': {
-      return defaultState;
+    case ActionType.CLEAR_CHOICES: {
+      return [];
     }
 
     default: {

@@ -1,6 +1,17 @@
-import { Choice } from './choice';
+import { InputChoice } from './input-choice';
+import { InputGroup } from './input-group';
 
-export interface Item extends Choice {
-  choiceId?: number;
-  highlighted?: boolean;
-}
+/**
+ * @deprecated Use InputChoice instead
+ */
+export interface Item extends InputChoice {}
+
+/**
+ * @deprecated Use InputChoice instead
+ */
+export interface Choice extends InputChoice {}
+
+/**
+ * @deprecated Use InputGroup instead
+ */
+export interface Group extends InputGroup {}

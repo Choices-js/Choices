@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Choice } from '../interfaces/choice';
 import { EventType } from '../interfaces/event-type';
+import { StringUntrusted } from '../interfaces/string-untrusted';
+import { StringPreEscaped } from '../interfaces/string-pre-escaped';
+import { ChoiceFull } from '../interfaces/choice-full';
+import { Types } from '../interfaces/types';
 
-export const getRandomNumber = (min: number, max: number): number =>
+const getRandomNumber = (min: number, max: number): number =>
   Math.floor(Math.random() * (max - min) + min);
 
-export const generateChars = (length: number): string =>
+const generateChars = (length: number): string =>
   Array.from({ length }, () => getRandomNumber(0, 36).toString(36)).join('');
 
 export const generateId = (
@@ -21,27 +24,6 @@ export const generateId = (
   id = `${prefix}-${id}`;
 
   return id;
-};
-
-export const getType = (obj: any): string =>
-  Object.prototype.toString.call(obj).slice(8, -1);
-
-export const isType = (type: string, obj: any): boolean =>
-  obj !== undefined && obj !== null && getType(obj) === type;
-
-export const wrap = (
-  element: HTMLElement,
-  wrapper: HTMLElement = document.createElement('div'),
-): HTMLElement => {
-  if (element.parentNode) {
-    if (element.nextSibling) {
-      element.parentNode.insertBefore(wrapper, element.nextSibling);
-    } else {
-      element.parentNode.appendChild(wrapper);
-    }
-  }
-
-  return wrapper.appendChild(element);
 };
 
 export const getAdjacentEl = (
@@ -86,8 +68,23 @@ export const isScrolledIntoView = (
   return isVisible;
 };
 
-export const sanitise = <T>(value: T | string): T | string => {
+export const sanitise = <T>(
+  value: T | StringUntrusted | StringPreEscaped | string,
+): T | string => {
   if (typeof value !== 'string') {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (typeof value === 'object') {
+      if ('raw' in value) {
+        return sanitise(value.raw);
+      }
+      if ('trusted' in value) {
+        return value.trusted;
+      }
+    }
+
     return value;
   }
 
@@ -95,6 +92,7 @@ export const sanitise = <T>(value: T | string): T | string => {
     .replace(/&/g, '&amp;')
     .replace(/>/g, '&gt;')
     .replace(/</g, '&lt;')
+    .replace(/'/g, '&#039;')
     .replace(/"/g, '&quot;');
 };
 
@@ -102,8 +100,7 @@ export const strToEl = ((): ((str: string) => Element) => {
   const tmpEl = document.createElement('div');
 
   return (str): Element => {
-    const cleanedInput = str.trim();
-    tmpEl.innerHTML = cleanedInput;
+    tmpEl.innerHTML = str.trim();
     const firldChild = tmpEl.children[0];
 
     while (tmpEl.firstChild) {
@@ -114,28 +111,59 @@ export const strToEl = ((): ((str: string) => Element) => {
   };
 })();
 
-interface RecordToCompare {
-  value: string;
-  label?: string;
-}
+export const unwrapStringForRaw = (
+  s?: StringUntrusted | StringPreEscaped | string,
+): string => {
+  if (typeof s === 'string') {
+    return s;
+  }
+
+  if (typeof s === 'object') {
+    if ('trusted' in s) {
+      return s.trusted;
+    }
+    if ('raw' in s) {
+      return s.raw;
+    }
+  }
+
+  return '';
+};
+
+export const unwrapStringForEscaped = (
+  s?: StringUntrusted | StringPreEscaped | string,
+): string => {
+  if (typeof s === 'string') {
+    return s;
+  }
+
+  if (typeof s === 'object') {
+    if ('escaped' in s) {
+      return s.escaped;
+    }
+    if ('trusted' in s) {
+      return s.trusted;
+    }
+  }
+
+  return '';
+};
+
 export const sortByAlpha = (
-  { value, label = value }: RecordToCompare,
-  { value: value2, label: label2 = value2 }: RecordToCompare,
+  { value, label = value }: Types.RecordToCompare,
+  { value: value2, label: label2 = value2 }: Types.RecordToCompare,
 ): number =>
-  label.localeCompare(label2, [], {
+  unwrapStringForRaw(label).localeCompare(unwrapStringForRaw(label2), [], {
     sensitivity: 'base',
     ignorePunctuation: true,
     numeric: true,
   });
 
 export const sortByScore = (
-  a: Pick<Choice, 'score'>,
-  b: Pick<Choice, 'score'>,
+  a: Pick<ChoiceFull, 'score'>,
+  b: Pick<ChoiceFull, 'score'>,
 ): number => {
-  const { score: scoreA = 0 } = a;
-  const { score: scoreB = 0 } = b;
-
-  return scoreA - scoreB;
+  return a.score - b.score;
 };
 
 export const dispatchEvent = (
@@ -152,21 +180,8 @@ export const dispatchEvent = (
   return element.dispatchEvent(event);
 };
 
-export const existsInArray = (
-  array: any[],
-  value: string,
-  key = 'value',
-): boolean =>
-  array.some((item) => {
-    if (typeof value === 'string') {
-      return item[key] === value.trim();
-    }
-
-    return item[key] === value;
-  });
-
-export const cloneObject = (obj: object): object =>
-  JSON.parse(JSON.stringify(obj));
+export const cloneObject = <T>(obj: T): T =>
+  obj !== undefined ? JSON.parse(JSON.stringify(obj)) : undefined;
 
 /**
  * Returns an array of keys present on the first but missing on the second object
@@ -181,7 +196,29 @@ export const diff = (
   return aKeys.filter((i) => bKeys.indexOf(i) < 0);
 };
 
-export const parseCustomProperties = (customProperties): any => {
+export const getClassNames = (
+  ClassNames: Array<string> | string,
+): Array<string> => {
+  return Array.isArray(ClassNames) ? ClassNames : [ClassNames];
+};
+
+export const getClassNamesSelector = (
+  option: string | Array<string> | null,
+) => {
+  if (option && Array.isArray(option)) {
+    return option
+      .map((item) => {
+        return `.${item}`;
+      })
+      .join('');
+  }
+
+  return `.${option}`;
+};
+
+export const parseCustomProperties = (
+  customProperties?: string,
+): object | string => {
   if (typeof customProperties !== 'undefined') {
     try {
       return JSON.parse(customProperties);

@@ -1,17 +1,62 @@
 /**
  * Helpers to create HTML elements used by Choices
- * Can be overridden by providing `callbackOnCreateTemplates` option
+ * Can be overridden by providing `callbackOnCreateTemplates` option.
+ * `Choices.defaults.templates` allows access to the default template methods from `callbackOnCreateTemplates`
  */
 
-import { Choice } from './interfaces/choice';
-import { Group } from './interfaces/group';
-import { Item } from './interfaces/item';
+import { ChoiceFull, CustomProperties } from './interfaces/choice-full';
+import { GroupFull } from './interfaces/group-full';
 import { PassedElementType } from './interfaces/passed-element-type';
+import { StringPreEscaped } from './interfaces/string-pre-escaped';
+import { StringUntrusted } from './interfaces/string-untrusted';
+import {
+  getClassNames,
+  sanitise,
+  unwrapStringForRaw,
+  unwrapStringForEscaped,
+} from './lib/utils';
+import {
+  NoticeType,
+  TemplateOptions,
+  Templates as TemplatesInterface,
+} from './interfaces/templates';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TemplateOptions = Record<'classNames' | 'allowHTML', any>;
+export const escapeForTemplate = (
+  allowHTML: boolean,
+  s: StringUntrusted | StringPreEscaped | string,
+): string => (allowHTML ? unwrapStringForEscaped(s) : (sanitise(s) as string));
 
-const templates = {
+const isEmptyObject = (obj: object): boolean => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const prop in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const assignCustomProperties = (
+  el: HTMLElement,
+  customProperties?: CustomProperties,
+): void => {
+  if (!customProperties) {
+    return;
+  }
+  const { dataset } = el;
+
+  if (typeof customProperties === 'string') {
+    dataset.customProperties = customProperties;
+  } else if (
+    typeof customProperties === 'object' &&
+    !isEmptyObject(customProperties)
+  ) {
+    dataset.customProperties = JSON.stringify(customProperties);
+  }
+};
+
+const templates: TemplatesInterface = {
   containerOuter(
     { classNames: { containerOuter } }: TemplateOptions,
     dir: HTMLElement['dir'],
@@ -22,7 +67,7 @@ const templates = {
     labelId: string,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: containerOuter,
+      className: getClassNames(containerOuter).join(' '),
     });
 
     div.dataset.type = passedElementType;
@@ -55,7 +100,7 @@ const templates = {
     classNames: { containerInner },
   }: TemplateOptions): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: containerInner,
+      className: getClassNames(containerInner).join(' '),
     });
   },
 
@@ -64,23 +109,28 @@ const templates = {
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: `${list} ${isSelectOneElement ? listSingle : listItems}`,
+      className: `${getClassNames(list).join(' ')} ${
+        isSelectOneElement
+          ? getClassNames(listSingle).join(' ')
+          : getClassNames(listItems).join(' ')
+      }`,
     });
   },
 
   placeholder(
     { allowHTML, classNames: { placeholder } }: TemplateOptions,
-    value: string,
+    value: StringPreEscaped | string,
   ): HTMLDivElement {
     return Object.assign(document.createElement('div'), {
-      className: placeholder,
-      [allowHTML ? 'innerHTML' : 'innerText']: value,
+      className: getClassNames(placeholder).join(' '),
+      innerHTML: escapeForTemplate(allowHTML, value),
     });
   },
 
   item(
     {
       allowHTML,
+      removeItemButtonAlignLeft,
       classNames: {
         item,
         button,
@@ -93,25 +143,43 @@ const templates = {
       id,
       value,
       label,
+      labelClass,
+      labelDescription,
       customProperties,
       active,
       disabled,
       highlighted,
       placeholder: isPlaceholder,
-    }: Item,
+    }: ChoiceFull,
     removeItemButton: boolean,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: item,
-      [allowHTML ? 'innerHTML' : 'innerText']: label,
+      className: getClassNames(item).join(' '),
     });
+
+    if (labelClass) {
+      const spanLabel = Object.assign(document.createElement('span'), {
+        innerHTML: escapeForTemplate(allowHTML, label),
+        className: getClassNames(labelClass).join(' '),
+      });
+      div.appendChild(spanLabel);
+    } else {
+      div.innerHTML = escapeForTemplate(allowHTML, label);
+    }
 
     Object.assign(div.dataset, {
       item: '',
       id,
       value,
-      customProperties,
     });
+    if (labelClass) {
+      div.dataset.labelClass = getClassNames(labelClass).join(' ');
+    }
+    if (labelDescription) {
+      div.dataset.labelDescription = labelDescription;
+    }
+
+    assignCustomProperties(div, customProperties);
 
     if (active) {
       div.setAttribute('aria-selected', 'true');
@@ -122,29 +190,44 @@ const templates = {
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...getClassNames(placeholder));
+      div.dataset.placeholder = '';
     }
 
-    div.classList.add(highlighted ? highlightedState : itemSelectable);
+    div.classList.add(
+      ...(highlighted
+        ? getClassNames(highlightedState)
+        : getClassNames(itemSelectable)),
+    );
 
     if (removeItemButton) {
       if (disabled) {
-        div.classList.remove(itemSelectable);
+        div.classList.remove(...getClassNames(itemSelectable));
       }
       div.dataset.deletable = '';
-      /** @todo This MUST be localizable, not hardcoded! */
-      const REMOVE_ITEM_TEXT = 'Remove item';
+
+      const REMOVE_ITEM_ICON =
+        typeof this.config.removeItemIconText === 'function'
+          ? this.config.removeItemIconText(sanitise(value), value)
+          : this.config.removeItemIconText;
+      const REMOVE_ITEM_LABEL =
+        typeof this.config.removeItemLabelText === 'function'
+          ? this.config.removeItemLabelText(sanitise(value), value)
+          : this.config.removeItemLabelText;
       const removeButton = Object.assign(document.createElement('button'), {
         type: 'button',
-        className: button,
-        [allowHTML ? 'innerHTML' : 'innerText']: REMOVE_ITEM_TEXT,
+        className: getClassNames(button).join(' '),
+        innerHTML: REMOVE_ITEM_ICON,
       });
-      removeButton.setAttribute(
-        'aria-label',
-        `${REMOVE_ITEM_TEXT}: '${value}'`,
-      );
+      if (REMOVE_ITEM_LABEL) {
+        removeButton.setAttribute('aria-label', REMOVE_ITEM_LABEL);
+      }
       removeButton.dataset.button = '';
-      div.appendChild(removeButton);
+      if (removeItemButtonAlignLeft) {
+        div.insertAdjacentElement('afterbegin', removeButton);
+      } else {
+        div.appendChild(removeButton);
+      }
     }
 
     return div;
@@ -155,7 +238,7 @@ const templates = {
     isSelectOneElement: boolean,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: list,
+      className: getClassNames(list).join(' '),
     });
 
     if (!isSelectOneElement) {
@@ -171,10 +254,12 @@ const templates = {
       allowHTML,
       classNames: { group, groupHeading, itemDisabled },
     }: TemplateOptions,
-    { id, value, disabled }: Group,
+    { id, label, disabled }: GroupFull,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
-      className: `${group} ${disabled ? itemDisabled : ''}`,
+      className: `${getClassNames(group).join(' ')} ${
+        disabled ? getClassNames(itemDisabled).join(' ') : ''
+      }`,
     });
 
     div.setAttribute('role', 'group');
@@ -182,7 +267,7 @@ const templates = {
     Object.assign(div.dataset, {
       group: '',
       id,
-      value,
+      value: label,
     });
 
     if (disabled) {
@@ -191,8 +276,8 @@ const templates = {
 
     div.appendChild(
       Object.assign(document.createElement('div'), {
-        className: groupHeading,
-        [allowHTML ? 'innerHTML' : 'innerText']: value,
+        className: getClassNames(groupHeading).join(' '),
+        innerHTML: escapeForTemplate(allowHTML, label),
       }),
     );
 
@@ -208,6 +293,7 @@ const templates = {
         itemSelectable,
         selectedState,
         itemDisabled,
+        description,
         placeholder,
       },
     }: TemplateOptions,
@@ -217,24 +303,50 @@ const templates = {
       label,
       groupId,
       elementId,
+      labelClass,
+      labelDescription,
       disabled: isDisabled,
       selected: isSelected,
       placeholder: isPlaceholder,
-    }: Choice,
+    }: ChoiceFull,
     selectText: string,
   ): HTMLDivElement {
     const div = Object.assign(document.createElement('div'), {
       id: elementId,
-      [allowHTML ? 'innerHTML' : 'innerText']: label,
-      className: `${item} ${itemChoice}`,
+      className: `${getClassNames(item).join(' ')} ${getClassNames(
+        itemChoice,
+      ).join(' ')}`,
     });
 
+    let describedBy: HTMLElement = div;
+    if (labelClass) {
+      const spanLabel = Object.assign(document.createElement('span'), {
+        innerHTML: escapeForTemplate(allowHTML, label),
+        className: getClassNames(labelClass).join(' '),
+      });
+      describedBy = spanLabel;
+      div.appendChild(spanLabel);
+    } else {
+      div.innerHTML = escapeForTemplate(allowHTML, label);
+    }
+
+    if (labelDescription) {
+      const descId = `${elementId}-description`;
+      describedBy.setAttribute('aria-describedby', descId);
+      const spanDesc = Object.assign(document.createElement('span'), {
+        innerHTML: escapeForTemplate(allowHTML, labelDescription),
+        id: descId,
+      });
+      spanDesc.classList.add(...getClassNames(description));
+      div.appendChild(spanDesc);
+    }
+
     if (isSelected) {
-      div.classList.add(selectedState);
+      div.classList.add(...getClassNames(selectedState));
     }
 
     if (isPlaceholder) {
-      div.classList.add(placeholder);
+      div.classList.add(...getClassNames(placeholder));
     }
 
     div.setAttribute('role', groupId && groupId > 0 ? 'treeitem' : 'option');
@@ -245,13 +357,19 @@ const templates = {
       value,
       selectText,
     });
+    if (labelClass) {
+      div.dataset.labelClass = getClassNames(labelClass).join(' ');
+    }
+    if (labelDescription) {
+      div.dataset.labelDescription = labelDescription;
+    }
 
     if (isDisabled) {
-      div.classList.add(itemDisabled);
+      div.classList.add(...getClassNames(itemDisabled));
       div.dataset.choiceDisabled = '';
       div.setAttribute('aria-disabled', 'true');
     } else {
-      div.classList.add(itemSelectable);
+      div.classList.add(...getClassNames(itemSelectable));
       div.dataset.choiceSelectable = '';
     }
 
@@ -260,12 +378,13 @@ const templates = {
 
   input(
     { classNames: { input, inputCloned } }: TemplateOptions,
-    placeholderValue: string,
+    placeholderValue: string | null,
   ): HTMLInputElement {
     const inp = Object.assign(document.createElement('input'), {
       type: 'search',
-      name: 'search_terms',
-      className: `${input} ${inputCloned}`,
+      className: `${getClassNames(input).join(' ')} ${getClassNames(
+        inputCloned,
+      ).join(' ')}`,
       autocomplete: 'off',
       autocapitalize: 'off',
       spellcheck: false,
@@ -273,7 +392,9 @@ const templates = {
 
     inp.setAttribute('role', 'textbox');
     inp.setAttribute('aria-autocomplete', 'list');
-    inp.setAttribute('aria-label', placeholderValue);
+    if (placeholderValue) {
+      inp.setAttribute('aria-label', placeholderValue);
+    }
 
     return inp;
   },
@@ -283,7 +404,8 @@ const templates = {
   }: TemplateOptions): HTMLDivElement {
     const div = document.createElement('div');
 
-    div.classList.add(list, listDropdown);
+    div.classList.add(...getClassNames(list));
+    div.classList.add(...getClassNames(listDropdown));
     div.setAttribute('aria-expanded', 'false');
 
     return div;
@@ -292,39 +414,62 @@ const templates = {
   notice(
     {
       allowHTML,
-      classNames: { item, itemChoice, noResults, noChoices },
+      classNames: { item, itemChoice, addChoice, noResults, noChoices },
     }: TemplateOptions,
-    innerText: string,
-    type: 'no-choices' | 'no-results' | '' = '',
+    innerText: StringUntrusted | StringPreEscaped | string,
+    type: NoticeType = '',
   ): HTMLDivElement {
-    const classes = [item, itemChoice];
+    const classes = [...getClassNames(item), ...getClassNames(itemChoice)];
 
-    if (type === 'no-choices') {
-      classes.push(noChoices);
-    } else if (type === 'no-results') {
-      classes.push(noResults);
+    // eslint-disable-next-line default-case
+    switch (type) {
+      case 'add-choice':
+        classes.push(...getClassNames(addChoice));
+        break;
+      case 'no-results':
+        classes.push(...getClassNames(noResults));
+        break;
+      case 'no-choices':
+        classes.push(...getClassNames(noChoices));
+        break;
     }
 
-    return Object.assign(document.createElement('div'), {
-      [allowHTML ? 'innerHTML' : 'innerText']: innerText,
+    const notice = Object.assign(document.createElement('div'), {
+      innerHTML: escapeForTemplate(allowHTML, innerText),
       className: classes.join(' '),
     });
+
+    if (type === 'add-choice') {
+      notice.dataset.choiceSelectable = '';
+      notice.dataset.choice = '';
+    }
+
+    return notice;
   },
 
   option({
     label,
     value,
+    labelClass,
+    labelDescription,
     customProperties,
     active,
     disabled,
-  }: Item): HTMLOptionElement {
-    const opt = new Option(label, value, false, active);
+  }: ChoiceFull): HTMLOptionElement {
+    // HtmlOptionElement's label value does not support HTML, so the avoid double escaping unwrap the untrusted string.
+    const labelValue = unwrapStringForRaw(label);
 
-    if (customProperties) {
-      opt.dataset.customProperties = `${customProperties}`;
+    const opt = new Option(labelValue, value, false, active);
+    if (labelClass) {
+      opt.dataset.labelClass = getClassNames(labelClass).join(' ');
+    }
+    if (labelDescription) {
+      opt.dataset.labelDescription = labelDescription;
     }
 
-    opt.disabled = !!disabled;
+    assignCustomProperties(opt, customProperties);
+
+    opt.disabled = disabled;
 
     return opt;
   },

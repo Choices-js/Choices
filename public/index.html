@@ -746,7 +746,7 @@
         var singleNoSearch = new Choices('#choices-single-no-search', {
           allowHTML: true,
           searchEnabled: false,
-          removeItemButton: true,
+            removeItemButton: true,
           choices: [
             { value: 'One', label: 'Label One' },
             { value: 'Two', label: 'Label Two', disabled: true },
@@ -841,6 +841,7 @@
           document.getElementById('choices-single-custom-templates'),
           {
             allowHTML: true,
+            position: 'bottom',
             callbackOnCreateTemplates: function(strToEl) {
               var classNames = this.config.classNames;
               var itemSelectText = this.config.itemSelectText;
@@ -941,7 +942,9 @@
     </script>
 
     <!-- Google Analytics - Ignore me -->
+    <!-- google analytics is currently breaking puppeteer tests
     <script>
+      try {
       window.ga =
         window.ga ||
         function() {
@@ -950,8 +953,12 @@
       ga.l = +new Date();
       ga('create', 'UA-31575166-1', 'auto');
       ga('send', 'pageview');
+      } catch (e) {
+        console.log(e);
+      }
     </script>
     <script async src="https://www.google-analytics.com/analytics.js"></script>
+    -->
     <!-- End Google Analytics -->
   </body>
 </html>

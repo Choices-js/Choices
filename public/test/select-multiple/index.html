@@ -48,7 +48,7 @@
 
     <!-- Choices includes -->
     <link rel="stylesheet" href="../../assets/styles/choices.min.css" />
-    <script src="../../assets/scripts/choices.min.js"></script>
+    <script src="../../assets/scripts/choices.js"></script>
     <!-- End Choices includes -->
   </head>
 
@@ -115,6 +115,22 @@
             <option value="Choice 2">Choice 2</option>
             <option value="Choice 3">Choice 3</option>
           </select>
+        </div>
+
+        <div data-test-hook="disabled-via-fieldset">
+          <fieldset disabled>
+          <label for="choices-disabled-via-fieldset">Disabled via fieldset</label>
+          <select
+            class="form-control"
+            name="choices-disabled-via-fieldset"
+            id="choices-disabled-via-fieldset"
+            multiple
+          >
+            <option value="Choice 1" selected>Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+          </select>
+          </fieldset>
         </div>
 
         <div data-test-hook="disabled-via-attr">
@@ -283,6 +299,23 @@
             </optgroup>
           </select>
         </div>
+        <div data-test-hook="mixed-groups">
+          <label for="choices-groups"
+            >Choice groups with some elements without a group</label
+          >
+          <select
+            class="form-control"
+            name="mixed-choices-groups"
+            id="mixed-choices-groups"
+            multiple
+          >
+            <optgroup label="UK">
+              <option value="London">London</option>
+            </optgroup>
+            <option value="Paris">Paris</option>
+            <option value="Lyon">Lyon</option>
+          </select>
+        </div>
 
         <div data-test-hook="custom-properties">
           <label for="choices-custom-properties">Custom properties</label>
@@ -369,7 +402,7 @@
         </div>
 
         <div data-test-hook="allowhtml-undefined">
-          <label for="choices-allowhtml-undefined">HTML allowed by default</label>
+          <label for="choices-allowhtml-undefined">HTML disabled by default</label>
           <select
             class="form-control"
             name="choices-allowhtml-undefined"
@@ -388,6 +421,16 @@
           ></select>
         </div>
 
+        <div data-test-hook="allowhtml-true-userinput-false">
+          <label for="choices-allowhtml-true-userinput-false">HTML allowed (except user input)</label>
+          <select
+            class="form-control"
+            name="choices-allowhtml-true-userinput-false"
+            id="choices-allowhtml-true-userinput-false"
+            multiple
+          ></select>
+        </div>
+
         <div data-test-hook="allowhtml-false">
           <label for="choices-allowhtml-false">HTML disabled</label>
           <select
@@ -396,6 +439,37 @@
             id="choices-allowhtml-false"
             multiple
           ></select>
+        </div>
+
+        <div data-test-hook="add-choices">
+          <label for="choices-add-choices">Add choices</label>
+          <select class="form-control" name="choices-add-choices" id="choices-add-choices" multiple>
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3">Choice 3</option>
+          </select>
+        </div>
+
+        <div data-test-hook="shadow-dom">
+          <noscript style="display:none;">
+          <link rel="stylesheet" href="../../assets/styles/base.min.css" />
+          <link rel="stylesheet" href="../../assets/styles/choices.min.css" />
+          <script src="../../assets/scripts/choices.min.js"></script>
+          <label for="choices-basic">Shadow DOM - Basic</label>
+          <button class="disable push-bottom">Disable</button>
+          <button class="enable push-bottom">Enable</button>
+          <select
+            class="form-control"
+            name="shadow-dom-choices-basic"
+            id="shadow-dom-choices-basic"
+            multiple
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Find me">Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+          </select>
+          </noscript>
         </div>
       </div>
     </div>
@@ -429,6 +503,10 @@
         new Choices('#choices-add-items-disabled', {
           allowHTML: true,
           addItems: false,
+        });
+
+        new Choices('#choices-disabled-via-fieldset', {
+          allowHTML: true,
         });
 
         new Choices('#choices-disabled-via-attr', {
@@ -468,8 +546,13 @@
           allowHTML: true,
           shouldSort: false,
         }).setChoices(async () => {
-          const data = await fetch('/data');
-          return data.json();
+          try {
+            const data = await fetch('/data');
+            return data.json();
+          } catch (e) {
+            console.log(e);
+            return [];
+          }
         });
 
         new Choices('#choices-scrolling-dropdown', {
@@ -479,6 +562,10 @@
 
         new Choices('#choices-groups', {
           allowHTML: true,
+        });
+
+        new Choices('#mixed-choices-groups', {
+          allowHTML: false,
         });
 
         new Choices('#choices-custom-properties', {
@@ -581,6 +668,8 @@
 
         new Choices('#choices-allowhtml-true', {
           allowHTML: true,
+          allowHtmlUserInput: true,
+          addChoices: true,
           choices: [
             {
               id: 1,
@@ -601,8 +690,10 @@
           ],
         });
 
-        new Choices('#choices-allowhtml-false', {
-          allowHTML: false,
+        new Choices('#choices-allowhtml-true-userinput-false', {
+          allowHTML: true,
+          allowHtmlUserInput: false,
+          addChoices: true,
           choices: [
             {
               id: 1,
@@ -622,6 +713,55 @@
             },
           ],
         });
+
+
+        new Choices('#choices-allowhtml-false', {
+          allowHTML: false,
+          allowHtmlUserInput: false,
+          addChoices: true,
+          choices: [
+            {
+              id: 1,
+              label: '<b>Choice 1</b>',
+              value: 'Choice 1',
+              selected: true
+            },
+            {
+              id: 2,
+              label: '<b>Choice 2</b>',
+              value: 'Choice 2',
+            },
+            {
+              id: 3,
+              label: 'Choice 3',
+              value: 'Choice 3',
+            },
+          ],
+        });
+
+        new Choices('#choices-add-choices', { addChoices: true });
+
+        const shadowDomWrapper = document.querySelector('div[data-test-hook="shadow-dom"]'),
+          shadowDomHtml = shadowDomWrapper.querySelector('noscript').innerHTML;
+        shadowDomWrapper.innerHTML = ''; // ensure the shadow-dom example is not part of the main document
+        const shadowRoot = shadowDomWrapper.attachShadow({ mode: 'open' });
+        shadowRoot.innerHTML = shadowDomHtml;
+
+        const choicesShadow = new Choices('#shadow-dom-choices-basic', {
+          allowHTML: false,
+          shadowRoot: shadowRoot,
+        });
+        shadowRoot
+          .querySelector('button.disable')
+          .addEventListener('click', () => {
+            choicesShadow.disable();
+          });
+
+        shadowRoot
+          .querySelector('button.enable')
+          .addEventListener('click', () => {
+            choicesShadow.enable();
+          });
       });
     </script>
   </body>

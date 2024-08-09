@@ -1,11 +1,12 @@
-export type EventType =
-  | 'addItem'
-  | 'removeItem'
-  | 'highlightItem'
-  | 'unhighlightItem'
-  | 'choice'
-  | 'change'
-  | 'search'
-  | 'showDropdown'
-  | 'hideDropdown'
-  | 'highlightChoice';
+export const enum EventType {
+  showDropdown = 'showDropdown',
+  hideDropdown = 'hideDropdown',
+  change = 'change',
+  choice = 'choice',
+  search = 'search',
+  addItem = 'addItem',
+  removeItem = 'removeItem',
+  highlightItem = 'highlightItem',
+  highlightChoice = 'highlightChoice',
+  unhighlightItem = 'unhighlightItem',
+}

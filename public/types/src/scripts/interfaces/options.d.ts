@@ -1,9 +1,9 @@
-import Fuse from 'fuse.js';
-import { Choices } from './choices';
-import { Choice } from './choice';
+import { IFuseOptions } from 'fuse.js';
+import { InputChoice } from './input-choice';
 import { ClassNames } from './class-names';
 import { PositionOptionsType } from './position-options-type';
 import { Types } from './types';
+export declare const ObjectsInConfig: string[];
 /**
  * Choices options interface
  *
@@ -51,7 +51,7 @@ export interface Options {
      *
      * @default []
      */
-    items: string[] | Choice[];
+    items: string[] | InputChoice[];
     /**
      * Add choices (see terminology) to select input.
      *
@@ -74,12 +74,32 @@ export interface Options {
      *     description: 'Custom description about Option 2',
      *     random: 'Another random custom property'
      *   },
+     * },
+     * {
+     *   id: 1,
+     *   label: 'Group 1',
+     *   choices: [{
+     *     value: 'Option 3',
+     *     label: 'Option 4',
+     *     selected: true,
+     *     disabled: false,
+     *   },
+     *   {
+     *     value: 'Option 2',
+     *     label: 'Option 2',
+     *     selected: false,
+     *     disabled: true,
+     *     customProperties: {
+     *       description: 'Custom description about Option 2',
+     *       random: 'Another random custom property'
+     *     }
+     *   }]
      * }]
      * ```
      *
      * @default []
      */
-    choices: Choice[];
+    choices: InputChoice[];
     /**
      * The amount of choices to be rendered within the dropdown list `("-1" indicates no limit)`. This is useful if you have a lot of choices where it is easier for a user to use the search area to find a choice.
      *
@@ -97,6 +117,24 @@ export interface Options {
      */
     maxItemCount: number;
     /**
+     * Make select-multiple with a max item count of 1 work similar to select-one does.
+     * Selecting an item will auto-close the dropdown and swap any existing item for the just selected choice.
+     * If applied to a select-one, it functions as above and not the standard select-one.
+     *
+     * **Input types affected:** select-one, select-multiple
+     *
+     * @default false
+     */
+    singleModeForMultiSelect: boolean;
+    /**
+     * Whether a user can add choices dynamically.
+     *
+     * **Input types affected:** select-one, select-multiple
+     *
+     * @default false
+     */
+    addChoices: boolean;
+    /**
      * Whether a user can add items.
      *
      * **Input types affected:** text
@@ -107,22 +145,53 @@ export interface Options {
     /**
      * A filter that will need to pass for a user to successfully add an item.
      *
-     * **Input types affected:** text
+     * **Input types affected:** text, select-one, select-multiple
      *
-     * @default null
+     * @default (value) => !!value && value !== ''
      */
     addItemFilter: string | RegExp | Types.FilterFunction | null;
     /**
      * The text that is shown when a user has inputted a new item but has not pressed the enter key. To access the current input value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+     * The raw non-sanitised value is passed as a 2nd argument.
      *
-     * **Input types affected:** text
+     * Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+     *
+     * **Input types affected:** text, one-select, select-one, select-multiple
      *
      * @default
      * ```
-     * (value) => `Press Enter to add <b>"${value}"</b>`;
+     * (value, valueRaw) => `Press Enter to add <b>"${value}"</b>`;
      * ```
      */
     addItemText: string | Types.NoticeStringFunction;
+    /**
+     * The text/icon for the remove button. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+     * The raw non-sanitised value is passed as a 2nd argument.
+     *
+     * Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+     *
+     * **Input types affected:** text, select-one, select-multiple
+     *
+     * @default
+     * ```
+     * (value, valueRaw) => `Remove item`;
+     * ```
+     */
+    removeItemIconText: string | Types.NoticeStringFunction;
+    /**
+     * The text for the remove button's aria label. To access the item's value, pass a function with a `value` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
+     * The raw non-sanitised value is passed as a 2nd argument.
+     *
+     * Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+     *
+     * **Input types affected:** text, select-one, select-multiple
+     *
+     * @default
+     * ```
+     * (value, valueRaw) => `Remove item: ${value}`;
+     * ```
+     */
+    removeItemLabelText: string | Types.NoticeStringFunction;
     /**
      * Whether a user can remove items.
      *
@@ -140,6 +209,14 @@ export interface Options {
      */
     removeItemButton: boolean;
     /**
+     * Align item remove button left vs right.
+     *
+     * **Input types affected:** text, select-one, select-multiple
+     *
+     * @default false
+     */
+    removeItemButtonAlignLeft: boolean;
+    /**
      * Whether a user can edit items. An item's value can be edited by pressing the backspace.
      *
      * **Input types affected:** text
@@ -152,13 +229,21 @@ export interface Options {
      * If `false`, all elements (placeholder, items, etc.) will be treated as plain text.
      * If `true`, this can be used to perform XSS scripting attacks if you load choices from a remote source.
      *
-     * **Deprecation Warning:** This will default to `false` in a future release.
+     * **Input types affected:** text, select-one, select-multiple
+     *
+     * @default false
+     */
+    allowHTML: boolean;
+    /**
+     * Whether HTML should be escaped on input when `addItems` or `addChoices` is true.
+     * If `false`, user input will be treated as plain text.
+     * If `true`, this can be used to perform XSS scripting attacks if you load previously submitted choices from a remote source.
      *
      * **Input types affected:** text, select-one, select-multiple
      *
-     * @default true
+     * @default false
      */
-    allowHTML: boolean;
+    allowHtmlUserInput: boolean;
     /**
      * Whether each inputted/chosen item should be unique.
      *
@@ -186,9 +271,7 @@ export interface Options {
     /**
      * Whether a search area should be shown.
      *
-     * @note Multiple select boxes will always show search areas.
-     *
-     * **Input types affected:** select-one
+     * **Input types affected:** select-one, select-multiple
      *
      * @default true
      */
@@ -242,6 +325,10 @@ export interface Options {
      */
     resetScrollPosition: boolean;
     /**
+     * The shadow root for use within ShadowDom
+     */
+    shadowRoot: ShadowRoot | null;
+    /**
      * Whether choices and groups should be sorted. If false, choices/groups will appear in the order they were given.
      *
      * **Input types affected:** select-one, select-multiple
@@ -274,7 +361,7 @@ export interface Options {
      *
      * @default sortByAlpha
      */
-    sorter: (current: Choice, next: Choice) => number;
+    sorter: (current: Types.RecordToCompare, next: Types.RecordToCompare) => number;
     /**
      * Whether the input should show a placeholder. Used in conjunction with `placeholderValue`. If `placeholder` is set to true and no value is passed to `placeholderValue`, the passed input's placeholder attribute will be used as the placeholder value.
      *
@@ -379,11 +466,15 @@ export interface Options {
     /**
      * If no duplicates are allowed, and the value already exists in the array.
      *
+     * Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
+     *
      * @default 'Only unique values can be added'
      */
     uniqueItemText: string | Types.NoticeStringFunction;
     /**
      * The text that is shown when addItemFilter is passed and it returns false
+     *
+     * Return type must be safe to insert into HTML (ie use the 1st argument which is sanitised)
      *
      * **Input types affected:** text
      *
@@ -410,7 +501,7 @@ export interface Options {
     /**
      * Choices uses the great Fuse library for searching. You can find more options here: https://fusejs.io/api/options.html
      */
-    fuseOptions: Fuse.IFuseOptions<Choices>;
+    fuseOptions: IFuseOptions<unknown>;
     /**
      * ID of the connected label to improve a11y. If set, aria-labelledby will be added.
      */
@@ -424,7 +515,7 @@ export interface Options {
      *
      * @default null
      */
-    callbackOnInit: ((this: Choices) => void) | null;
+    callbackOnInit: (() => void) | null;
     /**
      * Function to run on template creation. Through this callback it is possible to provide custom templates for the various components of Choices (see terminology). For Choices to work with custom templates, it is important you maintain the various data attributes defined here [https://github.com/jshjohnson/Choices/blob/67f29c286aa21d88847adfcd6304dc7d068dc01f/assets/scripts/src/choices.js#L1993-L2067].
      *
@@ -435,19 +526,19 @@ export interface Options {
      * @example
      * ```
      * const example = new Choices(element, {
-     *   callbackOnCreateTemplates: function (template) {
+     *   callbackOnCreateTemplates: function (template, originalTemplates) {
      *     var classNames = this.config.classNames;
      *     return {
      *       item: (data) => {
      *         return template(`
-     *           <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" data-item data-id="${data.id}" data-value="${data.value}" ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''}>
+     *           <div class="${getClassNames(classNames.item).join(' ')} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" data-item data-id="${data.id}" data-value="${data.value}" ${data.active ? 'aria-selected="true"' : ''} ${data.disabled ? 'aria-disabled="true"' : ''}>
      *             <span>&bigstar;</span> ${data.label}
      *           </div>
      *         `);
      *       },
      *       choice: (data) => {
      *         return template(`
-     *           <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable}" data-select-text="${this.config.itemSelectText}" data-choice ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} data-id="${data.id}" data-value="${data.value}" ${data.groupId > 0 ? 'role="treeitem"' : 'role="option"'}>
+     *           <div class="${getClassNames(classNames.item).join(' ')} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable}" data-select-text="${this.config.itemSelectText}" data-choice ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} data-id="${data.id}" data-value="${data.value}" ${data.groupId > 0 ? 'role="treeitem"' : 'role="option"'}>
      *             <span>&bigstar;</span> ${data.label}
      *           </div>
      *         `);
@@ -459,6 +550,6 @@ export interface Options {
      *
      * @default null
      */
-    callbackOnCreateTemplates: ((template: Types.StrToEl) => void) | null;
+    callbackOnCreateTemplates: ((template: Types.StrToEl, escapeForTemplate: Types.EscapeForTemplateFn) => void) | null;
+    appendGroupInSearch: false;
 }
-//# sourceMappingURL=options.d.ts.map

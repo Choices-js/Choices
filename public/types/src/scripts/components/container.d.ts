@@ -8,7 +8,6 @@ export default class Container {
     position: PositionOptionsType;
     isOpen: boolean;
     isFlipped: boolean;
-    isFocussed: boolean;
     isDisabled: boolean;
     isLoading: boolean;
     constructor({ element, type, classNames, position, }: {
@@ -17,8 +16,6 @@ export default class Container {
         classNames: ClassNames;
         position: PositionOptionsType;
     });
-    addEventListeners(): void;
-    removeEventListeners(): void;
     /**
      * Determine whether container should be flipped based on passed
      * dropdown position
@@ -33,11 +30,8 @@ export default class Container {
     removeFocusState(): void;
     enable(): void;
     disable(): void;
-    wrap(element: HTMLSelectElement | HTMLInputElement | HTMLElement): void;
+    wrap(element: HTMLElement): void;
     unwrap(element: HTMLElement): void;
     addLoadingState(): void;
     removeLoadingState(): void;
-    _onFocus(): void;
-    _onBlur(): void;
 }
-//# sourceMappingURL=container.d.ts.map

@@ -1,19 +1,20 @@
 import { ClassNames } from '../interfaces/class-names';
-import { Item } from '../interfaces/item';
 import WrappedElement from './wrapped-element';
-export default class WrappedSelect extends WrappedElement {
-    element: HTMLSelectElement;
+import { GroupFull } from '../interfaces/group-full';
+import { ChoiceFull } from '../interfaces/choice-full';
+export default class WrappedSelect extends WrappedElement<HTMLSelectElement> {
     classNames: ClassNames;
     template: (data: object) => HTMLOptionElement;
-    constructor({ element, classNames, template, }: {
+    extractPlaceholder: boolean;
+    constructor({ element, classNames, template, extractPlaceholder, }: {
         element: HTMLSelectElement;
         classNames: ClassNames;
         template: (data: object) => HTMLOptionElement;
+        extractPlaceholder: boolean;
     });
     get placeholderOption(): HTMLOptionElement | null;
-    get optionGroups(): Element[];
-    get options(): Item[] | HTMLOptionElement[];
-    set options(options: Item[] | HTMLOptionElement[]);
-    appendDocFragment(fragment: DocumentFragment): void;
+    addOptions(choices: ChoiceFull[]): void;
+    optionsAsChoices(): (ChoiceFull | GroupFull)[];
+    _optionToChoice(option: HTMLOptionElement): ChoiceFull;
+    _optgroupToChoice(optgroup: HTMLOptGroupElement): GroupFull;
 }
-//# sourceMappingURL=wrapped-select.d.ts.map

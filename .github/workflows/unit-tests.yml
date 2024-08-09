@@ -11,19 +11,21 @@ jobs:
   test-unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
-        run: npm install --no-optional --no-audit --ignore-scripts
+        run: npm ci --no-audit
         env:
           CYPRESS_INSTALL_BINARY: 0
           HUSKY_SKIP_INSTALL: true
+
+      - run: npm run build
 
       - run: npm run test:unit:coverage
         env:

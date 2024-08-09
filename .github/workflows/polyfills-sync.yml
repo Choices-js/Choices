@@ -20,4 +20,4 @@ jobs:
           node-version: 18
 
       - name: Check Polyfills documentation and settings sync
-        run: node .github/actions-scripts/polyfills-sync.js
+        run: node .github/actions-scripts/polyfills-sync.cjs

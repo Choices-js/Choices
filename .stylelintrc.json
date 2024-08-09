@@ -1,6 +1,7 @@
 {
   "extends": "stylelint-config-standard-scss",
   "rules": {
+    "media-feature-range-notation": null,
     "declaration-block-no-redundant-longhand-properties": null
   }
 }

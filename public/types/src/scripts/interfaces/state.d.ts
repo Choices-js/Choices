@@ -1,10 +1,8 @@
-import { Choice } from './choice';
-import { Group } from './group';
-import { Item } from './item';
+import { ChoiceFull } from './choice-full';
+import { GroupFull } from './group-full';
 export interface State {
-    choices: Choice[];
-    groups: Group[];
-    items: Item[];
-    loading: boolean;
+    choices: ChoiceFull[];
+    groups: GroupFull[];
+    items: ChoiceFull[];
+    loading: number;
 }
-//# sourceMappingURL=state.d.ts.map

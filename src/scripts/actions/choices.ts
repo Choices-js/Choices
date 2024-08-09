@@ -1,73 +1,53 @@
-import { ACTION_TYPES } from '../constants';
-import { Choice } from '../interfaces/choice';
+import { ChoiceFull } from '../interfaces/choice-full';
+import { ActionType } from '../interfaces';
+import { SearchResult } from '../interfaces/search';
 
 export interface AddChoiceAction {
-  type: typeof ACTION_TYPES.ADD_CHOICE;
-  id: number;
-  value: string;
-  label: string;
-  groupId: number;
-  disabled: boolean;
-  elementId: number;
-  customProperties: object;
-  placeholder: boolean;
-  keyCode: number;
+  type: ActionType.ADD_CHOICE;
+  choice: ChoiceFull;
 }
 
-export interface Result<T> {
-  item: T;
-  score: number;
+export interface RemoveChoiceAction {
+  type: ActionType.REMOVE_CHOICE;
+  choice: ChoiceFull;
 }
 
 export interface FilterChoicesAction {
-  type: typeof ACTION_TYPES.FILTER_CHOICES;
-  results: Result<Choice>[];
+  type: ActionType.FILTER_CHOICES;
+  results: SearchResult<ChoiceFull>[];
 }
 
 export interface ActivateChoicesAction {
-  type: typeof ACTION_TYPES.ACTIVATE_CHOICES;
+  type: ActionType.ACTIVATE_CHOICES;
   active: boolean;
 }
 
 export interface ClearChoicesAction {
-  type: typeof ACTION_TYPES.CLEAR_CHOICES;
+  type: ActionType.CLEAR_CHOICES;
 }
 
-export const addChoice = ({
-  value,
-  label,
-  id,
-  groupId,
-  disabled,
-  elementId,
-  customProperties,
-  placeholder,
-  keyCode,
-}): AddChoiceAction => ({
-  type: ACTION_TYPES.ADD_CHOICE,
-  value,
-  label,
-  id,
-  groupId,
-  disabled,
-  elementId,
-  customProperties,
-  placeholder,
-  keyCode,
+export const addChoice = (choice: ChoiceFull): AddChoiceAction => ({
+  type: ActionType.ADD_CHOICE,
+  choice,
+});
+
+export const removeChoice = (choice: ChoiceFull): RemoveChoiceAction => ({
+  type: ActionType.REMOVE_CHOICE,
+  choice,
 });
 
 export const filterChoices = (
-  results: Result<Choice>[],
+  results: SearchResult<ChoiceFull>[],
 ): FilterChoicesAction => ({
-  type: ACTION_TYPES.FILTER_CHOICES,
+  type: ActionType.FILTER_CHOICES,
   results,
 });
 
 export const activateChoices = (active = true): ActivateChoicesAction => ({
-  type: ACTION_TYPES.ACTIVATE_CHOICES,
+  type: ActionType.ACTIVATE_CHOICES,
   active,
 });
 
 export const clearChoices = (): ClearChoicesAction => ({
-  type: ACTION_TYPES.CLEAR_CHOICES,
+  type: ActionType.CLEAR_CHOICES,
 });

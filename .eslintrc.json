@@ -10,15 +10,16 @@
   ],
   "env": {
     "es6": true,
+    "node": true,
     "browser": true,
-    "mocha": true,
     "cypress/globals": true
   },
   "parserOptions": {
-    "project": "./tsconfig.json",
-    "ecmaVersion": 2020
+    "sourceType": "module",
+    "project": true
   },
   "rules": {
+    "import/no-named-as-default": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": [
       "error",
@@ -63,14 +64,22 @@
     ],
     "lines-between-class-members": "off",
     "@typescript-eslint/no-namespace": "off",
-    "react/jsx-filename-extension": [0]
+    "react/jsx-filename-extension": [0],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "mjs": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["*.test.ts"],
-      "env": {
-        "mocha": true
-      },
       "rules": {
         "no-restricted-syntax": "off",
         "compat/compat": "off",
@@ -119,5 +128,6 @@
         "extensions": [".js", ".ts"]
       }
     }
-  }
+  },
+  "ignorePatterns": ["node_modules/*", "public/*"]
 }

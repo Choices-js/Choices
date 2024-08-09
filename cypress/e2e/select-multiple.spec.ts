@@ -702,6 +702,19 @@ describe('Choices - select multiple', () => {
       });
     });
 
+    describe('some options with a group and some without', () => {
+      it('Shows all options, whether they are in a group or not', () => {
+        cy.get('[data-test-hook=mixed-groups]')
+          .find('.choices__input--cloned')
+          .focus();
+        cy.get('[data-test-hook=mixed-groups]')
+          .find('.choices__list--dropdown .choices__item')
+          .should(($choices) => {
+            expect($choices.length).to.equal(3);
+          });
+      });
+    });
+
     describe('custom properties', () => {
       beforeEach(() => {
         cy.get('[data-test-hook=custom-properties]')
@@ -936,34 +949,6 @@ describe('Choices - select multiple', () => {
     });
 
     describe('allow html', () => {
-      describe('is undefined', () => {
-        it('logs a deprecation warning', () => {
-          cy.get('@consoleWarn').should(
-            'be.calledOnceWithExactly',
-            'Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.',
-          );
-        });
-
-        it('does not show as text when selected', () => {
-          cy.get('[data-test-hook=allowhtml-undefined]')
-            .find('.choices__list--multiple .choices__item')
-            .first()
-            .should(($choice) => {
-              expect($choice.text().trim()).to.equal('Choice 1');
-            });
-        });
-
-        it('does not show html as text in dropdown', () => {
-          cy.get('[data-test-hook=allowhtml-undefined]')
-            .find('.choices__list--dropdown .choices__list')
-            .children()
-            .first()
-            .should(($choice) => {
-              expect($choice.text().trim()).to.equal('Choice 2');
-            });
-        });
-      });
-
       describe('set to true', () => {
         it('does not show as text when selected', () => {
           cy.get('[data-test-hook=allowhtml-true]')
@@ -1003,6 +988,24 @@ describe('Choices - select multiple', () => {
             .first()
             .should(($choice) => {
               expect($choice.text().trim()).to.equal('<b>Choice 2</b>');
+            });
+        });
+      });
+
+      describe('adding user-created choices', () => {
+        it('allows the user to add choices', () => {
+          const newChoice = 'New Choice';
+
+          cy.get('[data-test-hook=add-choices]')
+            .find('.choices__input--cloned')
+            .type(newChoice)
+            .type('{enter}');
+
+          cy.get('[data-test-hook=add-choices]')
+            .find('.choices__list--multiple')
+            .last()
+            .should($el => {
+              expect($el).to.contain(newChoice);
             });
         });
       });

@@ -1,7 +1,7 @@
 import { ClassNames } from '../interfaces/class-names';
 import { EventType } from '../interfaces/event-type';
-export default class WrappedElement {
-    element: HTMLInputElement | HTMLSelectElement;
+export default class WrappedElement<T extends HTMLInputElement | HTMLSelectElement> {
+    element: T;
     classNames: ClassNames;
     isDisabled: boolean;
     constructor({ element, classNames }: {
@@ -18,4 +18,3 @@ export default class WrappedElement {
     disable(): void;
     triggerEvent(eventType: EventType, data?: object): void;
 }
-//# sourceMappingURL=wrapped-element.d.ts.map

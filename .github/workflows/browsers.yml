@@ -36,15 +36,15 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-build-${{ matrix.browser }}
@@ -54,7 +54,7 @@ jobs:
             ${{ runner.OS }}-
 
       - run: |
-          npm ci
+          npm ci --no-audit
           npm run build
         env:
           CYPRESS_INSTALL_BINARY: 0
@@ -86,14 +86,14 @@ jobs:
       - run: echo "$env:ChromeWebDriver" >> $GITHUB_PATH
         if: matrix.browser == 'chrome' && matrix.os == 'windows-latest'
 
-      - run: npm i --no-optional --no-audit selenium-webdriver pixelmatch pngjs
-      - run: node .github/actions-scripts/selenium.js
+      - run: npm i --no-optional --no-audit selenium-webdriver pixelmatch@5.3.0 pngjs
+      - run: node .github/actions-scripts/selenium.cjs
         env:
           BROWSER: ${{ matrix.browser }}
           PORT: 0
           NODE_ENV: production # prevent watching
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshot-${{ matrix.browser }}-${{ matrix.os }}
@@ -102,29 +102,29 @@ jobs:
   puppeteer:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-build-puppeteer
           restore-keys: |
             ${{ runner.OS }}-build-puppeteer
       - run: |
-          npm ci
+          npm ci --no-audit
           npm run build
         env:
           CYPRESS_INSTALL_BINARY: 0
           HUSKY_SKIP_INSTALL: true
-      - run: npm i --no-optional --no-audit puppeteer pixelmatch pngjs
-      - run: node .github/actions-scripts/puppeteer.js
+      - run: npm i --no-optional --no-audit puppeteer@23.0.1 pixelmatch@5.3.0 pngjs@6.0.0
+      - run: node .github/actions-scripts/puppeteer.cjs
         env:
           PORT: 0
           NODE_ENV: production # prevent watching
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshot-puppeteer-darwin

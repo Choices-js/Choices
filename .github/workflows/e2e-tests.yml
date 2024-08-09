@@ -20,13 +20,13 @@ jobs:
       TERM: xterm-256color
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -42,7 +42,7 @@ jobs:
         id: cypress-info
         run: |
           echo ::set-output name=version::$(jq -r .devDependencies.cypress ./package.json)
-          echo ::set-output name=cache::$(npx cypress cache path)
+          echo ::set-output name=cache::$(npm exec cypress cache path)
         env:
           CYPRESS_INSTALL_BINARY: 0
       - name: Cache Cypress cache
@@ -54,7 +54,7 @@ jobs:
             ${{ runner.OS }}-cypress-${{ steps.cypress-info.outputs.version }}
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
         env:
           HUSKY_SKIP_INSTALL: true
 

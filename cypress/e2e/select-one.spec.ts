@@ -1070,25 +1070,6 @@ describe('Choices - select one', () => {
     });
 
     describe('allow html', () => {
-      describe('is undefined', () => {
-        it('logs a deprecation warning', () => {
-          cy.get('@consoleWarn').should(
-            'be.calledOnceWithExactly',
-            'Deprecation warning: allowHTML will default to false in a future release. To render HTML in Choices, you will need to set it to true. Setting allowHTML will suppress this message.',
-          );
-        });
-
-        it('does not show html as text', () => {
-          cy.get('[data-test-hook=allowhtml-undefined]')
-            .find('.choices__list--dropdown .choices__list')
-            .children()
-            .first()
-            .should(($choice) => {
-              expect($choice.text().trim()).to.equal('Choice 1');
-            });
-        });
-      });
-
       describe('set to true', () => {
         it('does not show html as text', () => {
           cy.get('[data-test-hook=allowhtml-true]')
@@ -1143,6 +1124,27 @@ describe('Choices - select one', () => {
           .find('select')
           .children()
           .should('have.length', 3);
+      });
+    });
+
+    describe('adding user-created choices', () => {
+      beforeEach(() => {
+        cy.get('[data-test-hook=add-choices]').find('.choices').click();
+      });
+
+      it('allows the user to add choices', () => {
+        const newChoice = 'New Choice';
+
+        cy.get('[data-test-hook=add-choices]')
+          .find('.choices__input--cloned')
+          .type(newChoice)
+          .type('{enter}');
+
+        cy.get('[data-test-hook=add-choices]')
+          .find('.choices__list--single .choices__item')
+          .should(($el) => {
+            expect($el).to.contain(newChoice);
+          });
       });
     });
   });

@@ -1,6 +1,17 @@
-import { Choice } from './choice';
-export interface Item extends Choice {
-    choiceId?: number;
-    highlighted?: boolean;
+import { InputChoice } from './input-choice';
+import { InputGroup } from './input-group';
+/**
+ * @deprecated Use InputChoice instead
+ */
+export interface Item extends InputChoice {
 }
-//# sourceMappingURL=item.d.ts.map
+/**
+ * @deprecated Use InputChoice instead
+ */
+export interface Choice extends InputChoice {
+}
+/**
+ * @deprecated Use InputGroup instead
+ */
+export interface Group extends InputGroup {
+}

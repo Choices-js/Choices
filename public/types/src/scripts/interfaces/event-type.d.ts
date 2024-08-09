@@ -1,2 +1,12 @@
-export type EventType = 'addItem' | 'removeItem' | 'highlightItem' | 'unhighlightItem' | 'choice' | 'change' | 'search' | 'showDropdown' | 'hideDropdown' | 'highlightChoice';
-//# sourceMappingURL=event-type.d.ts.map
+export declare const enum EventType {
+    showDropdown = "showDropdown",
+    hideDropdown = "hideDropdown",
+    change = "change",
+    choice = "choice",
+    search = "search",
+    addItem = "addItem",
+    removeItem = "removeItem",
+    highlightItem = "highlightItem",
+    highlightChoice = "highlightChoice",
+    unhighlightItem = "unhighlightItem"
+}

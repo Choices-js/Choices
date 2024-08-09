@@ -96,7 +96,7 @@ $choices-z-index: 1 !default;
       box-shadow: 0 0 0 2px $choices-highlight-color;
     }
   }
-  .#{$choices-selector}__item[data-value=''] .#{$choices-selector}__button {
+  .#{$choices-selector}__item[data-placeholder] .#{$choices-selector}__button {
     display: none;
   }
 
@@ -115,7 +115,7 @@ $choices-z-index: 1 !default;
   }
 
   &.is-open::after {
-    border-color: transparent transparent $choices-text-color transparent;
+    border-color: transparent transparent $choices-text-color;
     margin-top: -7.5px;
   }
 

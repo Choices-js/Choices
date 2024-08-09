@@ -1,4 +1,3 @@
-import { sanitise } from '../lib/utils';
 import { SELECT_ONE_TYPE } from '../constants';
 import { ClassNames } from '../interfaces/class-names';
 import { PassedElementType } from '../interfaces/passed-element-type';
@@ -45,15 +44,11 @@ export default class Input {
   }
 
   get value(): string {
-    return sanitise(this.element.value);
+    return this.element.value;
   }
 
   set value(value: string) {
     this.element.value = value;
-  }
-
-  get rawValue(): string {
-    return this.element.value;
   }
 
   addEventListeners(): void {

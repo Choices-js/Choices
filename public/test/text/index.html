@@ -48,7 +48,7 @@
 
     <!-- Choices includes -->
     <link rel="stylesheet" href="../../assets/styles/choices.min.css" />
-    <script src="../../assets/scripts/choices.min.js"></script>
+    <script src="../../assets/scripts/choices.js"></script>
     <!-- End Choices includes -->
   </head>
 
@@ -77,13 +77,18 @@
         </div>
 
         <div data-test-hook="allowhtml-undefined">
-          <label for="allowhtml-undefined">HTML allowed by default</label>
+          <label for="allowhtml-undefined">HTML disabled by default</label>
           <input class="form-control" id="allowhtml-undefined" type="text" />
         </div>
 
         <div data-test-hook="allowhtml-true">
           <label for="allowhtml-true">HTML allowed</label>
           <input class="form-control" id="allowhtml-true" type="text" />
+        </div>
+
+        <div data-test-hook="allowhtml-true-userinput-false">
+          <label for="allowhtml-true-userinput-false">HTML allowed (except user input)</label>
+          <input class="form-control" id="allowhtml-true-userinput-false" type="text" />
         </div>
 
         <div data-test-hook="allowhtml-false">
@@ -112,6 +117,17 @@
             id="choices-adding-items-disabled"
             type="text"
           />
+        </div>
+
+        <div data-test-hook="disabled-via-fieldset">
+          <label for="choices-disabled-via-fieldset">Disabled via fieldset</label>
+          <fieldset disabled>
+            <input
+              class="form-control"
+              id="choices-disabled-via-fieldset"
+              type="text"
+            />
+          </fieldset>
         </div>
 
         <div data-test-hook="disabled-via-attr">
@@ -145,6 +161,16 @@
             <input class="form-control" id="choices-within-form" type="text" />
           </form>
         </div>
+
+        <div data-test-hook="shadow-dom">
+          <noscript style="display:none;">
+          <link rel="stylesheet" href="../../assets/styles/base.min.css" />
+          <link rel="stylesheet" href="../../assets/styles/choices.min.css" />
+          <script src="../../assets/scripts/choices.min.js"></script>
+          <label for="choices-basic">Shadow DOM - Basic</label>
+          <input class="form-control" id="shadow-dom-choices-basic" type="text" />
+          </noscript>
+        </div>
       </div>
     </div>
     <script>
@@ -176,6 +202,15 @@
 
         new Choices('#allowhtml-true', {
           allowHTML: true,
+          allowHtmlUserInput: true,
+          items: [
+            '<b>Mason Rogers</b>'
+          ],
+        });
+
+        new Choices('#allowhtml-true-userinput-false', {
+          allowHTML: true,
+          allowHtmlUserInput: false,
           items: [
             '<b>Mason Rogers</b>'
           ],
@@ -183,6 +218,7 @@
 
         new Choices('#allowhtml-false', {
           allowHTML: false,
+          allowHtmlUserInput: false,
           items: [
             '<b>Mason Rogers</b>'
           ],
@@ -206,6 +242,10 @@
         new Choices('#choices-adding-items-disabled', {
           allowHTML: true,
           addItems: false,
+        });
+
+        new Choices('#choices-disabled-via-fieldset', {
+          allowHTML: true,
         });
 
         new Choices('#choices-disabled-via-attr', {
@@ -240,6 +280,17 @@
 
         new Choices('#choices-within-form', {
           allowHTML: true,
+        });
+
+        const shadowDomWrapper = document.querySelector('div[data-test-hook="shadow-dom"]'),
+          shadowDomHtml = shadowDomWrapper.querySelector('noscript').innerHTML;
+        shadowDomWrapper.innerHTML = ''; // ensure the shadow-dom example is not part of the main document
+        const shadowRoot = shadowDomWrapper.attachShadow({ mode: 'open' });
+        shadowRoot.innerHTML = shadowDomHtml;
+
+        new Choices('#shadow-dom-choices-basic', {
+          allowHTML: false,
+          shadowRoot: shadowRoot,
         });
       });
     </script>

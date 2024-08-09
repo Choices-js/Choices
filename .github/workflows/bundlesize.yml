@@ -30,10 +30,11 @@ jobs:
 
       # we don't need to build here, as even minized assets expected to be commited
 
-      - run: npx bundlesize
+      - run: npm run bundlesize
         env:
-          CI: true
-          BUNDLESIZE_GITHUB_TOKEN: ${{secrets.BUNDLESIZE_GITHUB_TOKEN}}
+          # token has expired, don't block the test
+          #CI: true
+          #BUNDLESIZE_GITHUB_TOKEN: ${{secrets.BUNDLESIZE_GITHUB_TOKEN}}
           CI_REPO_NAME: ${{ github.event.repository.name }}
           CI_REPO_OWNER: ${{ github.event.organization.login }}
           CI_COMMIT_SHA: ${{ github.event.after }}

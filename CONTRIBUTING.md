@@ -12,6 +12,15 @@ In lieu of a formal styleguide, take care to maintain the existing coding style 
 | `npm run css:watch`  | Watch SCSS files for changes. On a change, run build process |
 | `npm run css:build`  | Compile, minify and prefix SCSS files to CSS                 |
 
+## Passing enviromental arguments to rollup
+
+Use `--` followed by normal rollup `--environment` arguments. The last one overrides any previous ones with the same name
+
+An example of changing what js:watch will bind to:
+```
+npm run js:watch -- --environment WATCH_HOST:0.0.0.0
+```
+
 ## Pull requests
 When submitting a pull request that resolves a bug, feel free to use the following template:
 

@@ -1,5 +1,3 @@
-import { Options } from 'deepmerge';
-import { Store } from 'redux';
 import {
   WrappedInput,
   WrappedSelect,
@@ -8,14 +6,18 @@ import {
   Input,
   Dropdown,
 } from '../components';
-import { Choice } from './choice';
-import { Group } from './group';
-import { Item } from './item';
+import { Store } from './store';
+import { InputChoice } from './input-choice';
 import { State } from './state';
-import templates from '../templates';
+import { Templates } from './templates';
+import { ChoiceFull } from './choice-full';
+import { GroupFull } from './group-full';
+import { Options } from './options';
+import { SearchHandler } from './search';
 
 export interface Choices {
   initialised: boolean;
+
   config: Options;
 
   passedElement: WrappedInput | WrappedSelect;
@@ -42,13 +44,17 @@ export interface Choices {
 
   _store: Store;
 
-  _templates: typeof templates;
+  _templates: Templates;
 
   _initialState: State;
 
   _currentState: State;
 
   _prevState: State;
+
+  _lastAddedChoiceId: number;
+
+  _lastAddedGroupId: number;
 
   _currentValue: string;
 
@@ -72,16 +78,11 @@ export interface Choices {
     itemChoice: string;
   };
 
-  _presetGroups: Group[] | HTMLOptGroupElement[] | Element[];
+  _presetChoices: (ChoiceFull | GroupFull)[];
 
-  _presetOptions: Item[] | HTMLOptionElement[];
+  _presetItems: (InputChoice | string)[];
 
-  _presetChoices: Partial<Choice>[];
+  _initialItems: string[];
 
-  _presetItems: Item[] | string[];
-
-  new (
-    element: string | Element | HTMLInputElement | HTMLSelectElement,
-    userConfig: Partial<Options>,
-  );
+  _searchFn: SearchHandler;
 }

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "lib": ["es2017", "dom"],
+    "target": "es5",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "newLine": "lf",
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["."],
+  "exclude": ["**/node_modules", "**/public"]
+}

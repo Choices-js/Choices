@@ -1,10 +1,10 @@
-import { Store as IStore, AnyAction } from 'redux';
-import { Choice } from '../interfaces/choice';
-import { Group } from '../interfaces/group';
-import { Item } from '../interfaces/item';
+import { Store as ReduxStore, AnyAction } from 'redux';
+import { Store as IStore } from '../interfaces/store';
 import { State } from '../interfaces/state';
-export default class Store {
-    _store: IStore;
+import { ChoiceFull } from '../interfaces/choice-full';
+import { GroupFull } from '../interfaces/group-full';
+export default class Store implements IStore {
+    _store: ReduxStore;
     constructor();
     /**
      * Subscribe store to function call (wrapped Redux method)
@@ -14,6 +14,9 @@ export default class Store {
      * Dispatch event to store (wrapped Redux method)
      */
     dispatch(action: AnyAction): void;
+    startDeferRendering(): void;
+    stopDeferRendering(): void;
+    withDeferRendering(func: () => void): void;
     /**
      * Get store object (wrapping Redux method)
      */
@@ -21,43 +24,35 @@ export default class Store {
     /**
      * Get items from store
      */
-    get items(): Item[];
-    /**
-     * Get active items from store
-     */
-    get activeItems(): Item[];
+    get items(): ChoiceFull[];
     /**
      * Get highlighted items from store
      */
-    get highlightedActiveItems(): Item[];
+    get highlightedActiveItems(): ChoiceFull[];
     /**
      * Get choices from store
      */
-    get choices(): Choice[];
+    get choices(): ChoiceFull[];
     /**
      * Get active choices from store
      */
-    get activeChoices(): Choice[];
-    /**
-     * Get selectable choices from store
-     */
-    get selectableChoices(): Choice[];
+    get activeChoices(): ChoiceFull[];
     /**
      * Get choices that can be searched (excluding placeholders)
      */
-    get searchableChoices(): Choice[];
+    get searchableChoices(): ChoiceFull[];
     /**
      * Get placeholder choice from store
      */
-    get placeholderChoice(): Choice | undefined;
+    get placeholderChoice(): ChoiceFull | undefined;
     /**
      * Get groups from store
      */
-    get groups(): Group[];
+    get groups(): GroupFull[];
     /**
      * Get active groups from store
      */
-    get activeGroups(): Group[];
+    get activeGroups(): GroupFull[];
     /**
      * Get loading state from store
      */
@@ -65,10 +60,9 @@ export default class Store {
     /**
      * Get single choice by it's ID
      */
-    getChoiceById(id: string): Choice | undefined;
+    getChoiceById(id: number): ChoiceFull | undefined;
     /**
      * Get group by group id
      */
-    getGroupById(id: number): Group | undefined;
+    getGroupById(id: number): GroupFull | undefined;
 }
-//# sourceMappingURL=store.d.ts.map

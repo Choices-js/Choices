@@ -1,5 +1,5 @@
 import { Choices } from './choices';
-import { Choice } from './choice';
+import { InputChoice } from './input-choice';
 import { ClassNames } from './class-names';
 import { EventType } from './event-type';
 import { PassedElementType } from './passed-element-type';
@@ -77,7 +77,7 @@ export interface EventMap {
      * Arguments: choice: Choice
      */
     choice: CustomEvent<{
-        choice: Choice;
+        choice: InputChoice;
     }>;
     /**
      * Triggered each time an item is added/removed **by a user**.
@@ -126,4 +126,3 @@ export interface EventMap {
         el: PassedElement;
     }>;
 }
-//# sourceMappingURL=passed-element.d.ts.map

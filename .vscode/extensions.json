@@ -10,8 +10,5 @@
     "github.vscode-pull-request-github",
     // needed for our configured debug configuration with Chrome
     "msjsdiag.debugger-for-chrome"
-    // Mocha recommended - https://mochajs.org/#mocha-sidebar-vs-code,
-    // but it's buggy
-    // "maty.vscode-mocha-sidebar"
   ]
 }

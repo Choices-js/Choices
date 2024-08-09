@@ -17,12 +17,17 @@ export default class List {
     this.element.innerHTML = '';
   }
 
-  append(node: Element | DocumentFragment): void {
-    this.element.appendChild(node);
+  prepend(node: Element | DocumentFragment) {
+    const child = this.element.firstElementChild;
+    if (child) {
+      this.element.insertBefore(node, child);
+    } else {
+      this.element.append(node);
+    }
   }
 
-  getChild(selector: string): HTMLElement | null {
-    return this.element.querySelector(selector);
+  append(node: Element | DocumentFragment): void {
+    this.element.appendChild(node);
   }
 
   hasChildren(): boolean {
