@@ -25,7 +25,10 @@
       "require": "./public/assets/scripts/choices.search-none.min.js"
     }
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "*.scss",
+    "*.css"
+  ],
   "scripts": {
     "start": "run-p js:watch css:watch",
     "build": "run-p js:build css:build",
