@@ -757,11 +757,15 @@
         }
         return undefined;
     };
-    var mapInputToChoice = function (value, allowGroup) {
+    var mapInputToChoice = function (value, allowGroup, allowRawString) {
+        if (allowRawString === void 0) { allowRawString = true; }
         if (typeof value === 'string') {
+            var sanitisedValue = sanitise(value);
+            var userValue = allowRawString || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
             var result_1 = mapInputToChoice({
                 value: value,
-                label: value,
+                label: userValue,
+                selected: true,
             }, false);
             return result_1;
         }
@@ -932,6 +936,7 @@
         silent: false,
         renderChoiceLimit: -1,
         maxItemCount: -1,
+        renderItems: true,
         closeDropdownOnSelect: 'auto',
         singleModeForMultiSelect: false,
         addChoices: false,
@@ -967,6 +972,7 @@
         noResultsText: 'No results found',
         noChoicesText: 'No choices to choose from',
         itemSelectText: 'Press to select',
+        itemDeselectText: 'Press to deselect',
         uniqueItemText: 'Only unique values can be added',
         customAddItemText: 'Only values matching specific conditions can be added',
         addItemText: function (value) { return "Press Enter to add <b>\"".concat(value, "\"</b>"); },
@@ -2688,7 +2694,7 @@
             div.appendChild(heading);
             return div;
         },
-        choice: function (_a, choice, selectText, groupName) {
+        choice: function (_a, choice, selectText, deselectText, groupName) {
             var allowHTML = _a.allowHTML, _b = _a.classNames, item = _b.item, itemChoice = _b.itemChoice, itemSelectable = _b.itemSelectable, selectedState = _b.selectedState, itemDisabled = _b.itemDisabled, description = _b.description, placeholder = _b.placeholder;
             // eslint-disable-next-line prefer-destructuring
             var label = choice.label;
@@ -2734,6 +2740,9 @@
             div.dataset.value = rawValue;
             if (selectText) {
                 div.dataset.selectText = selectText;
+            }
+            if (deselectText) {
+                div.dataset.deselectText = deselectText;
             }
             if (choice.group) {
                 div.dataset.groupId = "".concat(choice.group.id);
@@ -3487,7 +3496,7 @@
                     this._renderChoices();
                 }
             }
-            if (changes.items) {
+            if (changes.items && this.config.renderItems) {
                 this._renderItems();
             }
         };
@@ -3532,7 +3541,7 @@
                 choiceLimit--;
                 choices.every(function (choice, index) {
                     // choiceEl being empty signals the contents has probably significantly changed
-                    var dropdownItem = choice.choiceEl || _this._templates.choice(config, choice, config.itemSelectText, groupLabel);
+                    var dropdownItem = choice.choiceEl || _this._templates.choice(config, choice, config.itemSelectText, config.itemDeselectText, groupLabel);
                     choice.choiceEl = dropdownItem;
                     fragment.appendChild(dropdownItem);
                     if (!choice.disabled && (isSearching || !choice.selected)) {
@@ -3574,7 +3583,7 @@
                     renderChoices(renderableChoices(activeChoices), false, undefined);
                 }
             }
-            if (!selectableChoices) {
+            if (!selectableChoices && !config.renderSelectedChoices) {
                 if (!this._notice) {
                     this._notice = {
                         text: resolveStringFunction(isSearching ? config.noResultsText : config.noChoicesText),
@@ -3798,6 +3807,12 @@
                 });
                 this._triggerChange(choice.value);
             }
+            else if (this.config.renderSelectedChoices) {
+                this._store.withTxn(function () {
+                    _this._removeItem(choice);
+                });
+                this._triggerChange(choice.value);
+            }
             // We want to close the dropdown if we are dealing with a single select box
             if (hasActiveDropdown && this.config.closeDropdownOnSelect) {
                 this.hideDropdown(true);
@@ -3830,6 +3845,7 @@
         };
         Choices.prototype._loadChoices = function () {
             var _a;
+            var _this = this;
             var config = this.config;
             if (this._isTextElement) {
                 // Assign preset items from passed object first
@@ -3838,7 +3854,7 @@
                 if (this.passedElement.value) {
                     var elementItems = this.passedElement.value
                         .split(config.delimiter)
-                        .map(function (e) { return mapInputToChoice(e, false); });
+                        .map(function (e) { return mapInputToChoice(e, false, _this.config.allowHtmlUserInput); });
                     this._presetChoices = this._presetChoices.concat(elementItems);
                 }
                 this._presetChoices.forEach(function (choice) {
@@ -4190,13 +4206,7 @@
                     if (!_this._canCreateItem(value)) {
                         return;
                     }
-                    var sanitisedValue = sanitise(value);
-                    var userValue = _this.config.allowHtmlUserInput || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
-                    _this._addChoice(mapInputToChoice({
-                        value: userValue,
-                        label: userValue,
-                        selected: true,
-                    }, false), true, true);
+                    _this._addChoice(mapInputToChoice(value, false, _this.config.allowHtmlUserInput), true, true);
                     addedItem = true;
                 }
                 _this.clearInput();

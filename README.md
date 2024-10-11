@@ -68,26 +68,14 @@ From a [CDN](https://www.jsdelivr.com/package/npm/choices.js):
 
 ```html
 <!-- Include base CSS (optional) -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/base.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/base.min.css" />
 <!-- Or versioned -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/base.min.css" />
 
 <!-- Include Choices CSS -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 <!-- Or versioned -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@9.0.1/public/assets/styles/choices.min.css" />
 
 <!-- Include Choices JavaScript (latest) -->
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
@@ -111,13 +99,15 @@ Or include Choices directly:
 The use of `import` of css/scss is supported from webpack.
 
 In .scss:
+
 ```scss
-@import "choices.js/src/styles/choices";
+@import 'choices.js/src/styles/choices';
 ```
 
 In .js/.ts:
+
 ```javascript
-import "choices.js/public/assets/styles/choices.css";
+import 'choices.js/public/assets/styles/choices.css';
 ```
 
 ## Setup
@@ -246,11 +236,11 @@ import "choices.js/public/assets/styles/choices.css";
 
 Choices works with the following input types, referenced in the documentation as noted.
 
-| HTML Element                                                                                           | Documentation "Input Type" |
-| -------------------------------------------------------------------------------------------------------| -------------------------- |
-| [`<input type="text">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input)               | `text`                     |
-| [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)                         | `select-one`               |
-| [`<select multiple>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attr-multiple)  | `select-multiple`          |
+| HTML Element                                                                                          | Documentation "Input Type" |
+| ----------------------------------------------------------------------------------------------------- | -------------------------- |
+| [`<input type="text">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input)              | `text`                     |
+| [`<select>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select)                        | `select-one`               |
+| [`<select multiple>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select#attr-multiple) | `select-multiple`          |
 
 ## Configuration Options
 
@@ -356,6 +346,14 @@ Pass an array of objects:
 
 **Usage:** The amount of items a user can input/select ("-1" indicates no limit).
 
+### renderItems
+
+**Type:** `Boolean` **Default:** `true`
+
+**Input types affected:** `text`, `select-multiple`
+
+**Usage:** Whether to render items.
+
 ### closeDropdownOnSelect
 
 **Type:** `Boolean` | 'auto' **Default:** `auto`
@@ -363,6 +361,7 @@ Pass an array of objects:
 **Input types affected:** select-one, select-multiple
 
 **Usage:** Control how the dropdown closes after making a selection for select-one or select-multiple.
+
 - 'auto' defaults based on backing-element type:
 - select-one: true
 - select-multiple: false
@@ -376,6 +375,7 @@ Pass an array of objects:
 **Usage:** Make select-multiple with a max item count of 1 work similar to select-one does. Selecting an item will auto-close the dropdown and swap any existing item for the just selected choice. If applied to a select-one, it functions as above and not the standard select-one.
 
 ### addChoices
+
 **Type**: `Boolean` **Default:** `false`
 
 **Input types affected:** `select-multiple`, `select-one`
@@ -502,7 +502,7 @@ Pass an array of objects:
 
 **Input types affected:** `select-one`, `select-multiple`
 
-**Usage:** The maximum amount of search results to show  ("-1" indicates no limit).
+**Usage:** The maximum amount of search results to show ("-1" indicates no limit).
 
 ### shadowRoot
 
@@ -838,34 +838,32 @@ or more complex:
 
 ```js
 const example = new Choices(element, {
-  callbackOnCreateTemplates: function(strToEl, escapeForTemplate, getClassNames) {
+  callbackOnCreateTemplates: function (strToEl, escapeForTemplate, getClassNames) {
     return {
       item: ({ classNames }, data) => {
         return template(`
-          <div class="${getClassNames(classNames.item).join(' ')} ${
-          getClassNames(data.highlighted
-            ? classNames.highlightedState
-            : classNames.itemSelectable).join(' ')
-        } ${
-          data.placeholder ? classNames.placeholder : ''
-        }" data-item data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
-          data.active ? 'aria-selected="true"' : ''
-        } ${data.disabled ? 'aria-disabled="true"' : ''}>
+          <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(
+            data.highlighted ? classNames.highlightedState : classNames.itemSelectable,
+          ).join(' ')} ${
+            data.placeholder ? classNames.placeholder : ''
+          }" data-item data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+            data.active ? 'aria-selected="true"' : ''
+          } ${data.disabled ? 'aria-disabled="true"' : ''}>
             <span>&bigstar;</span> ${escapeForTemplate(data.label)}
           </div>
         `);
       },
       choice: ({ classNames }, data) => {
         return template(`
-          <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
-          getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
-        }" data-select-text="${this.config.itemSelectText}" data-choice ${
-          data.disabled
-            ? 'data-choice-disabled aria-disabled="true"'
-            : 'data-choice-selectable'
-        } data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
-          data.groupId > 0 ? 'role="treeitem"' : 'role="option"'
-        }>
+          <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${getClassNames(
+            data.disabled ? classNames.itemDisabled : classNames.itemSelectable,
+          ).join(
+            ' ',
+          )}" data-select-text="${this.config.itemSelectText}" data-deselect-text="${this.config.itemDeselectText}" data-choice ${
+            data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'
+          } data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+            data.groupId > 0 ? 'role="treeitem"' : 'role="option"'
+          }>
             <span>&bigstar;</span> ${escapeForTemplate(data.label)}
           </div>
         `);
@@ -887,7 +885,7 @@ const example = new Choices(element);
 
 element.addEventListener(
   'addItem',
-  function(event) {
+  function (event) {
     // do something creative here...
     console.log(event.detail.id);
     console.log(event.detail.value);
@@ -903,7 +901,7 @@ const example = new Choices(document.getElementById('example'));
 
 example.passedElement.element.addEventListener(
   'addItem',
-  function(event) {
+  function (event) {
     // do something creative here...
     console.log(event.detail.id);
     console.log(event.detail.value);
@@ -1303,7 +1301,7 @@ https://www.jetbrains.com/help/phpstorm/playwright.html
 ### NPM tasks
 
 | Task                      | Usage                                                        |
-|---------------------------|--------------------------------------------------------------|
+| ------------------------- | ------------------------------------------------------------ |
 | `npm run start`           | Fire up local server for development                         |
 | `npm run test:unit`       | Run sequence of tests once                                   |
 | `npm run test:unit:watch` | Fire up test server and re-test on file change               |
@@ -1315,19 +1313,20 @@ https://www.jetbrains.com/help/phpstorm/playwright.html
 | `npm run css:watch`       | Watch SCSS files for changes. On a change, run build process |
 | `npm run css:build`       | Compile, minify and prefix SCSS files to CSS                 |
 
-
 ### Build flags
 
 Choices supports various environment variables as build-flags to enable/disable features.
 The pre-built bundles these features set, and tree shaking uses the non-used parts.
 
 #### CHOICES_SEARCH_FUSE
+
 **Values:** `full` / `basic` / `null`
 **Default:** `full`
 
 Fuse.js support a `full`/`basic` profile. `full` adds additional logic operations, which aren't used by default with Choices. The `null` option drops Fuse.js as a dependency and instead uses a simple prefix only search feature.
 
 #### CHOICES_CAN_USE_DOM
+
 **Values:** `1` / `0`
 **Default:** `1`
 
@@ -1335,7 +1334,7 @@ Allows loading Choices into a non-browser environment.
 
 ### Interested in contributing?
 
-We're always interested in having more active maintainers.  Please get in touch if you're interested 👍
+We're always interested in having more active maintainers. Please get in touch if you're interested 👍
 
 ## License
 

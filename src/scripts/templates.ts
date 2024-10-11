@@ -254,6 +254,7 @@ const templates: TemplatesInterface = {
     }: TemplateOptions,
     choice: ChoiceFull,
     selectText: string,
+    deselectText: string,
     groupName?: string,
   ): HTMLDivElement {
     // eslint-disable-next-line prefer-destructuring
@@ -306,6 +307,9 @@ const templates: TemplatesInterface = {
     div.dataset.value = rawValue;
     if (selectText) {
       div.dataset.selectText = selectText;
+    }
+    if (deselectText) {
+      div.dataset.deselectText = deselectText;
     }
     if (choice.group) {
       div.dataset.groupId = `${choice.group.id}`;

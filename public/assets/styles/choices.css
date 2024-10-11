@@ -62,7 +62,7 @@
   opacity: 1;
 }
 .choices[data-type*=select-one] .choices__button:focus {
-  box-shadow: 0 0 0 2px #005F75;
+  box-shadow: 0 0 0 2px #005f75;
 }
 .choices[data-type*=select-one] .choices__item[data-placeholder] .choices__button {
   display: none;
@@ -174,7 +174,7 @@
   font-weight: 500;
   margin-right: 3.75px;
   margin-bottom: 3.75px;
-  background-color: #005F75;
+  background-color: #005f75;
   border: 1px solid #004a5c;
   color: #fff;
   word-break: break-all;
@@ -242,8 +242,17 @@
   .choices__list--dropdown .choices__item--selectable[data-select-text], .choices__list[aria-expanded] .choices__item--selectable[data-select-text] {
     padding-right: 100px;
   }
-  .choices__list--dropdown .choices__item--selectable[data-select-text]::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text]::after {
+  .choices__list--dropdown .choices__item--selectable[data-select-text].is-selected, .choices__list[aria-expanded] .choices__item--selectable[data-select-text].is-selected {
+    background-color: #005f75;
+    color: #fff;
+  }
+  .choices__list--dropdown .choices__item--selectable[data-select-text].is-selected::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text].is-selected::after {
+    content: attr(data-deselect-text);
+  }
+  .choices__list--dropdown .choices__item--selectable[data-select-text]:not(.is-selected)::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text]:not(.is-selected)::after {
     content: attr(data-select-text);
+  }
+  .choices__list--dropdown .choices__item--selectable[data-select-text]::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text]::after {
     font-size: 12px;
     opacity: 0;
     position: absolute;
