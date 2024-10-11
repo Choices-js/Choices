@@ -294,6 +294,11 @@ $choices-z-index: 1 !default;
       text-align: right;
     }
   }
+  &[data-type*='select-multiple'] .#{$choices-selector}__item--selectable {
+    &.is-selected::after {
+      content: attr(data-deselect-text);
+    }
+  }
   .#{$choices-selector}__item--selectable {
     &[data-select-text] {
       @media (min-width: 640px) {
@@ -302,10 +307,6 @@ $choices-z-index: 1 !default;
         &.is-selected {
           background-color: $choices-primary-color;
           color: #fff;
-
-          &::after {
-            content: attr(data-deselect-text);
-          }
         }
         &:not(.is-selected)::after {
           content: attr(data-select-text);

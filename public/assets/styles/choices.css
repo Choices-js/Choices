@@ -238,6 +238,9 @@
 [dir=rtl] .choices__list--dropdown .choices__item, [dir=rtl] .choices__list[aria-expanded] .choices__item {
   text-align: right;
 }
+[data-type*=select-multiple].choices__list--dropdown .choices__item--selectable.is-selected::after, [data-type*=select-multiple].choices__list[aria-expanded] .choices__item--selectable.is-selected::after {
+  content: attr(data-deselect-text);
+}
 @media (min-width: 640px) {
   .choices__list--dropdown .choices__item--selectable[data-select-text], .choices__list[aria-expanded] .choices__item--selectable[data-select-text] {
     padding-right: 100px;
@@ -245,9 +248,6 @@
   .choices__list--dropdown .choices__item--selectable[data-select-text].is-selected, .choices__list[aria-expanded] .choices__item--selectable[data-select-text].is-selected {
     background-color: #005f75;
     color: #fff;
-  }
-  .choices__list--dropdown .choices__item--selectable[data-select-text].is-selected::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text].is-selected::after {
-    content: attr(data-deselect-text);
   }
   .choices__list--dropdown .choices__item--selectable[data-select-text]:not(.is-selected)::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text]:not(.is-selected)::after {
     content: attr(data-select-text);
