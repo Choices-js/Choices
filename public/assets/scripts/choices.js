@@ -4289,7 +4289,7 @@
                 });
                 this._triggerChange(choice.value);
             }
-            else if (this.config.renderSelectedChoices) {
+            else if (this.config.renderSelectedChoices && this._isSelectMultipleElement) {
                 this._store.withTxn(function () {
                     _this._removeItem(choice);
                 });
