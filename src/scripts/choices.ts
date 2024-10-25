@@ -914,7 +914,7 @@ class Choices {
       }
     }
 
-    if (changes.items) {
+    if (changes.items && this.config.renderItems) {
       this._renderItems();
     }
   }
@@ -965,7 +965,7 @@ class Choices {
       choices.every((choice, index) => {
         // choiceEl being empty signals the contents has probably significantly changed
         const dropdownItem =
-          choice.choiceEl || this._templates.choice(config, choice, config.itemSelectText, groupLabel);
+          choice.choiceEl || this._templates.choice(config, choice, config.itemSelectText, config.itemDeselectText, groupLabel);
         choice.choiceEl = dropdownItem;
         fragment.appendChild(dropdownItem);
         if (!choice.disabled && (isSearching || !choice.selected)) {
@@ -1020,7 +1020,7 @@ class Choices {
       }
     }
 
-    if (!selectableChoices) {
+    if (!selectableChoices && !config.renderSelectedChoices) {
       if (!this._notice) {
         this._notice = {
           text: resolveStringFunction(isSearching ? config.noResultsText : config.noChoicesText),
@@ -1278,6 +1278,11 @@ class Choices {
       });
 
       this._triggerChange(choice.value);
+    } else if (this.config.renderSelectedChoices && this._isSelectMultipleElement) {
+        this._store.withTxn(() => {
+            this._removeItem(choice);
+        });
+        this._triggerChange(choice.value);
     }
 
     // We want to close the dropdown if we are dealing with a single select box

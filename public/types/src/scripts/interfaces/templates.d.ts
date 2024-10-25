@@ -21,7 +21,7 @@ export interface Templates {
     item(options: TemplateOptions, choice: ChoiceFull, removeItemButton: boolean): HTMLDivElement;
     choiceList(options: TemplateOptions, isSelectOneElement: boolean): HTMLDivElement;
     choiceGroup(options: TemplateOptions, group: GroupFull): HTMLDivElement;
-    choice(options: TemplateOptions, choice: ChoiceFull, selectText: string, groupText?: string): HTMLDivElement;
+    choice(options: TemplateOptions, choice: ChoiceFull, selectText: string, deselectText: string, groupText?: string): HTMLDivElement;
     input(options: TemplateOptions, placeholderValue: string | null): HTMLInputElement;
     dropdown(options: TemplateOptions): HTMLDivElement;
     notice(options: TemplateOptions, innerText: string, type: NoticeType): HTMLDivElement;
