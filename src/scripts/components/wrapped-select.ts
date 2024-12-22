@@ -81,7 +81,7 @@ export default class WrappedSelect extends WrappedElement<HTMLSelectElement> {
       score: 0,
       rank: 0,
       value: option.value,
-      label: option.innerText, // HTML options do not support most html tags, but innerHtml will extract html comments...
+      label: option.getAttribute('label') || option.innerText, // HTML options do not support most html tags, but innerHtml will extract html comments...
       element: option,
       active: true,
       // this returns true if nothing is selected on initial load, which will break placeholder support
