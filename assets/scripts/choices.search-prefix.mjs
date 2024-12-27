@@ -1,4 +1,4 @@
-/*! choices.js v11.0.2 | © 2024 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.0.3 | © 2024 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -72,6 +72,20 @@ var EventType = {
     highlightItem: 'highlightItem',
     highlightChoice: 'highlightChoice',
     unhighlightItem: 'unhighlightItem',
+};
+
+var KeyCodeMap = {
+    TAB_KEY: 9,
+    SHIFT_KEY: 16,
+    BACK_KEY: 46,
+    DELETE_KEY: 8,
+    ENTER_KEY: 13,
+    A_KEY: 65,
+    ESC_KEY: 27,
+    UP_KEY: 38,
+    DOWN_KEY: 40,
+    PAGE_UP_KEY: 33,
+    PAGE_DOWN_KEY: 34,
 };
 
 var ObjectsInConfig = ['fuseOptions', 'classNames'];
@@ -730,11 +744,15 @@ var stringToHtmlClass = function (input) {
     }
     return undefined;
 };
-var mapInputToChoice = function (value, allowGroup) {
+var mapInputToChoice = function (value, allowGroup, allowRawString) {
+    if (allowRawString === void 0) { allowRawString = true; }
     if (typeof value === 'string') {
+        var sanitisedValue = sanitise(value);
+        var userValue = allowRawString || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
         var result_1 = mapInputToChoice({
             value: value,
-            label: value,
+            label: userValue,
+            selected: true,
         }, false);
         return result_1;
     }
@@ -839,7 +857,7 @@ var WrappedSelect = /** @class */ (function (_super) {
             score: 0,
             rank: 0,
             value: option.value,
-            label: option.innerHTML,
+            label: option.innerText, // HTML options do not support most html tags, but innerHtml will extract html comments...
             element: option,
             active: true,
             // this returns true if nothing is selected on initial load, which will break placeholder support
@@ -1967,11 +1985,15 @@ var Choices = /** @class */ (function () {
         if (this.dropdown.isActive) {
             return this;
         }
+        if (preventInputFocus === undefined) {
+            // eslint-disable-next-line no-param-reassign
+            preventInputFocus = !this._canSearch;
+        }
         requestAnimationFrame(function () {
             _this.dropdown.show();
             var rect = _this.dropdown.element.getBoundingClientRect();
             _this.containerOuter.open(rect.bottom, rect.height);
-            if (!preventInputFocus && _this._canSearch) {
+            if (!preventInputFocus) {
                 _this.input.focus();
             }
             _this.passedElement.triggerEvent(EventType.showDropdown);
@@ -2273,6 +2295,7 @@ var Choices = /** @class */ (function () {
         }
         this.itemList.element.replaceChildren('');
         this.choiceList.element.replaceChildren('');
+        this._clearNotice();
         this._store.reset();
         this._lastAddedChoiceId = 0;
         this._lastAddedGroupId = 0;
@@ -2654,6 +2677,7 @@ var Choices = /** @class */ (function () {
     };
     Choices.prototype._loadChoices = function () {
         var _a;
+        var _this = this;
         var config = this.config;
         if (this._isTextElement) {
             // Assign preset items from passed object first
@@ -2662,7 +2686,7 @@ var Choices = /** @class */ (function () {
             if (this.passedElement.value) {
                 var elementItems = this.passedElement.value
                     .split(config.delimiter)
-                    .map(function (e) { return mapInputToChoice(e, false); });
+                    .map(function (e) { return mapInputToChoice(e, false, _this.config.allowHtmlUserInput); });
                 this._presetChoices = this._presetChoices.concat(elementItems);
             }
             this._presetChoices.forEach(function (choice) {
@@ -2728,6 +2752,7 @@ var Choices = /** @class */ (function () {
         var maxItemCount = config.maxItemCount, maxItemText = config.maxItemText;
         if (!config.singleModeForMultiSelect && maxItemCount > 0 && maxItemCount <= this._store.items.length) {
             this.choiceList.element.replaceChildren('');
+            this._notice = undefined;
             this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice);
             return false;
         }
@@ -2905,7 +2930,15 @@ var Choices = /** @class */ (function () {
         var wasPrintableChar = event.key.length === 1 ||
             (event.key.length === 2 && event.key.charCodeAt(0) >= 0xd800) ||
             event.key === 'Unidentified';
-        if (!this._isTextElement && !hasActiveDropdown) {
+        /*
+          We do not show the dropdown if focusing out with esc or navigating through input fields.
+          An activated search can still be opened with any other key.
+         */
+        if (!this._isTextElement &&
+            !hasActiveDropdown &&
+            keyCode !== KeyCodeMap.ESC_KEY &&
+            keyCode !== KeyCodeMap.TAB_KEY &&
+            keyCode !== KeyCodeMap.SHIFT_KEY) {
             this.showDropdown();
             if (!this.input.isFocussed && wasPrintableChar) {
                 /*
@@ -2921,19 +2954,19 @@ var Choices = /** @class */ (function () {
             }
         }
         switch (keyCode) {
-            case 65 /* KeyCodeMap.A_KEY */:
+            case KeyCodeMap.A_KEY:
                 return this._onSelectKey(event, this.itemList.element.hasChildNodes());
-            case 13 /* KeyCodeMap.ENTER_KEY */:
+            case KeyCodeMap.ENTER_KEY:
                 return this._onEnterKey(event, hasActiveDropdown);
-            case 27 /* KeyCodeMap.ESC_KEY */:
+            case KeyCodeMap.ESC_KEY:
                 return this._onEscapeKey(event, hasActiveDropdown);
-            case 38 /* KeyCodeMap.UP_KEY */:
-            case 33 /* KeyCodeMap.PAGE_UP_KEY */:
-            case 40 /* KeyCodeMap.DOWN_KEY */:
-            case 34 /* KeyCodeMap.PAGE_DOWN_KEY */:
+            case KeyCodeMap.UP_KEY:
+            case KeyCodeMap.PAGE_UP_KEY:
+            case KeyCodeMap.DOWN_KEY:
+            case KeyCodeMap.PAGE_DOWN_KEY:
                 return this._onDirectionKey(event, hasActiveDropdown);
-            case 8 /* KeyCodeMap.DELETE_KEY */:
-            case 46 /* KeyCodeMap.BACK_KEY */:
+            case KeyCodeMap.DELETE_KEY:
+            case KeyCodeMap.BACK_KEY:
                 return this._onDeleteKey(event, this._store.items, this.input.isFocussed);
         }
     };
@@ -3014,13 +3047,7 @@ var Choices = /** @class */ (function () {
                 if (!_this._canCreateItem(value)) {
                     return;
                 }
-                var sanitisedValue = sanitise(value);
-                var userValue = _this.config.allowHtmlUserInput || sanitisedValue === value ? value : { escaped: sanitisedValue, raw: value };
-                _this._addChoice(mapInputToChoice({
-                    value: userValue,
-                    label: userValue,
-                    selected: true,
-                }, false), true, true);
+                _this._addChoice(mapInputToChoice(value, false, _this.config.allowHtmlUserInput), true, true);
                 addedItem = true;
             }
             _this.clearInput();
@@ -3038,6 +3065,7 @@ var Choices = /** @class */ (function () {
         if (hasActiveDropdown) {
             event.stopPropagation();
             this.hideDropdown(true);
+            this._stopSearch();
             this.containerOuter.element.focus();
         }
     };
@@ -3047,8 +3075,8 @@ var Choices = /** @class */ (function () {
         if (hasActiveDropdown || this._isSelectOneElement) {
             this.showDropdown();
             this._canSearch = false;
-            var directionInt = keyCode === 40 /* KeyCodeMap.DOWN_KEY */ || keyCode === 34 /* KeyCodeMap.PAGE_DOWN_KEY */ ? 1 : -1;
-            var skipKey = event.metaKey || keyCode === 34 /* KeyCodeMap.PAGE_DOWN_KEY */ || keyCode === 33 /* KeyCodeMap.PAGE_UP_KEY */;
+            var directionInt = keyCode === KeyCodeMap.DOWN_KEY || keyCode === KeyCodeMap.PAGE_DOWN_KEY ? 1 : -1;
+            var skipKey = event.metaKey || keyCode === KeyCodeMap.PAGE_DOWN_KEY || keyCode === KeyCodeMap.PAGE_UP_KEY;
             var nextEl = void 0;
             if (skipKey) {
                 if (directionInt > 0) {
@@ -3213,19 +3241,16 @@ var Choices = /** @class */ (function () {
         var containerOuter = this.containerOuter;
         var blurWasWithinContainer = target && containerOuter.element.contains(target);
         if (blurWasWithinContainer && !this._isScrollingOnIe) {
-            var targetIsInput = target === this.input.element;
-            if (this._isTextElement || this._isSelectMultipleElement) {
-                if (targetIsInput) {
-                    containerOuter.removeFocusState();
-                    this.hideDropdown(true);
+            if (target === this.input.element) {
+                containerOuter.removeFocusState();
+                this.hideDropdown(true);
+                if (this._isTextElement || this._isSelectMultipleElement) {
                     this.unhighlightAll();
                 }
             }
-            else {
+            else if (target === this.containerOuter.element) {
+                // Remove the focus state when the past outerContainer was the target
                 containerOuter.removeFocusState();
-                if (targetIsInput || (target === containerOuter.element && !this._canSearch)) {
-                    this.hideDropdown(true);
-                }
             }
         }
         else {
@@ -3312,6 +3337,10 @@ var Choices = /** @class */ (function () {
             return;
         }
         this._store.dispatch(removeItem$1(item));
+        var notice = this._notice;
+        if (notice && notice.type === NoticeTypes.noChoices) {
+            this._clearNotice();
+        }
         this.passedElement.triggerEvent(EventType.removeItem, this._getChoiceForOutput(item));
     };
     Choices.prototype._addChoice = function (choice, withEvents, userTriggered) {
@@ -3528,7 +3557,7 @@ var Choices = /** @class */ (function () {
             throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
         }
     };
-    Choices.version = '11.0.2';
+    Choices.version = '11.0.3';
     return Choices;
 }());
 
