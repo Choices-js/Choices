@@ -5,6 +5,7 @@ export const EventType = {
   hideDropdown: 'hideDropdown',
   change: 'change',
   choice: 'choice',
+  clear: 'clear',
   search: 'search',
   addItem: 'addItem',
   removeItem: 'removeItem',
