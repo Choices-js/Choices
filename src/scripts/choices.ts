@@ -1220,9 +1220,9 @@ class Choices {
       this._triggerChange(itemToRemove.value);
 
       if (this._isSelectOneElement && !this._hasNonChoicePlaceholder) {
-        const placeholderChoice = this._store.choices
-          .reverse()
-          .find((choice) => !choice.disabled && choice.placeholder);
+        const placeholderChoice = (this.config.shouldSort ? this._store.choices.reverse() : this._store.choices).find(
+          (choice) => !choice.disabled && choice.placeholder,
+        );
         if (placeholderChoice) {
           this._addItem(placeholderChoice);
           this.unhighlightAll();

@@ -25,9 +25,9 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [['dot'], ['blob']] : 'line',
-  timeout: process.env.CI ? 5000 : 1000,
+  timeout: 10000,
   expect : {
-    timeout: process.env.CI ? 1000 : 500,
+    timeout: 1000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

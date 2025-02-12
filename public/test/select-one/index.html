@@ -123,6 +123,52 @@
           </script>
         </div>
 
+        <div data-test-hook="remove-button-with-sorting-on">
+          <label for="choices-remove-button-with-sorting-on">Remove button with should sort On</label>
+          <select
+            class="form-control"
+            name="choices-remove-button-with-sorting-on"
+            id="choices-remove-button-with-sorting-on"
+          >
+            <option value="Choice 4" selected>Choice 4</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-remove-button-with-sorting-on', {
+                allowHTML: true,
+                removeItemButton: true,
+                shouldSort: true
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="remove-button-with-sorting-off">
+          <label for="choices-remove-button-with-sorting-off">Remove button with should sort off</label>
+          <select
+            class="form-control"
+            name="choices-remove-button-with-sorting-off"
+            id="choices-remove-button-with-sorting-off"
+          >
+            <option value="Choice 4" selected>Choice 4</option>
+            <option value="Choice 3">Choice 3</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 1">Choice 1</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-remove-button-with-sorting-off', {
+                allowHTML: true,
+                removeItemButton: true,
+                shouldSort: false
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="no-press-to-select">
           <label for="no-press-to-select">No press to select</label>
           <select

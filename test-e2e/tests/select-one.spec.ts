@@ -230,6 +230,42 @@ describe(`Choices - select one`, () => {
           await suite.expectedValue('');
           await suite.expectHiddenDropdown();
         });
+
+        describe('with should sort', () => {
+          test('on', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, 'remove-button-with-sorting-on');
+            await suite.startWithClick();
+            await suite.expectVisibleDropdown();
+
+            await suite.items.getByRole('button', { name: 'Remove item' }).last().click();
+            await suite.advanceClock();
+
+            const firstChoice = suite.choices.first();
+            await expect(firstChoice).toHaveText('Choice 1');
+            const lastChoice = suite.choices.last();
+            await expect(lastChoice).toHaveText('Choice 4');
+
+            await suite.escapeKey();
+            await suite.expectHiddenDropdown();
+          });
+
+          test('off', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, 'remove-button-with-sorting-off');
+            await suite.startWithClick();
+            await suite.expectVisibleDropdown();
+
+            await suite.items.getByRole('button', { name: 'Remove item' }).last().click();
+            await suite.advanceClock();
+
+            const firstChoice = suite.choices.first();
+            await expect(firstChoice).toHaveText('Choice 4');
+            const lastChoice = suite.choices.last();
+            await expect(lastChoice).toHaveText('Choice 1');
+
+            await suite.escapeKey();
+            await suite.expectHiddenDropdown();
+          });
+        });
       });
     });
 
