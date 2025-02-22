@@ -36,7 +36,7 @@ export default class Store<T> implements IStore {
      */
     get activeChoices(): ChoiceFull[];
     /**
-     * Get choices that can be searched (excluding placeholders)
+     * Get choices that can be searched (excluding placeholders or disabled choices)
      */
     get searchableChoices(): ChoiceFull[];
     /**

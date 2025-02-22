@@ -259,7 +259,7 @@ export interface Options {
     /**
      * Whether each inputted/chosen item should be unique.
      *
-     * **Input types affected:** text
+     * **Input types affected:** text, `select-multiple`, `select-one`
      *
      * @default true
      */
