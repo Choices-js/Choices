@@ -39,6 +39,14 @@ The following build flags are supported via environment variables:
 npm run js:watch -- --environment CHOICES_SEARCH_FUSE:basic
 ```
 
+### CHOICES_SEARCH_KMP
+**Values:**: **"1" / "0" **
+**Usage:** High performance `indexOf`-like search algorithm.
+**Example**:
+```
+npm run js:watch -- --environment CHOICES_SEARCH_KMP:1
+```
+
 ### CHOICES_CAN_USE_DOM
 **Values:**: **"1" / "0" **
 **Usage:** Indicates if DOM methods are supported in the global namespace. Useful if importing into DOM or the e2e tests without a DOM implementation available.
