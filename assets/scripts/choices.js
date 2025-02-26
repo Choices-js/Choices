@@ -1,4 +1,4 @@
-/*! choices.js v11.0.4 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.0.5 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -3769,13 +3769,14 @@
          * }], 'value', 'label', false);
          * ```
          */
-        Choices.prototype.setChoices = function (choicesArrayOrFetcher, value, label, replaceChoices, clearSearchFlag) {
+        Choices.prototype.setChoices = function (choicesArrayOrFetcher, value, label, replaceChoices, clearSearchFlag, replaceItems) {
             var _this = this;
             if (choicesArrayOrFetcher === void 0) { choicesArrayOrFetcher = []; }
             if (value === void 0) { value = 'value'; }
             if (label === void 0) { label = 'label'; }
             if (replaceChoices === void 0) { replaceChoices = false; }
             if (clearSearchFlag === void 0) { clearSearchFlag = true; }
+            if (replaceItems === void 0) { replaceItems = false; }
             if (!this.initialisedOK) {
                 this._warnChoicesInitFailed('setChoices');
                 return this;
@@ -3786,10 +3787,6 @@
             if (typeof value !== 'string' || !value) {
                 throw new TypeError("value parameter must be a name of 'value' field in passed objects");
             }
-            // Clear choices if needed
-            if (replaceChoices) {
-                this.clearChoices();
-            }
             if (typeof choicesArrayOrFetcher === 'function') {
                 // it's a choices fetcher function
                 var fetcher_1 = choicesArrayOrFetcher(this);
@@ -3799,7 +3796,9 @@
                     return new Promise(function (resolve) { return requestAnimationFrame(resolve); })
                         .then(function () { return _this._handleLoadingState(true); })
                         .then(function () { return fetcher_1; })
-                        .then(function (data) { return _this.setChoices(data, value, label, replaceChoices); })
+                        .then(function (data) {
+                        return _this.setChoices(data, value, label, replaceChoices, clearSearchFlag, replaceItems);
+                    })
                         .catch(function (err) {
                         if (!_this.config.silent) {
                             console.error(err);
@@ -3823,6 +3822,16 @@
                 if (clearSearchFlag) {
                     _this._isSearching = false;
                 }
+                var items = {};
+                if (!replaceItems) {
+                    _this._store.items.forEach(function (item) {
+                        items[item.value] = item;
+                    });
+                }
+                // Clear choices if needed
+                if (replaceChoices) {
+                    _this.clearChoices();
+                }
                 var isDefaultValue = value === 'value';
                 var isDefaultLabel = label === 'label';
                 choicesArrayOrFetcher.forEach(function (groupOrChoice) {
@@ -3839,6 +3848,9 @@
                             choice = __assign(__assign({}, choice), { value: choice[value], label: choice[label] });
                         }
                         var choiceFull = mapInputToChoice(choice, false);
+                        if (!replaceItems && choiceFull.value in items) {
+                            choiceFull.selected = true;
+                        }
                         _this._addChoice(choiceFull);
                         if (choiceFull.placeholder && !_this._hasNonChoicePlaceholder) {
                             _this._placeholderValue = unwrapStringForEscaped(choiceFull.label);
@@ -5206,7 +5218,7 @@
                 throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
             }
         };
-        Choices.version = '11.0.4';
+        Choices.version = '11.0.5';
         return Choices;
     }());
 
