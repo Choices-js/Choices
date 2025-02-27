@@ -1,4 +1,4 @@
-/*! choices.js v11.0.5 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.0.6 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -3334,15 +3334,9 @@ var Choices = /** @class */ (function () {
             if (clearSearchFlag) {
                 _this._isSearching = false;
             }
-            var items = {};
-            if (!replaceItems) {
-                _this._store.items.forEach(function (item) {
-                    items[item.value] = item;
-                });
-            }
             // Clear choices if needed
             if (replaceChoices) {
-                _this.clearChoices();
+                _this.clearChoices(true, replaceItems);
             }
             var isDefaultValue = value === 'value';
             var isDefaultLabel = label === 'label';
@@ -3360,9 +3354,6 @@ var Choices = /** @class */ (function () {
                         choice = __assign(__assign({}, choice), { value: choice[value], label: choice[label] });
                     }
                     var choiceFull = mapInputToChoice(choice, false);
-                    if (!replaceItems && choiceFull.value in items) {
-                        choiceFull.selected = true;
-                    }
                     _this._addChoice(choiceFull);
                     if (choiceFull.placeholder && !_this._hasNonChoicePlaceholder) {
                         _this._placeholderValue = unwrapStringForEscaped(choiceFull.label);
@@ -3448,22 +3439,38 @@ var Choices = /** @class */ (function () {
         }
         return this;
     };
-    Choices.prototype.clearChoices = function (clearOptions) {
+    Choices.prototype.clearChoices = function (clearOptions, clearItems) {
+        var _this = this;
         if (clearOptions === void 0) { clearOptions = true; }
+        if (clearItems === void 0) { clearItems = false; }
         if (clearOptions) {
-            this.passedElement.element.replaceChildren('');
+            if (clearItems) {
+                this.passedElement.element.replaceChildren('');
+            }
+            else {
+                this.passedElement.element.querySelectorAll(':not([selected])').forEach(function (el) {
+                    el.remove();
+                });
+            }
         }
         this.itemList.element.replaceChildren('');
         this.choiceList.element.replaceChildren('');
         this._clearNotice();
-        this._store.reset();
+        this._store.withTxn(function () {
+            var items = clearItems ? [] : _this._store.items;
+            _this._store.reset();
+            items.forEach(function (item) {
+                _this._store.dispatch(addChoice(item));
+                _this._store.dispatch(addItem(item));
+            });
+        });
         // @todo integrate with Store
         this._searcher.reset();
         return this;
     };
     Choices.prototype.clearStore = function (clearOptions) {
         if (clearOptions === void 0) { clearOptions = true; }
-        this.clearChoices(clearOptions);
+        this.clearChoices(clearOptions, true);
         this._stopSearch();
         this._lastAddedChoiceId = 0;
         this._lastAddedGroupId = 0;
@@ -4321,7 +4328,6 @@ var Choices = /** @class */ (function () {
         if (target === this.input.element) {
             return;
         }
-        var preventDefault = true;
         var item = target.closest('[data-button],[data-item],[data-choice]');
         if (item instanceof HTMLElement) {
             if ('button' in item.dataset) {
@@ -4329,16 +4335,12 @@ var Choices = /** @class */ (function () {
             }
             else if ('item' in item.dataset) {
                 this._handleItemAction(item, event.shiftKey);
-                // don't prevent default to support dragging
-                preventDefault = false;
             }
             else if ('choice' in item.dataset) {
                 this._handleChoiceAction(item);
             }
         }
-        if (preventDefault) {
-            event.preventDefault();
-        }
+        event.preventDefault();
     };
     /**
      * Handles mouseover event over this.dropdown
@@ -4730,7 +4732,7 @@ var Choices = /** @class */ (function () {
             throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
         }
     };
-    Choices.version = '11.0.5';
+    Choices.version = '11.0.6';
     return Choices;
 }());
 
