@@ -1331,6 +1331,12 @@ The pre-built bundles these features set, and tree shaking uses the non-used par
 
 Fuse.js support a `full`/`basic` profile. `full` adds additional logic operations, which aren't used by default with Choices. The `null` option drops Fuse.js as a dependency and instead uses a simple prefix only search feature.
 
+#### CHOICES_SEARCH_KMP
+**Values:** `1` / `0`
+**Default:** `0`
+
+If `CHOICES_SEARCH_FUSE` is `null`, this enables an `indexOf`-like [Knuth–Morris–Pratt algorithm](https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm). Useful for very large data sets, without fuzzy searching.
+
 #### CHOICES_CAN_USE_DOM
 **Values:** `1` / `0`
 **Default:** `1`

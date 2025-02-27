@@ -3,6 +3,7 @@ import { beforeEach } from 'vitest';
 import { DEFAULT_CONFIG } from '../../../src';
 import { cloneObject } from '../../../src/scripts/lib/utils';
 import { SearchByFuse } from '../../../src/scripts/search/fuse';
+import { SearchByKMP } from '../../../src/scripts/search/kmp';
 import { SearchByPrefixFilter } from '../../../src/scripts/search/prefix-filter';
 
 export interface SearchableShape {
@@ -97,6 +98,27 @@ describe('search', () => {
       haystack.forEach((value, index) => {
         expect(results[index].item.value).eq(value.value);
       });
+    });
+  });
+
+  describe('kmp', () => {
+    let searcher: SearchByKMP<SearchableShape>;
+    beforeEach(() => {
+      process.env.CHOICES_SEARCH_KMP = '1';
+      searcher = new SearchByKMP<SearchableShape>(options);
+      searcher.index(haystack);
+    });
+    it('empty result', () => {
+      const results = searcher.search('');
+      expect(results.length).eq(0);
+    });
+    it('label prefix', () => {
+      const results = searcher.search('label');
+      expect(results.length).eq(haystack.length);
+    });
+    it('label suffix', () => {
+      const results = searcher.search(`${haystack.length - 1}`);
+      expect(results.length).eq(2);
     });
   });
 
