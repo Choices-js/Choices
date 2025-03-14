@@ -1326,41 +1326,82 @@
         generic: '',
     };
 
-    var SearchByPrefixFilter = /** @class */ (function () {
-        function SearchByPrefixFilter(config) {
+    function kmpSearch(pattern, text) {
+        if (pattern.length === 0) {
+            return 0; // Immediate match
+        }
+        // Compute longest suffix-prefix table
+        var lsp = [0]; // Base case
+        for (var i = 1; i < pattern.length; i++) {
+            var j_1 = lsp[i - 1]; // Start by assuming we're extending the previous LSP
+            while (j_1 > 0 && pattern.charAt(i) !== pattern.charAt(j_1)) {
+                j_1 = lsp[j_1 - 1];
+            }
+            if (pattern.charAt(i) === pattern.charAt(j_1)) {
+                j_1++;
+            }
+            lsp.push(j_1);
+        }
+        // Walk through text string
+        var j = 0; // Number of chars matched in pattern
+        for (var i = 0; i < text.length; i++) {
+            while (j > 0 && text.charAt(i) !== pattern.charAt(j)) {
+                j = lsp[j - 1]; // Fall back in the pattern
+            }
+            if (text.charAt(i) === pattern.charAt(j)) {
+                j++; // Next char matched, increment position
+                if (j === pattern.length) {
+                    return i - (j - 1);
+                }
+            }
+        }
+        return -1; // Not found
+    }
+    var SearchByKMP = /** @class */ (function () {
+        function SearchByKMP(config) {
             this._haystack = [];
             this._fields = config.searchFields;
         }
-        SearchByPrefixFilter.prototype.index = function (data) {
+        SearchByKMP.prototype.index = function (data) {
             this._haystack = data;
         };
-        SearchByPrefixFilter.prototype.reset = function () {
+        SearchByKMP.prototype.reset = function () {
             this._haystack = [];
         };
-        SearchByPrefixFilter.prototype.isEmptyIndex = function () {
+        SearchByKMP.prototype.isEmptyIndex = function () {
             return !this._haystack.length;
         };
-        SearchByPrefixFilter.prototype.search = function (_needle) {
+        SearchByKMP.prototype.search = function (_needle) {
             var fields = this._fields;
             if (!fields || !fields.length || !_needle) {
                 return [];
             }
             var needle = _needle.toLowerCase();
-            return this._haystack
-                .filter(function (obj) { return fields.some(function (field) { return field in obj && obj[field].toLowerCase().startsWith(needle); }); })
-                .map(function (value, index) {
-                return {
-                    item: value,
-                    score: index,
-                    rank: index + 1,
-                };
-            });
+            var results = [];
+            var count = 0;
+            for (var i = 0, j = this._haystack.length; i < j; i++) {
+                var obj = this._haystack[i];
+                for (var k = 0, l = this._fields.length; k < l; k++) {
+                    var field = this._fields[k];
+                    if (field in obj && kmpSearch(needle, obj[field].toLowerCase()) !== -1) {
+                        results.push({
+                            item: obj[field],
+                            score: count,
+                            rank: count + 1,
+                        });
+                        count++;
+                    }
+                }
+            }
+            return results;
         };
-        return SearchByPrefixFilter;
+        return SearchByKMP;
     }());
 
     function getSearcher(config) {
-        return new SearchByPrefixFilter(config);
+        {
+            return new SearchByKMP(config);
+        }
     }
 
     /**
