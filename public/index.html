@@ -199,6 +199,20 @@
           <option value="Choice 4" disabled>Choice 4</option>
         </select>
 
+        <label for="choices-multiple-keep">Keep in dropdown without rendering items</label>
+        <select
+          class="form-control"
+          name="choices-multiple-default"
+          id="choices-multiple-keep"
+          placeholder="This is a placeholder"
+          multiple
+        >
+          <option value="Choice 1" selected>Choice 1</option>
+          <option value="Choice 2">Choice 2</option>
+          <option value="Choice 3">Choice 3</option>
+          <option value="Choice 4" disabled>Choice 4</option>
+        </select>
+
         <label for="choices-multiple-remove-button">With remove button</label>
         <select
           class="form-control"
@@ -639,6 +653,11 @@
             },
           ],
         });
+
+        var multipleKeep = new Choices(
+          document.getElementById('choices-multiple-keep'),
+          { renderSelectedChoices: 'always', renderItems: false }
+        );
 
         var multipleDefault = new Choices(
           document.getElementById('choices-multiple-groups'),

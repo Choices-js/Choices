@@ -294,13 +294,28 @@ $choices-z-index: 1 !default;
       text-align: right;
     }
   }
+  [data-type*="select-multiple"] & .#{$choices-selector}__item--selectable {
+    &[data-deselect-text] {
+      @media (min-width: 640px) {
+        &.is-selected::after {
+            content: attr(data-deselect-text);
+        }
+      }
+    }
+  }
   .#{$choices-selector}__item--selectable {
     &[data-select-text] {
       @media (min-width: 640px) {
         padding-right: 100px;
 
-        &::after {
+        &.is-selected {
+          background-color: $choices-primary-color;
+          color: #fff;
+        }
+        &:not(.is-selected)::after {
           content: attr(data-select-text);
+        }
+        &::after {
           font-size: $choices-font-size-sm;
           opacity: 0;
           position: absolute;

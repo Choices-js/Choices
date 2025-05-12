@@ -73,6 +73,24 @@ describe(`Choices - select one`, () => {
           await expect(suite.items.last()).not.toHaveText('!--');
         });
 
+        test('does not show deselect text on hover of selected choice', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+            await suite.startWithClick();
+
+            await suite.choices.first().hover();
+
+            const deselectText = 'Deselect';
+            const afterContent = await page.evaluate(({testId, deselectText}) => {
+                    const choice = document.querySelector(`[data-test-hook=${testId}] .choices__item--choice.is-selected`) as HTMLElement;
+                    choice.dataset.deselectText = deselectText;
+                    return getComputedStyle(choice, ':after').content;
+                },
+                {testId, deselectText},
+            );
+
+            await expect(afterContent).not.toContain(`\"${deselectText}\"`);
+        });
+
         test('does not remove selected choice from dropdown list', async ({ page, bundle }) => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
           await suite.startWithClick();
