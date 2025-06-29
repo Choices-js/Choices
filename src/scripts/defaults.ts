@@ -57,7 +57,7 @@ export const DEFAULT_CONFIG: Options = {
   searchEnabled: true,
   searchChoices: true,
   searchFloor: 1,
-  searchResultLimit: 4,
+  searchResultLimit: -1,
   searchFields: ['label', 'value'],
   position: 'auto',
   resetScrollPosition: true,
