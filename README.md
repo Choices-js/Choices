@@ -160,7 +160,7 @@ import "choices.js/public/assets/styles/choices.css";
     searchEnabled: true,
     searchChoices: true,
     searchFloor: 1,
-    searchResultLimit: 4,
+    searchResultLimit: -1,
     searchFields: ['label', 'value'],
     position: 'auto',
     resetScrollPosition: true,
@@ -496,9 +496,9 @@ Pass an array of objects:
 
 **Usage:** The minimum length a search value should be before choices are searched.
 
-### searchResultLimit: 4,
+### searchResultLimit,
 
-**Type:** `Number` **Default:** `4`
+**Type:** `Number` **Default:** `-1`
 
 **Input types affected:** `select-one`, `select-multiple`
 
