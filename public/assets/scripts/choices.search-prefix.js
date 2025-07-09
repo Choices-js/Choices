@@ -950,6 +950,7 @@
         searchFloor: 1,
         searchResultLimit: 4,
         searchFields: ['label', 'value'],
+        searchMode: 'fuzzy',
         position: 'auto',
         resetScrollPosition: true,
         shouldSort: true,
@@ -2812,6 +2813,14 @@
             return canAddItem;
         };
         Choices.prototype._searchChoices = function (value) {
+            if (this.config.searchMode === 'partial') {
+                return this._partialSearch(value);
+            }
+            else {
+                return this._fusySearch(value);
+            }
+        };
+        Choices.prototype._fusySearch = function (value) {
             var newValue = value.trim().replace(/\s{2,}/, ' ');
             // signal input didn't change search
             if (!newValue.length || newValue === this._currentValue) {
@@ -2837,6 +2846,53 @@
                 }
             }
             this._store.dispatch(filterChoices(results));
+            return results.length;
+        };
+        Choices.prototype._partialSearch = function (value) {
+            var _a;
+            var newValue = value.trim().replace(/\s{2,}/g, ' ');
+            // 入力が空、または前回と同じならスキップ
+            if (!newValue.length || newValue === this._currentValue) {
+                return null;
+            }
+            var lowerValue = newValue.toLowerCase();
+            var searchableChoices = this._store.searchableChoices;
+            // 部分一致検索結果を作成
+            var allChoices = this._store.choices;
+            var results = searchableChoices
+                .map(function (choice) {
+                var label = (choice.label || choice.value || '').toLowerCase();
+                if (label.includes(lowerValue)) {
+                    var refIndex = allChoices.findIndex(function (c) { return c.id === choice.id; });
+                    if (refIndex !== -1) {
+                        return {
+                            item: choice,
+                            score: 0,
+                            refIndex: refIndex,
+                            rank: 1
+                        };
+                    }
+                }
+                return null;
+            })
+                .filter(function (item) { return item !== null; });
+            // 状態を更新
+            this._currentValue = newValue;
+            this._highlightPosition = 0;
+            this._isSearching = true;
+            // 結果がなければメッセージを表示
+            var noticeType = (_a = this._notice) === null || _a === void 0 ? void 0 : _a.type;
+            if (noticeType !== NoticeTypes.addChoice) {
+                if (!results.length) {
+                    this._displayNotice(resolveStringFunction(this.config.noResultsText), NoticeTypes.noResults);
+                }
+                else {
+                    this._clearNotice();
+                }
+            }
+            // 検索結果をStoreに反映
+            this._store.dispatch(filterChoices(results));
+            console.log(results.length);
             return results.length;
         };
         Choices.prototype._stopSearch = function () {

@@ -59,6 +59,7 @@ export const DEFAULT_CONFIG: Options = {
   searchFloor: 1,
   searchResultLimit: 4,
   searchFields: ['label', 'value'],
+  searchMode: 'fuzzy',
   position: 'auto',
   resetScrollPosition: true,
   shouldSort: true,
