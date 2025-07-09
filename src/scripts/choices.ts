@@ -1459,6 +1459,15 @@ class Choices {
   }
 
   _searchChoices(value: string): number | null {
+
+    if (this.config.searchMode === 'partial') {
+      return this._partialSearch(value);
+    } else {
+      return this._fusySearch(value);
+    }
+  }
+
+  _fusySearch(value: string): number | null {
     const newValue = value.trim().replace(/\s{2,}/, ' ');
 
     // signal input didn't change search
@@ -1490,8 +1499,61 @@ class Choices {
     this._store.dispatch(filterChoices(results));
 
     return results.length;
-  }
+  }    
+  
+  _partialSearch(value: string): number | null {
+    const newValue = value.trim().replace(/\s{2,}/g, ' ');
+  
+    // 入力が空、または前回と同じならスキップ
+    if (!newValue.length || newValue === this._currentValue) {
+      return null;
+    }
+  
+    const lowerValue = newValue.toLowerCase();
+    const searchableChoices = this._store.searchableChoices;
+  
+    // 部分一致検索結果を作成
+    const allChoices = this._store.choices;
 
+    const results = searchableChoices
+      .map((choice) => {
+        const label = (choice.label || choice.value || '').toLowerCase();
+        if (label.includes(lowerValue)) {
+          const refIndex = allChoices.findIndex(c => c.id === choice.id);
+          if (refIndex !== -1) {
+            return {
+              item: choice,
+              score: 0,
+              refIndex,
+              rank: 1
+            };
+          }
+        }
+        return null;
+      })
+      .filter((item): item is { item: ChoiceFull; score: number; refIndex: number; rank: number } => item !== null);
+    
+    // 状態を更新
+    this._currentValue = newValue;
+    this._highlightPosition = 0;
+    this._isSearching = true;
+  
+    // 結果がなければメッセージを表示
+    const noticeType = this._notice?.type;
+    if (noticeType !== NoticeTypes.addChoice) {
+      if (!results.length) {
+        this._displayNotice(resolveStringFunction(this.config.noResultsText), NoticeTypes.noResults);
+      } else {
+        this._clearNotice();
+      }
+    }
+  
+    // 検索結果をStoreに反映
+    this._store.dispatch(filterChoices(results));
+  console.log(results.length);
+    return results.length;
+  }
+       
   _stopSearch(): void {
     if (this._isSearching) {
       this._currentValue = '';

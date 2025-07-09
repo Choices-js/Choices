@@ -321,6 +321,14 @@ export interface Options {
      */
     searchFields: string[];
     /**
+     * The search mode to use when searching for choices. Can be either `fuzzy` or `partial`.
+     *
+     * **Input types affected:** select-one, select-multiple
+     *
+     * @default 'fuzzy'
+     */
+    searchMode: 'fuzzy' | 'partial';
+    /**
      * Whether the dropdown should appear above `(top)` or below `(bottom)` the input. By default, if there is not enough space within the window the dropdown will appear above the input, otherwise below it.
      *
      * **Input types affected:** select-one, select-multiple

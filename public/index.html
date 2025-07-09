@@ -105,6 +105,44 @@
         </p>
         <hr />
 
+        <h2>部分一致</h2>
+        <label
+          id="choices-partial-label"
+          for="choices-partial"
+          >partial</label
+        >
+        <select
+        class="form-control"
+        name="choices-partial"
+        id="choices-partial"
+      >
+        <optgroup label="東京23区">
+          <option value="1000">1000:足立区</option>
+          <option value="1010">1010:荒川区</option>
+          <option value="1020">1020:板橋区</option>
+          <option value="1030">1030:江戸川区</option>
+          <option value="1040">1040:大田区</option>
+          <option value="1050">1050:葛飾区</option>
+          <option value="1060">1060:北区</option>
+          <option value="1070">1070:江東区</option>
+          <option value="1080">1080:品川区</option>
+          <option value="1090">1090:渋谷区</option>
+          <option value="1100">1100:新宿区</option>
+          <option value="1110">1110:杉並区</option>
+          <option value="1120">1120:墨田区</option>
+          <option value="1130">1130:世田谷区</option>
+          <option value="1140">1140:台東区</option>
+          <option value="1150">1150:中央区</option>
+          <option value="1160">1160:千代田区</option>
+          <option value="1170">1170:豊島区</option>
+          <option value="1180">1180:中野区</option>
+          <option value="1190">1190:練馬区</option>
+          <option value="1200">1200:文京区</option>
+          <option value="1210">1210:港区</option>
+          <option value="1220">1220:目黒区</option>
+        </optgroup>
+      </select>
+      
         <h2>Text inputs</h2>
         <label for="choices-text-remove-button"
           >Limited to 5 values with remove button</label
@@ -796,6 +834,14 @@
           'value',
           'label'
         );
+
+        var singleNoSorting = new Choices('#choices-partial', {
+          allowHTML: true,
+          shouldSort: false,
+          searchMode: 'partial',
+          searchResultLimit: 9999,
+          labelId: 'choices-partial-label',
+        });
 
         var singleSelectedOpt = new Choices('#choices-single-selected-option', {
           allowHTML: true,

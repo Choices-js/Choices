@@ -167,6 +167,8 @@ declare class Choices {
     _canAddItems(): boolean;
     _canCreateItem(value: string): boolean;
     _searchChoices(value: string): number | null;
+    _fusySearch(value: string): number | null;
+    _partialSearch(value: string): number | null;
     _stopSearch(): void;
     _addEventListeners(): void;
     _removeEventListeners(): void;
