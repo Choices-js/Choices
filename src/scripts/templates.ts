@@ -253,6 +253,7 @@ const templates: TemplatesInterface = {
     {
       allowHTML,
       classNames: { item, itemChoice, itemSelectable, selectedState, itemDisabled, description, placeholder },
+      itemDeselectText,
     }: TemplateOptions,
     choice: ChoiceFull,
     selectText: string,
@@ -308,6 +309,9 @@ const templates: TemplatesInterface = {
     div.dataset.value = rawValue;
     if (selectText) {
       div.dataset.selectText = selectText;
+    }
+    if (itemDeselectText) {
+      div.dataset.deselectText = itemDeselectText;
     }
     if (choice.group) {
       div.dataset.groupId = `${choice.group.id}`;
