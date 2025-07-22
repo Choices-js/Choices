@@ -1,0 +1,72 @@
+@use "sass:math";
+@use "sass:color";
+@use "./functions";
+
+$choices-selector: "choices" !default;
+
+$choices-base-spacing: 7.5px !default;
+$choices-guttering: 24px !default;
+
+$choices-outer-spacing: $choices-base-spacing !default;
+$choices-inner-spacing: 4px !default;
+
+$choices-text-color: #333 !default;
+$choices-keyline-color: #ddd !default;
+$choices-primary-color: #005F75 !default;
+$choices-disabled-color: #eaeaea !default;
+$choices-highlight-color: $choices-primary-color !default;
+
+$choices-font-size: 14px !default;
+
+$choices-font-size-lg: $choices-font-size * 1.142857 !default;
+$choices-font-size-md: $choices-font-size !default;
+$choices-font-size-sm: $choices-font-size * 0.857143 !default;
+
+$choices-bg-color: #f9f9f9 !default;
+$choices-bg-color-disabled: #eaeaea !default;
+
+$choices-multiple-item-font-size: $choices-font-size-sm !default;
+$choices-multiple-item-padding: math.div($choices-base-spacing, 2) $choices-base-spacing * 1.25 !default;
+$choices-multiple-item-border-radius: 20px !default;
+$choices-multiple-item-border-width: 1px !default;
+$choices-multiple-item-border-style: solid !default;
+$choices-multiple-item-border-color: color.adjust($choices-primary-color, $lightness: -5%) !default;
+$choices-multiple-item-font-weight: 500 !default;
+
+$choices-outer-border-width: 1px !default;
+$choices-outer-border-style: solid !default;
+$choices-outer-border-radius: 2.5px !default;
+
+$choices-inner-border-width: $choices-outer-border-width !default;
+$choices-inner-border-style: $choices-outer-border-style !default;
+
+$choices-dropdown-bg-color: #fff !default;
+$choices-dropdown-border-width: 1px !default;
+$choices-dropdown-border-style: solid !default;
+$choices-dropdown-border-color: $choices-keyline-color !default;
+
+$choices-single-item-padding: 10px !default;
+
+$choices-item-heading-font-size: $choices-font-size-sm !default;
+$choices-item-heading-font-weight: 600 !default;
+$choices-item-heading-padding: $choices-single-item-padding !default;
+$choices-item-heading-border-bottom: 1px solid color.adjust($choices-keyline-color, $lightness: 10%) !default;
+$choices-item-heading-color: color.adjust($choices-text-color, $lightness: 30%) !default;
+
+$choices-input-bg-color: #fff !default;
+
+$choices-button-dimension: 20px !default;
+$choices-button-offset: 8px !default;
+
+$choices-arrow-size: 5px !default;
+$choices-arrow-color: $choices-text-color !default;
+
+$choices-icon-cross: url("data:image/svg+xml,<svg width=\"21\" height=\"21\" viewBox=\"0 0 21 21\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"currentColor\" fill-rule=\"evenodd\"><path d=\"M2.592.044l18.364 18.364-2.548 2.548L.044 2.592z\"/><path d=\"M0 18.364L18.364 0l2.548 2.548L2.548 20.912z\"/></g></svg>") !default;
+
+$choices-z-index: 1 !default;
+
+// backward compatibility
+$choices-bg-color-dropdown: $choices-dropdown-bg-color !default;
+$choices-border-radius-item: $choices-multiple-item-border-radius !default;
+$choices-border-radius: $choices-outer-border-radius !default;
+$choices-icon-cross-inverse: $choices-icon-cross !default;

@@ -112,6 +112,15 @@ The use of `import` of css/scss is supported from webpack.
 
 In .scss:
 ```scss
+// Choices can be customized by overriding variables.
+// See `src/styles/_vars.scss` for a list of available variables.
+$choices-font-size: 15px;
+$choices-primary-color: papayawhip;
+
+// Variables can also be overridden in an another file, as long as it is imported first.
+@import "my-vars";
+
+// import this file near the bottom of your stylesheet
 @import "choices.js/src/styles/choices";
 ```
 

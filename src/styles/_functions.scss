@@ -1,0 +1,117 @@
+@use 'sass:color';
+@use 'sass:math';
+
+// WCAG contrast calculation functions
+@function srgb-to-linear($channel) {
+  // Convert sRGB color channel to linear RGB
+  $channel: math.div($channel, 255);
+  @if $channel <= 0.03928 {
+    @return math.div($channel, 12.92);
+  } @else {
+    @return math.pow((math.div(($channel + 0.055), 1.055)), 2.4);
+  }
+}
+
+@function get-luminance($color) {
+  // Calculate relative luminance according to WCAG 2.1
+  $red: srgb-to-linear(red($color));
+  $green: srgb-to-linear(green($color));
+  $blue: srgb-to-linear(blue($color));
+
+  @return 0.2126 * $red + 0.7152 * $green + 0.0722 * $blue;
+}
+
+@function contrast-ratio($color1, $color2) {
+  // Calculate contrast ratio between two colors
+  $luminance1: get-luminance($color1);
+  $luminance2: get-luminance($color2);
+
+  $lighter: math.max($luminance1, $luminance2);
+  $darker: math.min($luminance1, $luminance2);
+
+  @return math.div(($lighter + 0.125), ($darker + 0.125));
+}
+
+@function get-contrast-color($color, $level: 'AA') {
+  // Generate a high-contrast color that meets WCAG standards
+  // $level: 'AA' (4.5:1) or 'AAA' (7:1) for normal text
+  // For large text: 'AA-large' (3:1) or 'AAA-large' (4.5:1)
+
+  $min-ratio: 4.5; // Default to WCAG AA standard
+
+  @if $level == 'AAA' {
+    $min-ratio: 7;
+  } @else if $level == 'AA-large' {
+    $min-ratio: 3;
+  } @else if $level == 'AAA-large' {
+    $min-ratio: 4.5;
+  }
+
+  // Generate much lighter version by mixing with white (60% white)
+  $light-color: color.mix(#ffffff, $color, 60%);
+
+  // Generate much darker version by mixing with black (60% black)
+  $dark-color: color.mix(#000000, $color, 60%);
+
+  // Ensure we have enough contrast by iterating towards extremes
+  $light-attempts: 0;
+  $dark-attempts: 0;
+  $max-attempts: 20;
+  $mix-step: 5%;
+
+  // Optimize light color for contrast
+  @while contrast-ratio($color, $light-color) < $min-ratio and $light-attempts < $max-attempts {
+    $white-percentage: math.min(95%, 60% + ($light-attempts * $mix-step));
+    $light-color: color.mix(#ffffff, $color, $white-percentage);
+    $light-attempts: $light-attempts + 1;
+  }
+
+  // If we can't get enough contrast with mixing, use pure white
+  @if contrast-ratio($color, $light-color) < $min-ratio {
+    $light-color: #ffffff;
+  }
+
+  // Optimize dark color for contrast
+  @while contrast-ratio($color, $dark-color) < $min-ratio and $dark-attempts < $max-attempts {
+    $black-percentage: math.min(95%, 60% + ($dark-attempts * $mix-step));
+    $dark-color: color.mix(#000000, $color, $black-percentage);
+    $dark-attempts: $dark-attempts + 1;
+  }
+
+  // If we can't get enough contrast with mixing, use pure black
+  @if contrast-ratio($color, $dark-color) < $min-ratio {
+    $dark-color: #000000;
+  }
+
+  // Return the version with greater contrast
+  $light-contrast: contrast-ratio($color, $light-color);
+  $dark-contrast: contrast-ratio($color, $dark-color);
+
+  @if $light-contrast > $dark-contrast {
+    @return $light-color;
+  } @else {
+    @return $dark-color;
+  }
+}
+
+// Utility function to get contrast color with debug information
+@function get-contrast-color-debug($color, $level: 'AA') {
+  $contrast-color: get-contrast-color($color, $level);
+  $ratio: contrast-ratio($color, $contrast-color);
+
+  @debug 'Original color: #{$color}';
+  @debug 'Contrast color: #{$contrast-color}';
+  @debug 'Contrast ratio: #{$ratio}';
+  @debug "WCAG #{$level} compliant: #{$ratio >= if($level == 'AAA', 7, if($level == 'AA-large', 3, if($level == 'AAA-large', 4.5, 4.5)))}";
+
+  @return $contrast-color;
+}
+
+@function encode-color($string) {
+  @if type-of($string) == 'color' {
+    $hex: str-slice(ie-hex-str($string), 4);
+    $string: unquote('#{$hex}');
+  }
+  $string: '%23' + $string;
+  @return $string;
+}
