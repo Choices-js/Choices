@@ -25,6 +25,35 @@ $choices-font-size-sm: $choices-font-size * 0.857143 !default;
 $choices-bg-color: #f9f9f9 !default;
 $choices-bg-color-disabled: #eaeaea !default;
 
+$choices-outer-border-width: 1px !default;
+$choices-outer-border-style: solid !default;
+$choices-outer-border-color: $choices-keyline-color !default;
+$choices-outer-border-color-open: color.adjust($choices-keyline-color, $lightness: -15%) !default;
+$choices-outer-border-radius: 2.5px !default;
+
+$choices-inner-font-size: $choices-font-size-md !default;
+$choices-inner-border-width: $choices-outer-border-width !default;
+$choices-inner-border-style: $choices-outer-border-style !default;
+$choices-inner-border-color: $choices-outer-border-color !default;
+$choices-inner-border-color-open: $choices-outer-border-color-open !default;
+$choices-inner-border-radius: $choices-outer-border-radius !default;
+
+$choices-dropdown-bg-color: #fff !default;
+$choices-dropdown-border-width: $choices-outer-border-width !default;
+$choices-dropdown-border-style: $choices-outer-border-style !default;
+$choices-dropdown-border-color: $choices-outer-border-color !default;
+$choices-dropdown-border-color-open: $choices-outer-border-color-open !default;
+
+$choices-item-padding: 10px !default;
+$choices-item-font-size: $choices-font-size-md !default;
+$choices-item-bg-color-highlighted: color.mix(#000, #fff, 5%) !default;
+
+$choices-item-heading-font-size: $choices-font-size-sm !default;
+$choices-item-heading-font-weight: 600 !default;
+$choices-item-heading-padding: $choices-item-padding !default;
+$choices-item-heading-border-bottom: 1px solid color.adjust($choices-keyline-color, $lightness: 10%) !default;
+$choices-item-heading-color: color.adjust($choices-text-color, $lightness: 30%) !default;
+
 $choices-multiple-item-font-size: $choices-font-size-sm !default;
 $choices-multiple-item-padding: math.div($choices-base-spacing, 2) $choices-base-spacing * 1.25 !default;
 $choices-multiple-item-border-radius: 20px !default;
@@ -33,27 +62,8 @@ $choices-multiple-item-border-style: solid !default;
 $choices-multiple-item-border-color: color.adjust($choices-primary-color, $lightness: -5%) !default;
 $choices-multiple-item-font-weight: 500 !default;
 
-$choices-outer-border-width: 1px !default;
-$choices-outer-border-style: solid !default;
-$choices-outer-border-radius: 2.5px !default;
-
-$choices-inner-border-width: $choices-outer-border-width !default;
-$choices-inner-border-style: $choices-outer-border-style !default;
-
-$choices-dropdown-bg-color: #fff !default;
-$choices-dropdown-border-width: 1px !default;
-$choices-dropdown-border-style: solid !default;
-$choices-dropdown-border-color: $choices-keyline-color !default;
-
-$choices-single-item-padding: 10px !default;
-
-$choices-item-heading-font-size: $choices-font-size-sm !default;
-$choices-item-heading-font-weight: 600 !default;
-$choices-item-heading-padding: $choices-single-item-padding !default;
-$choices-item-heading-border-bottom: 1px solid color.adjust($choices-keyline-color, $lightness: 10%) !default;
-$choices-item-heading-color: color.adjust($choices-text-color, $lightness: 30%) !default;
-
 $choices-input-bg-color: #fff !default;
+$choices-input-font-size: $choices-font-size-md !default;
 
 $choices-button-dimension: 20px !default;
 $choices-button-offset: 8px !default;

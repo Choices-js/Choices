@@ -50,7 +50,7 @@
   .#{$choices-selector}__input {
     display: block;
     width: 100%;
-    padding: $choices-single-item-padding;
+    padding: $choices-item-padding;
     border-bottom: $choices-inner-border-width $choices-inner-border-style $choices-keyline-color;
     background-color: $choices-input-bg-color;
     margin: 0;
@@ -155,23 +155,23 @@
   width: 100%;
   background-color: $choices-bg-color;
   padding: $choices-base-spacing $choices-base-spacing math.div($choices-base-spacing, 2);
-  border: $choices-outer-border-width $choices-outer-border-style $choices-keyline-color;
-  border-radius: $choices-outer-border-radius;
-  font-size: $choices-font-size-md;
+  border: $choices-inner-border-width $choices-inner-border-style $choices-inner-border-color;
+  border-radius: $choices-inner-border-radius;
+  font-size: $choices-inner-font-size;
   min-height: 44px;
   overflow: hidden;
 
   .is-focused &,
   .is-open & {
-    border-color: color.adjust($choices-keyline-color, $lightness: -15%);
+    border-color: $choices-inner-border-color-open;
   }
 
   .is-open & {
-    border-radius: $choices-outer-border-radius $choices-outer-border-radius 0 0;
+    border-radius: $choices-inner-border-radius $choices-inner-border-radius 0 0;
   }
 
   .is-flipped.is-open & {
-    border-radius: 0 0 $choices-outer-border-radius $choices-outer-border-radius;
+    border-radius: 0 0 $choices-inner-border-radius $choices-inner-border-radius;
   }
 }
 
@@ -246,7 +246,7 @@
   background-color: $choices-dropdown-bg-color;
   border: $choices-dropdown-border-width $choices-dropdown-border-style $choices-dropdown-border-color;
   top: 100%;
-  margin-top: -1px;
+  margin-top: -$choices-dropdown-border-width;
   border-bottom-left-radius: $choices-outer-border-radius;
   border-bottom-right-radius: $choices-outer-border-radius;
   overflow: hidden;
@@ -257,14 +257,14 @@
   }
 
   .is-open & {
-    border-color: color.adjust($choices-keyline-color, $lightness: -15%);
+    border-color: $choices-dropdown-border-color-open;
   }
 
   .is-flipped & {
     top: auto;
     bottom: 100%;
     margin-top: 0;
-    margin-bottom: -1px;
+    margin-bottom: -$choices-dropdown-border-width;
     border-radius: 0.25rem 0.25rem 0 0;
   }
   .#{$choices-selector}__list {
@@ -276,8 +276,8 @@
   }
   .#{$choices-selector}__item {
     position: relative;
-    padding: $choices-single-item-padding;
-    font-size: $choices-font-size-md;
+    padding: $choices-item-padding;
+    font-size: $choices-item-font-size;
 
     [dir='rtl'] & {
       text-align: right;
@@ -286,33 +286,33 @@
   .#{$choices-selector}__item--selectable {
     &[data-select-text] {
       @media (min-width: 640px) {
-        padding-right: $choices-single-item-padding + 90px; // for now
+        padding-right: $choices-item-padding + 90px; // for now
 
         &::after {
           content: attr(data-select-text);
           font-size: $choices-font-size-sm;
           opacity: 0;
           position: absolute;
-          right: $choices-single-item-padding;
+          right: $choices-item-padding;
           top: 50%;
           transform: translateY(-50%);
         }
 
         [dir='rtl'] & {
           text-align: right;
-          padding-left: $choices-single-item-padding + 90px; // for now
-          padding-right: $choices-single-item-padding;
+          padding-left: $choices-item-padding + 90px; // for now
+          padding-right: $choices-item-padding;
 
           &::after {
             right: auto;
-            left: $choices-single-item-padding;
+            left: $choices-item-padding;
           }
         }
       }
     }
 
     &.is-highlighted {
-      background-color: color.mix(#000, #fff, 5%);
+      background-color: $choices-item-bg-color-highlighted;
 
       &::after {
         opacity: 0.5;
@@ -366,7 +366,7 @@
   display: inline-block;
   vertical-align: baseline;
   background-color: $choices-bg-color;
-  font-size: $choices-font-size-md;
+  font-size: $choices-input-font-size;
   margin-bottom: $choices-inner-spacing + 1px;
   border: 0;
   border-radius: 0;
