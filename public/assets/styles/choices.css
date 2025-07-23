@@ -5,7 +5,7 @@
   position: relative;
   overflow: hidden;
   margin-bottom: 24px;
-  font-size: 15.999998px;
+  font-size: 14px;
 }
 .choices:focus {
   outline: none;
@@ -183,7 +183,7 @@
   display: inline-block;
   vertical-align: middle;
   border-radius: 20px;
-  font-size: 12.000002px;
+  font-size: 12px;
   padding: 3.75px 9.375px;
   font-weight: 500;
   margin-right: 3.75px;
@@ -195,7 +195,7 @@
   box-sizing: border-box;
 }
 .choices__list--multiple .choices__item[data-deletable] {
-  padding-right: 5px;
+  padding-right: 3.75px;
 }
 [dir=rtl] .choices__list--multiple .choices__item {
   margin-right: 0;
@@ -235,7 +235,7 @@
   bottom: 100%;
   margin-top: 0;
   margin-bottom: -1px;
-  border-radius: 0.25rem 0.25rem 0 0;
+  border-radius: 2.5px 2.5px 0 0;
 }
 .choices__list--dropdown .choices__list, .choices__list[aria-expanded] .choices__list {
   position: relative;
@@ -258,7 +258,7 @@
   }
   .choices__list--dropdown .choices__item--selectable[data-select-text]::after, .choices__list[aria-expanded] .choices__item--selectable[data-select-text]::after {
     content: attr(data-select-text);
-    font-size: 12.000002px;
+    font-size: 14px;
     opacity: 0;
     position: absolute;
     right: 10px;
@@ -299,7 +299,7 @@
 
 .choices__heading {
   font-weight: 600;
-  font-size: 12.000002px;
+  font-size: 12px;
   padding: 10px;
   border-bottom: 1px solid #f7f7f7;
   color: gray;

@@ -5,13 +5,15 @@
 @use 'sass:math';
 @use 'sass:color';
 @use './functions';
+
+@import 'overrides';
 @import './vars';
 
 .#{$choices-selector} {
   position: relative;
   overflow: hidden;
   margin-bottom: $choices-guttering;
-  font-size: $choices-font-size-lg;
+  font-size: $choices-font-size-md;
 
   &:focus {
     outline: none;
@@ -51,7 +53,7 @@
     display: block;
     width: 100%;
     padding: $choices-item-padding;
-    border-bottom: $choices-inner-border-width $choices-inner-border-style $choices-keyline-color;
+    border-bottom: $choices-border-width $choices-border-style $choices-border-color;
     background-color: $choices-input-bg-color;
     margin: 0;
   }
@@ -155,23 +157,23 @@
   width: 100%;
   background-color: $choices-bg-color;
   padding: $choices-base-spacing $choices-base-spacing math.div($choices-base-spacing, 2);
-  border: $choices-inner-border-width $choices-inner-border-style $choices-inner-border-color;
-  border-radius: $choices-inner-border-radius;
-  font-size: $choices-inner-font-size;
-  min-height: 44px;
+  border: $choices-border-width $choices-border-style $choices-border-color;
+  border-radius: $choices-border-radius;
+  font-size: $choices-font-size-md;
+  min-height: math.round($choices-base-font-size * 3.1428571429);
   overflow: hidden;
 
   .is-focused &,
   .is-open & {
-    border-color: $choices-inner-border-color-open;
+    border-color: $choices-border-color-open;
   }
 
   .is-open & {
-    border-radius: $choices-inner-border-radius $choices-inner-border-radius 0 0;
+    border-radius: $choices-border-radius $choices-border-radius 0 0;
   }
 
   .is-flipped.is-open & {
-    border-radius: 0 0 $choices-inner-border-radius $choices-inner-border-radius;
+    border-radius: 0 0 $choices-border-radius $choices-border-radius;
   }
 }
 
@@ -218,7 +220,7 @@
     box-sizing: border-box;
 
     &[data-deletable] {
-      padding-right: 5px;
+      padding-right: math.div($choices-base-spacing, 2);
     }
 
     [dir='rtl'] & {
@@ -247,8 +249,8 @@
   border: $choices-dropdown-border-width $choices-dropdown-border-style $choices-dropdown-border-color;
   top: 100%;
   margin-top: -$choices-dropdown-border-width;
-  border-bottom-left-radius: $choices-outer-border-radius;
-  border-bottom-right-radius: $choices-outer-border-radius;
+  border-bottom-left-radius: $choices-border-radius;
+  border-bottom-right-radius: $choices-border-radius;
   overflow: hidden;
   word-break: break-all;
 
@@ -265,7 +267,7 @@
     bottom: 100%;
     margin-top: 0;
     margin-bottom: -$choices-dropdown-border-width;
-    border-radius: 0.25rem 0.25rem 0 0;
+    border-radius: $choices-border-radius $choices-border-radius 0 0;
   }
   .#{$choices-selector}__list {
     position: relative;
@@ -290,7 +292,7 @@
 
         &::after {
           content: attr(data-select-text);
-          font-size: $choices-font-size-sm;
+          font-size: $choices-font-size-md;
           opacity: 0;
           position: absolute;
           right: $choices-item-padding;
@@ -367,7 +369,7 @@
   vertical-align: baseline;
   background-color: $choices-bg-color;
   font-size: $choices-input-font-size;
-  margin-bottom: $choices-inner-spacing + 1px;
+  margin-bottom: $choices-inner-spacing + $choices-border-width;
   border: 0;
   border-radius: 0;
   max-width: 100%;
