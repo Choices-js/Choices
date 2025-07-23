@@ -6,7 +6,6 @@
 @use 'sass:color';
 @use './functions';
 
-@import 'overrides';
 @import './vars';
 
 .#{$choices-selector} {
