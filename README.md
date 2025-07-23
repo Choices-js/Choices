@@ -114,8 +114,11 @@ In .scss:
 ```scss
 // Choices can be customized by overriding variables.
 // See `src/styles/_vars.scss` for a list of available variables.
-$choices-font-size: 15px;
-$choices-primary-color: papayawhip;
+
+// The following two variables will have global effects on the overall
+// appearance of Choices if no other variables are changed:
+$choices-base-spacing: 7.5px;         // controls overall padding
+$choices-base-font-size: 14px;        // controls overall font size
 
 // Variables can also be overridden in an another file, as long as it is imported first.
 @import "my-vars";
