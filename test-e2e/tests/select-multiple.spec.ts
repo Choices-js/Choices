@@ -275,6 +275,24 @@ describe(`Choices - select multiple`, () => {
       describe('selecting choices', () => {
         const selectedChoiceText = 'Choice 1';
 
+        test('shows deselect text on hover of selected choice', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+            await suite.startWithClick();
+
+            await suite.choices.first().hover();
+
+            const deselectText = 'Deselect';
+            const afterContent = await page.evaluate(({testId, deselectText}) => {
+                    const choice = document.querySelector(`[data-test-hook=${testId}] .choices__item--choice.is-selected`) as HTMLElement;
+                    choice.dataset.deselectText = deselectText;
+                    return getComputedStyle(choice, ':after').content;
+                },
+                {testId, deselectText},
+            );
+
+            await expect(afterContent).toContain(`\"${deselectText}\"`);
+        });
+
         test('not removing selected choice from dropdown list', async ({ page, bundle }) => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
           await suite.startWithClick();
@@ -304,6 +322,7 @@ describe(`Choices - select multiple`, () => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
           await suite.startWithClick();
 
+          await suite.choices.first().click();
           const count = await suite.choices.count();
 
           for (let i = 1; i < count + 1; i++) {
@@ -346,6 +365,32 @@ describe(`Choices - select multiple`, () => {
           await suite.input.press('PageUp');
           await expect(suite.choices.first()).toHaveClass(/is-highlighted/);
           await expect(suite.choices.last()).not.toHaveClass(/is-highlighted/);
+        });
+      });
+    });
+
+    describe('dont-render-selected-items', () => {
+      const testId = 'dont-render-selected-items';
+      describe('selecting choices', () => {
+        test('all available choices', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          await suite.choices.first().click();
+          const count = await suite.choices.count();
+
+          for (let i = 1; i < count + 1; i++) {
+            await suite.expectVisibleDropdown();
+            await suite.getChoiceWithText(`Choice ${i}`).click();
+            await suite.advanceClock();
+            await suite.expectedItemCount(0);
+            if (i < count) {
+              await expect(suite.getChoiceWithText(`Choice ${i}`)).toHaveClass(/is-selected/);
+              await expect(suite.selectableChoices).toHaveCount(count);
+            } else {
+              await suite.expectHiddenNotice();
+            }
+          }
         });
       });
     });

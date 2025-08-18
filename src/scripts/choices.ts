@@ -933,7 +933,7 @@ class Choices {
       }
     }
 
-    if (changes.items) {
+    if (changes.items && this.config.renderItems) {
       this._renderItems();
     }
   }
@@ -1286,6 +1286,11 @@ class Choices {
       });
 
       this._triggerChange(choice.value);
+    } else if (this.config.renderSelectedChoices && this._isSelectMultipleElement) {
+        this._store.withTxn(() => {
+            this._removeItem(choice);
+        });
+        this._triggerChange(choice.value);
     }
 
     // We want to close the dropdown if we are dealing with a single select box

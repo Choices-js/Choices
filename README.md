@@ -357,6 +357,14 @@ Pass an array of objects:
 
 **Usage:** The amount of items a user can input/select ("-1" indicates no limit).
 
+### renderItems
+
+**Type:** `Boolean` **Default:** `true`
+
+**Input types affected:** `text`, `select-multiple`
+
+**Usage:** Whether to render items.
+
 ### closeDropdownOnSelect
 
 **Type:** `Boolean` | 'auto' **Default:** `auto`
@@ -863,7 +871,7 @@ const example = new Choices(element, {
         return strToEl(`
           <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
           getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
-        }" data-select-text="${this.config.itemSelectText}" data-choice ${
+        }" data-select-text="${this.config.itemSelectText}" data-deselect-text="${this.config.itemDeselectText}" data-choice ${
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'
             : 'data-choice-selectable'
