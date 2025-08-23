@@ -158,6 +158,10 @@ class Choices {
 
   _docRoot: ShadowRoot | HTMLElement;
 
+  _dropdownParent: HTMLElement | null;
+
+  _dropdownFixed: boolean;
+
   constructor(
     element: string | Element | HTMLInputElement | HTMLSelectElement = '[data-choice]',
     userConfig: Partial<Options> = {},
@@ -260,7 +264,7 @@ class Choices {
 
     this._store = new Store(config);
     this._currentValue = '';
-    config.searchEnabled = !isText && config.searchEnabled;
+    config.searchEnabled = (!isText && config.searchEnabled) || isSelectMultiple;
     this._canSearch = config.searchEnabled;
     this._isScrollingOnIe = false;
     this._highlightPosition = 0;
@@ -317,6 +321,18 @@ class Choices {
       this.initialisedOK = false;
 
       return;
+    }
+
+    // Position fixed for dropdown items
+    this._dropdownFixed = false;
+
+    if (config.dropdownParent) {
+      const parent = this._docRoot.querySelector<HTMLElement>(config.dropdownParent);
+
+      if (parent) {
+        this._dropdownFixed = true;
+        this._dropdownParent = parent;
+      }
     }
 
     // Let's go
@@ -513,23 +529,22 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.show();
-      const rect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(rect.bottom, rect.height);
+
+      if (this._dropdownFixed) {
+        const containerRect = this.containerOuter.element.getBoundingClientRect();
+        this.dropdown.element.style.top = `${containerRect.bottom}px`;
+        this.dropdown.element.style.left = `${containerRect.left}px`;
+        this.dropdown.element.style.width = `${containerRect.width}px`;
+      }
+
+      const dropdownRect = this.dropdown.element.getBoundingClientRect();
+      this.containerOuter.open(dropdownRect.bottom, dropdownRect.height);
 
       if (!preventInputFocus) {
         this.input.focus();
       }
 
       this.passedElement.triggerEvent(EventType.showDropdown);
-
-      const activeElement = this.choiceList.element.querySelector<HTMLElement>(
-        getClassNamesSelector(this.config.classNames.selectedState),
-      );
-
-      if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
-        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
-        activeElement.scrollIntoView();
-      }
     });
 
     return this;
@@ -539,8 +554,6 @@ class Choices {
     if (!this.dropdown.isActive) {
       return this;
     }
-
-    this._removeHighlightedChoices();
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
@@ -970,15 +983,11 @@ class Choices {
     const renderableChoices = (choices: ChoiceFull[]): ChoiceFull[] =>
       choices.filter(
         (choice) =>
-          !choice.placeholder &&
-          (isSearching
-            ? (config.searchRenderSelectedChoices || !choice.selected) && !!choice.rank
-            : config.renderSelectedChoices || !choice.selected),
+          !choice.placeholder && (isSearching ? !!choice.rank : config.renderSelectedChoices || !choice.selected),
       );
 
     const showLabel = config.appendGroupInSearch && isSearching;
     let selectableChoices = false;
-    let highlightedEl: HTMLElement | null = null;
     const renderChoices = (choices: ChoiceFull[], withinGroup: boolean): void => {
       if (isSearching) {
         // sortByRank is used to ensure stable sorting, as scores are non-unique
@@ -1006,8 +1015,6 @@ class Choices {
         fragment.appendChild(dropdownItem);
         if (isSearching || !choice.selected) {
           selectableChoices = true;
-        } else if (!highlightedEl) {
-          highlightedEl = dropdownItem;
         }
 
         return index < choiceLimit;
@@ -1069,7 +1076,9 @@ class Choices {
     this._renderNotice(fragment);
     this.choiceList.element.replaceChildren(fragment);
 
-    this._highlightChoice(highlightedEl);
+    if (selectableChoices) {
+      this._highlightChoice();
+    }
   }
 
   _renderItems(): void {
@@ -2054,10 +2063,14 @@ class Choices {
     this.containerOuter.addInvalidState();
   }
 
-  /**
-   * Removes any highlighted choice options
-   */
-  _removeHighlightedChoices(): void {
+  _highlightChoice(el: HTMLElement | null = null): void {
+    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
+
+    if (!choices.length) {
+      return;
+    }
+
+    let passedEl = el;
     const { highlightedState } = this.config.classNames;
     const highlightedChoices = Array.from(
       this.dropdown.element.querySelectorAll<HTMLElement>(getClassNamesSelector(highlightedState)),
@@ -2068,19 +2081,6 @@ class Choices {
       removeClassesFromElement(choice, highlightedState);
       choice.setAttribute('aria-selected', 'false');
     });
-  }
-
-  _highlightChoice(el: HTMLElement | null = null): void {
-    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
-
-    if (!choices.length) {
-      return;
-    }
-
-    let passedEl = el;
-    const { highlightedState } = this.config.classNames;
-
-    this._removeHighlightedChoices();
 
     if (passedEl) {
       this._highlightPosition = choices.indexOf(passedEl);
@@ -2280,6 +2280,7 @@ class Choices {
   _createStructure(): void {
     const { containerInner, containerOuter, passedElement } = this;
     const dropdownElement = this.dropdown.element;
+    let dropdownParent: HTMLElement = containerOuter.element;
 
     // Hide original element
     passedElement.conceal();
@@ -2288,24 +2289,30 @@ class Choices {
     // Wrapper inner container with outer container
     containerOuter.wrap(containerInner.element);
 
-    containerOuter.element.appendChild(containerInner.element);
-    containerOuter.element.appendChild(dropdownElement);
-    containerInner.element.appendChild(this.itemList.element);
-    dropdownElement.appendChild(this.choiceList.element);
-
     if (this._isSelectOneElement) {
       this.input.placeholder = this.config.searchPlaceholderValue || '';
-      if (this.config.searchEnabled) {
-        dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
-      }
     } else {
-      if (!this._isSelectMultipleElement || this.config.searchEnabled) {
-        containerInner.element.appendChild(this.input.element);
-      }
       if (this._placeholderValue) {
         this.input.placeholder = this._placeholderValue;
       }
       this.input.setWidth();
+    }
+
+    if (this._dropdownFixed && this._dropdownParent instanceof HTMLElement) {
+      const { fixed } = this.config.classNames;
+      dropdownParent = this._dropdownParent;
+      addClassesToElement(dropdownElement, fixed);
+    }
+
+    containerOuter.element.appendChild(containerInner.element);
+    dropdownParent.appendChild(dropdownElement);
+    containerInner.element.appendChild(this.itemList.element);
+    dropdownElement.appendChild(this.choiceList.element);
+
+    if (!this._isSelectOneElement) {
+      containerInner.element.appendChild(this.input.element);
+    } else if (this.config.searchEnabled) {
+      dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
     }
 
     this._highlightPosition = 0;
