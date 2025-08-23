@@ -18,6 +18,7 @@ export const DEFAULT_CLASSNAMES: ClassNames = {
   itemChoice: ['choices__item--choice'],
   description: ['choices__description'],
   placeholder: ['choices__placeholder'],
+  fixed: ['choices__position--fixed'],
   group: ['choices__group'],
   groupHeading: ['choices__heading'],
   button: ['choices__button'],
@@ -93,4 +94,5 @@ export const DEFAULT_CONFIG: Options = {
   callbackOnCreateTemplates: null,
   classNames: DEFAULT_CLASSNAMES,
   appendGroupInSearch: false,
+  dropdownParent: null,
 } as const;

@@ -158,6 +158,10 @@ class Choices {
 
   _docRoot: ShadowRoot | HTMLElement;
 
+  _dropdownParent: HTMLElement | null;
+
+  _dropdownFixed: boolean;
+
   constructor(
     element: string | Element | HTMLInputElement | HTMLSelectElement = '[data-choice]',
     userConfig: Partial<Options> = {},
@@ -317,6 +321,18 @@ class Choices {
       this.initialisedOK = false;
 
       return;
+    }
+
+    // Position fixed for dropdown items
+    this._dropdownFixed = false;
+
+    if (config.dropdownParent) {
+      const parent = this._docRoot.querySelector<HTMLElement>(config.dropdownParent);
+
+      if (parent) {
+        this._dropdownFixed = true;
+        this._dropdownParent = parent;
+      }
     }
 
     // Let's go
@@ -513,8 +529,16 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.show();
-      const rect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(rect.bottom, rect.height);
+
+      if (this._dropdownFixed) {
+        const containerRect = this.containerOuter.element.getBoundingClientRect();
+        this.dropdown.element.style.top = `${containerRect.bottom}px`;
+        this.dropdown.element.style.left = `${containerRect.left}px`;
+        this.dropdown.element.style.width = `${containerRect.width}px`;
+      }
+
+      const dropdownRect = this.dropdown.element.getBoundingClientRect();
+      this.containerOuter.open(dropdownRect.bottom, dropdownRect.height);
 
       if (!preventInputFocus) {
         this.input.focus();
@@ -2256,6 +2280,7 @@ class Choices {
   _createStructure(): void {
     const { containerInner, containerOuter, passedElement } = this;
     const dropdownElement = this.dropdown.element;
+    let dropdownParent: HTMLElement = containerOuter.element;
 
     // Hide original element
     passedElement.conceal();
@@ -2273,8 +2298,14 @@ class Choices {
       this.input.setWidth();
     }
 
+    if (this._dropdownFixed && this._dropdownParent instanceof HTMLElement) {
+      const { fixed } = this.config.classNames;
+      dropdownParent = this._dropdownParent;
+      addClassesToElement(dropdownElement, fixed);
+    }
+
     containerOuter.element.appendChild(containerInner.element);
-    containerOuter.element.appendChild(dropdownElement);
+    dropdownParent.appendChild(dropdownElement);
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 
