@@ -100,6 +100,28 @@
           </script>
         </div>
 
+        <div data-test-hook="selected-choice-in-dropdown">
+          <label for="selected-choice-in-dropdown">Selected choice in dropdown</label>
+          <select
+            class="form-control"
+            name="selected-choice-in-dropdown"
+            id="selected-choice-in-dropdown"
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+            <option value="Choice 3" selected>Choice 3</option>
+            <option value="Choice 4">Choice 4</option>
+          </select>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#selected-choice-in-dropdown', {
+                allowHTML: true,
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="remove-button">
           <label for="choices-remove-button">Remove button</label>
           <select

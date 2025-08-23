@@ -350,6 +350,21 @@ describe(`Choices - select multiple`, () => {
       });
     });
 
+    describe('selected choices highlighted in dropdown', () => {
+      const selectedChoice = 'Choice 3';
+      test('on', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'selected-choice-in-dropdown');
+        await suite.startWithClick();
+
+        await suite.expectedItemCount(2);
+        await suite.expectedValue(selectedChoice);
+
+        await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
+        /* known limitation due to highlighting the first choice only right now */
+        // await expect(suite.choices.nth(3)).toHaveClass(/is-highlighted/);
+      });
+    });
+
     describe('remove button', () => {
       const testId = 'remove-button';
       describe('on click', () => {

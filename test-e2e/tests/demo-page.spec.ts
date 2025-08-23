@@ -25,7 +25,6 @@ describe(`Choices`, () => {
       await suite.startWithClick();
       await suite.expectVisibleDropdown();
       await suite.input.press('ArrowDown');
-      await suite.input.press('ArrowDown');
       await suite.advanceClock();
 
       await expect(page).toHaveScreenshot({

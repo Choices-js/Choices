@@ -2405,6 +2405,7 @@ var Choices = /** @class */ (function () {
         };
         var showLabel = config.appendGroupInSearch && isSearching;
         var selectableChoices = false;
+        var highlightedEl = null;
         var renderChoices = function (choices, withinGroup) {
             if (isSearching) {
                 // sortByRank is used to ensure stable sorting, as scores are non-unique
@@ -2425,6 +2426,9 @@ var Choices = /** @class */ (function () {
                 fragment.appendChild(dropdownItem);
                 if (isSearching || !choice.selected) {
                     selectableChoices = true;
+                }
+                else if (!highlightedEl) {
+                    highlightedEl = dropdownItem;
                 }
                 return index < choiceLimit;
             });
@@ -2473,9 +2477,7 @@ var Choices = /** @class */ (function () {
         }
         this._renderNotice(fragment);
         this.choiceList.element.replaceChildren(fragment);
-        if (selectableChoices) {
-            this._highlightChoice();
-        }
+        this._highlightChoice(highlightedEl);
     };
     Choices.prototype._renderItems = function () {
         var _this = this;
