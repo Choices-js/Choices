@@ -205,6 +205,7 @@ $choices-placeholder-opacity: 0.5 !default;
     border-color: var(--choices-invalid-color, #{$choices-invalid-color});
   }
 
+  /** ToDo: rewrite to be applied to the dropdown */
   .is-flipped.is-open & {
     border-radius: 0 0 var(--choices-border-radius, #{$choices-border-radius}) var(--choices-border-radius, #{$choices-border-radius});
   }
@@ -294,7 +295,7 @@ $choices-placeholder-opacity: 0.5 !default;
     border-color: color-mix(in srgb, var(--choices-keyline-color, #{$choices-keyline-color}) 85%, var(--choices-darken, black));
   }
 
-  .is-flipped & {
+  &.is-flipped {
     top: auto;
     bottom: 100%;
     margin-top: 0;
