@@ -528,17 +528,23 @@ class Choices {
     }
 
     requestAnimationFrame(() => {
-      this.dropdown.show();
+      const containerRect = this.containerOuter.element.getBoundingClientRect();
 
       if (this._dropdownDetached) {
-        const containerRect = this.containerOuter.element.getBoundingClientRect();
-        this.dropdown.element.style.top = `${containerRect.bottom}px`;
+        this.dropdown.element.style.top = `${window.scrollY + containerRect.bottom}px`;
         this.dropdown.element.style.left = `${containerRect.left}px`;
         this.dropdown.element.style.width = `${containerRect.width}px`;
       }
 
+      this.dropdown.show();
+
       const dropdownRect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(dropdownRect.bottom, dropdownRect.height);
+      const flipped = this.containerOuter.open(dropdownRect.bottom, dropdownRect.height, this.dropdown);
+
+      if (this._dropdownDetached && flipped) {
+        this.dropdown.element.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
+        this.dropdown.element.style.bottom = `${document.body.offsetHeight - containerRect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
+      }
 
       if (!preventInputFocus) {
         this.input.focus();
@@ -557,7 +563,7 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
-      this.containerOuter.close();
+      this.containerOuter.close(this.dropdown);
 
       if (!preventInputBlur && this._canSearch) {
         this.input.removeActiveDescendant();
@@ -2299,9 +2305,7 @@ class Choices {
     }
 
     if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
-      const { fixed } = this.config.classNames;
       dropdownParent = this._dropdownParent;
-      addClassesToElement(dropdownElement, fixed);
     }
 
     containerOuter.element.appendChild(containerInner.element);
