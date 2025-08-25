@@ -160,7 +160,7 @@ class Choices {
 
   _dropdownParent: HTMLElement | null;
 
-  _dropdownFixed: boolean;
+  _dropdownDetached: boolean;
 
   constructor(
     element: string | Element | HTMLInputElement | HTMLSelectElement = '[data-choice]',
@@ -323,14 +323,14 @@ class Choices {
       return;
     }
 
-    // Position fixed for dropdown items
-    this._dropdownFixed = false;
+    // Dropdown is detached from the original wrapper
+    this._dropdownDetached = false;
 
     if (config.dropdownParent) {
       const parent = this._docRoot.querySelector<HTMLElement>(config.dropdownParent);
 
       if (parent) {
-        this._dropdownFixed = true;
+        this._dropdownDetached = true;
         this._dropdownParent = parent;
       }
     }
@@ -530,7 +530,7 @@ class Choices {
     requestAnimationFrame(() => {
       this.dropdown.show();
 
-      if (this._dropdownFixed) {
+      if (this._dropdownDetached) {
         const containerRect = this.containerOuter.element.getBoundingClientRect();
         this.dropdown.element.style.top = `${containerRect.bottom}px`;
         this.dropdown.element.style.left = `${containerRect.left}px`;
@@ -2298,7 +2298,7 @@ class Choices {
       this.input.setWidth();
     }
 
-    if (this._dropdownFixed && this._dropdownParent instanceof HTMLElement) {
+    if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
       const { fixed } = this.config.classNames;
       dropdownParent = this._dropdownParent;
       addClassesToElement(dropdownElement, fixed);

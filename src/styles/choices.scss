@@ -272,10 +272,6 @@ $choices-placeholder-opacity: 0.5 !default;
   }
 }
 
-.#{$choices-selector}__position--fixed {
-  position: fixed !important;
-}
-
 %choices-dropdown {
   display: none;
   z-index: var(--choices-z-index, #{$choices-z-index});

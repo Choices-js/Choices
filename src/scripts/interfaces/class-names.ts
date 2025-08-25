@@ -28,8 +28,6 @@ export interface ClassNames {
   description: string | Array<string>;
   /** @default ['choices__placeholder'] */
   placeholder: string | Array<string>;
-  /** @default ['choices__position-fixed'] */
-  fixed: string | Array<string>;
   /** @default ['choices__group'] */
   group: string | Array<string>;
   /** @default ['choices__heading'] */
