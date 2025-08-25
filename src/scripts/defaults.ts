@@ -93,4 +93,5 @@ export const DEFAULT_CONFIG: Options = {
   callbackOnCreateTemplates: null,
   classNames: DEFAULT_CLASSNAMES,
   appendGroupInSearch: false,
+  dropdownParent: null,
 } as const;

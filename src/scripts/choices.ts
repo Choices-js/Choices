@@ -158,6 +158,10 @@ class Choices {
 
   _docRoot: ShadowRoot | HTMLElement;
 
+  _dropdownParent: HTMLElement | null;
+
+  _dropdownDetached: boolean;
+
   constructor(
     element: string | Element | HTMLInputElement | HTMLSelectElement = '[data-choice]',
     userConfig: Partial<Options> = {},
@@ -317,6 +321,18 @@ class Choices {
       this.initialisedOK = false;
 
       return;
+    }
+
+    // Dropdown is detached from the original wrapper
+    this._dropdownDetached = false;
+
+    if (config.dropdownParent) {
+      const parent = this._docRoot.querySelector<HTMLElement>(config.dropdownParent);
+
+      if (parent) {
+        this._dropdownDetached = true;
+        this._dropdownParent = parent;
+      }
     }
 
     // Let's go
@@ -512,9 +528,23 @@ class Choices {
     }
 
     requestAnimationFrame(() => {
+      const containerRect = this.containerOuter.element.getBoundingClientRect();
+
+      if (this._dropdownDetached) {
+        this.dropdown.element.style.top = `${window.scrollY + containerRect.bottom}px`;
+        this.dropdown.element.style.left = `${containerRect.left}px`;
+        this.dropdown.element.style.width = `${containerRect.width}px`;
+      }
+
       this.dropdown.show();
-      const rect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(rect.bottom, rect.height);
+
+      const dropdownRect = this.dropdown.element.getBoundingClientRect();
+      const flipped = this.containerOuter.open(dropdownRect.bottom, dropdownRect.height, this.dropdown);
+
+      if (this._dropdownDetached && flipped) {
+        this.dropdown.element.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
+        this.dropdown.element.style.bottom = `${document.body.offsetHeight - containerRect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
+      }
 
       if (!preventInputFocus) {
         this.input.focus();
@@ -533,7 +563,7 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
-      this.containerOuter.close();
+      this.containerOuter.close(this.dropdown);
 
       if (!preventInputBlur && this._canSearch) {
         this.input.removeActiveDescendant();
@@ -2256,6 +2286,7 @@ class Choices {
   _createStructure(): void {
     const { containerInner, containerOuter, passedElement } = this;
     const dropdownElement = this.dropdown.element;
+    let dropdownParent: HTMLElement = containerOuter.element;
 
     // Hide original element
     passedElement.conceal();
@@ -2273,8 +2304,12 @@ class Choices {
       this.input.setWidth();
     }
 
+    if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
+      dropdownParent = this._dropdownParent;
+    }
+
     containerOuter.element.appendChild(containerInner.element);
-    containerOuter.element.appendChild(dropdownElement);
+    dropdownParent.appendChild(dropdownElement);
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 

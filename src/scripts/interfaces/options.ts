@@ -616,4 +616,6 @@ export interface Options {
   callbackOnCreateTemplates: CallbackOnCreateTemplatesFn | null;
 
   appendGroupInSearch: boolean;
+
+  dropdownParent: string | null;
 }
