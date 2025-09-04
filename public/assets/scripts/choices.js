@@ -4246,7 +4246,7 @@
             if (!items.length || !this.config.removeItems || !this.config.removeItemButton) {
                 return;
             }
-            var id = element && parseDataSetId(element.parentElement);
+            var id = element && parseDataSetId(element.closest('[data-id]'));
             var itemToRemove = id && items.find(function (item) { return item.id === id; });
             if (!itemToRemove) {
                 return;
@@ -4826,7 +4826,7 @@
          */
         Choices.prototype._onMouseDown = function (event) {
             var target = event.target;
-            if (!(target instanceof HTMLElement)) {
+            if (!(target instanceof Element)) {
                 return;
             }
             // If we have our mouse down on the scrollbar and are on IE11...
