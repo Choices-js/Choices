@@ -1234,6 +1234,8 @@ class Choices {
     this._store.withTxn(() => {
       // Remove item associated with button
       this._removeItem(itemToRemove);
+      const passedElementValueModified = this.passedElement.value.split(",").filter(x=> x !== itemToRemove.value)
+      this.passedElement.value = passedElementValueModified.join(",")
       this._triggerChange(itemToRemove.value);
 
       if (this._isSelectOneElement && !this._hasNonChoicePlaceholder) {
