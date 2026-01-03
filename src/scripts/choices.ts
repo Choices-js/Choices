@@ -1793,7 +1793,10 @@ class Choices {
           return;
         }
 
-        this._addChoice(mapInputToChoice<string>(value, false, this.config.allowHtmlUserInput), true, true);
+        value.split(this.config.delimiter)
+              .map((e: string) => mapInputToChoice<string>(e.trim(), false, this.config.allowHtmlUserInput))
+              .forEach((elementItem: ChoiceFull) => this._addChoice(elementItem, true, true));
+
         addedItem = true;
       }
 
