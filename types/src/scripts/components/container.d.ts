@@ -27,6 +27,8 @@ export default class Container {
     close(): void;
     addFocusState(): void;
     removeFocusState(): void;
+    addInvalidState(): void;
+    removeInvalidState(): void;
     enable(): void;
     disable(): void;
     wrap(element: HTMLElement): void;

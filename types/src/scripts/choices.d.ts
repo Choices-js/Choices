@@ -155,6 +155,9 @@ declare class Choices {
     _displayNotice(text: string, type: NoticeType, openDropdown?: boolean): void;
     _clearNotice(): void;
     _renderNotice(fragment?: DocumentFragment): void;
+    /**
+     * @deprecated Use utils.getChoiceForOutput
+     */
     _getChoiceForOutput(choice: ChoiceFull, keyCode?: number): EventChoice;
     _triggerChange(value: any): void;
     _handleButtonAction(element: HTMLElement): void;
@@ -193,6 +196,14 @@ declare class Choices {
     _onFocus({ target }: Pick<FocusEvent, 'target'>): void;
     _onBlur({ target }: Pick<FocusEvent, 'target'>): void;
     _onFormReset(): void;
+    _onChange(event: Event & {
+        target: HTMLInputElement | HTMLSelectElement;
+    }): void;
+    _onInvalid(): void;
+    /**
+     * Removes any highlighted choice options
+     */
+    _removeHighlightedChoices(): void;
     _highlightChoice(el?: HTMLElement | null): void;
     _addItem(item: ChoiceFull, withEvents?: boolean, userTriggered?: boolean): void;
     _removeItem(item: ChoiceFull): void;

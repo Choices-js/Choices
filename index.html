@@ -54,28 +54,17 @@
     <link rel="stylesheet" href="assets/styles/choices.min.css" />
     <script src="assets/scripts/choices.js"></script>
     <!-- End Choices includes -->
-
-    <!--[if lt IE 9]>
-      <style>
-        .hidden-ie {
-          display: none;
-        }
-        .visible-ie {
-          display: block;
-        }
-      </style>
-    <![endif]-->
   </head>
 
   <body>
     <div class="container">
       <div class="section">
         <a href="https://github.com/jshjohnson/Choices" class="logo">
-          <img
-            src="assets/images/logo.svg"
-            alt="Choices.js logo"
-            class="logo-img hidden-ie"
-          />
+          <picture style="display: flex">
+            <source media="(prefers-color-scheme: dark)" srcset="assets/images/logo--dark.svg" class="logo-img source-dark">
+            <source media="(prefers-color-scheme: light)" srcset="assets/images/logo.svg" class="logo-img source-light">
+            <img src="assets/images/logo.svg" alt="Choices.js logo" class="logo-img">
+          </picture>
           <h1 class="visible-ie">Choices.js</h1>
         </a>
         <p>
@@ -548,6 +537,37 @@
 
           <button type="reset">Reset</button>
         </form>
+
+        <hr />
+        <h2>Form validation</h2>
+        <p>Try submitting the form first.</p>
+        <p>
+          <small>Then try setting the values as they are required!</small>
+        </p>
+        <form data-test-hook="invalid-form" style="margin-bottom:0">
+          <div data-test-hook="invalid-select">
+            <label for="invalid-select">Change me!</label>
+            <select class="form-control" name="reset-simple" id="invalid-select" required>
+              <option value selected>-</option>
+              <option value="Option 1">Option 1</option>
+              <option value="Option 2">Option 2</option>
+              <option value="Option 3">Option 3</option>
+              <option value="Option 4">Option 4</option>
+              <option value="Option 5">Option 5</option>
+            </select>
+          </div>
+          <div data-test-hook="invalid-input">
+            <label for="invalid-input">And me!</label>
+            <input
+              class="form-control"
+              id="invalid-input"
+              type="text"
+              placeholder="Enter something"
+              required
+            />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
       </div>
     </div>
     <script>
@@ -943,6 +963,21 @@
         var resetMultiple = new Choices('#reset-multiple', {
           allowHTML: true,
           removeItemButton: true,
+        });
+
+        var invalidText = new Choices(
+          document.getElementById('invalid-input'),
+          {
+            allowHTML: true,
+            delimiter: ',',
+            editItems: true,
+            maxItemCount: 5,
+            removeItemButton: true,
+          }
+        );
+
+        var invalidSelect = new Choices(document.getElementById('invalid-select'), {
+          allowHTML: true,
         });
       });
     </script>
