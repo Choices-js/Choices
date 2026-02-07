@@ -529,21 +529,22 @@ class Choices {
 
     requestAnimationFrame(() => {
       const containerRect = this.containerOuter.element.getBoundingClientRect();
+      const dropdownElement = this.dropdown.element;
 
       if (this._dropdownDetached) {
-        this.dropdown.element.style.top = `${window.scrollY + containerRect.bottom}px`;
-        this.dropdown.element.style.left = `${containerRect.left}px`;
-        this.dropdown.element.style.width = `${containerRect.width}px`;
+        dropdownElement.style.top = `${window.scrollY + containerRect.bottom}px`;
+        dropdownElement.style.left = `${containerRect.left}px`;
+        dropdownElement.style.width = `${containerRect.width}px`;
       }
 
       this.dropdown.show();
 
-      const dropdownRect = this.dropdown.element.getBoundingClientRect();
-      const flipped = this.containerOuter.open(dropdownRect.bottom, dropdownRect.height, this.dropdown);
+      const dropdownRect = dropdownElement.getBoundingClientRect();
+      const flipped = this.containerOuter.open(dropdownElement, dropdownRect.bottom, dropdownRect.height);
 
       if (this._dropdownDetached && flipped) {
-        this.dropdown.element.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
-        this.dropdown.element.style.bottom = `${document.body.offsetHeight - containerRect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
+        dropdownElement.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
+        dropdownElement.style.bottom = `${document.body.offsetHeight - containerRect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
       }
 
       if (!preventInputFocus) {
@@ -574,7 +575,7 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
-      this.containerOuter.close(this.dropdown);
+      this.containerOuter.close(this.dropdown.element);
 
       if (!preventInputBlur && this._canSearch) {
         this.input.removeActiveDescendant();

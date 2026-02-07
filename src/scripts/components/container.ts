@@ -2,7 +2,6 @@ import { addClassesToElement, removeClassesFromElement } from '../lib/utils';
 import { ClassNames } from '../interfaces/class-names';
 import { PositionOptionsType } from '../interfaces/position-options-type';
 import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
-import Dropdown from './dropdown';
 
 export default class Container {
   element: HTMLElement;
@@ -69,32 +68,28 @@ export default class Container {
     this.element.removeAttribute('aria-activedescendant');
   }
 
-  open(dropdownPos: number, dropdownHeight: number, dropdown: Dropdown): boolean {
+  open(dropdown: HTMLElement, dropdownPos: number, dropdownHeight: number): boolean {
     addClassesToElement(this.element, this.classNames.openState);
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
 
     if (this.shouldFlip(dropdownPos, dropdownHeight)) {
-      addClassesToElement(dropdown.element, this.classNames.flippedState);
+      addClassesToElement(dropdown, this.classNames.flippedState);
       this.isFlipped = true;
-
-      return true;
     }
 
-    return false;
+    return this.isFlipped;
   }
 
-  close(dropdown: Dropdown): void {
+  close(dropdown: HTMLElement): void {
     removeClassesFromElement(this.element, this.classNames.openState);
     this.element.setAttribute('aria-expanded', 'false');
     this.removeActiveDescendant();
     this.isOpen = false;
 
     // A dropdown flips if it does not have space within the page
-    if (this.isFlipped) {
-      removeClassesFromElement(dropdown.element, this.classNames.flippedState);
-      this.isFlipped = false;
-    }
+    removeClassesFromElement(dropdown, this.classNames.flippedState);
+    this.isFlipped = false;
   }
 
   addFocusState(): void {
