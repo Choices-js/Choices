@@ -169,7 +169,7 @@ import "choices.js/public/assets/styles/choices.css";
     resetScrollPosition: true,
     shouldSort: true,
     shouldSortItems: false,
-    sorter: () => {...},
+    sorter: (a, b) => sortByAlpha,
     shadowRoot: null,
     placeholder: true,
     placeholderValue: null,
@@ -609,7 +609,7 @@ const example = new Choices(element, {
   sorter: function(a, b) {
     return b.label.length - a.label.length;
   },
-};
+});
 ```
 
 ### placeholder
@@ -774,7 +774,7 @@ Return type must be safe to insert into HTML (ie use the 1st argument which is s
 ```js
 const example = new Choices(element, {
   valueComparer: (a, b) => value.trim() === b.trim(),
-};
+});
 ```
 
 ### labelId
