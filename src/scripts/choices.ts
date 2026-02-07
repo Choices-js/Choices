@@ -2305,7 +2305,10 @@ class Choices {
       if (this._placeholderValue) {
         this.input.placeholder = this._placeholderValue;
       }
-      this.input.setWidth();
+
+      if (this._placeholderValue || this._store.items.length > 0) {
+        this.input.setWidth();
+      }
     }
 
     this._highlightPosition = 0;
