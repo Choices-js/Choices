@@ -200,6 +200,10 @@ declare class Choices {
         target: HTMLInputElement | HTMLSelectElement;
     }): void;
     _onInvalid(): void;
+    /**
+     * Removes any highlighted choice options
+     */
+    _removeHighlightedChoices(): void;
     _highlightChoice(el?: HTMLElement | null): void;
     _addItem(item: ChoiceFull, withEvents?: boolean, userTriggered?: boolean): void;
     _removeItem(item: ChoiceFull): void;

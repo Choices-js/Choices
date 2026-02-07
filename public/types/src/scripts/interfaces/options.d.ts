@@ -297,6 +297,14 @@ export interface Options {
      */
     searchChoices: boolean;
     /**
+     * Whether disabled choices should be included in search results. If `true`, disabled choices will appear in search results but still cannot be selected.
+     *
+     * **Input types affected:** select-one, select-multiple
+     *
+     * @default false
+     */
+    searchDisabledChoices: boolean;
+    /**
      * The minimum length a search value should be before choices are searched.
      *
      * **Input types affected:** select-one, select-multiple
@@ -431,6 +439,14 @@ export interface Options {
      * @default 'auto';
      */
     renderSelectedChoices: 'auto' | 'always' | boolean;
+    /**
+     * Whether selected choices should be removed from the list during search.
+     *
+     * **Input types affected:** select-multiple
+     *
+     * @default false;
+     */
+    searchRenderSelectedChoices: boolean;
     /**
      * The text that is shown whilst choices are being populated via AJAX.
      *

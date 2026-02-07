@@ -94,7 +94,9 @@ export default class WrappedSelect extends WrappedElement<HTMLSelectElement> {
       labelClass:
         typeof option.dataset.labelClass !== 'undefined' ? stringToHtmlClass(option.dataset.labelClass) : undefined,
       labelDescription:
-        typeof option.dataset.labelDescription !== 'undefined' ? option.dataset.labelDescription : undefined,
+        typeof option.dataset.labelDescription !== 'undefined'
+          ? { trusted: option.dataset.labelDescription }
+          : undefined,
       customProperties: parseCustomProperties(option.dataset.customProperties),
     };
   }

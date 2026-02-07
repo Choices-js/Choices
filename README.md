@@ -161,6 +161,7 @@ import "choices.js/public/assets/styles/choices.css";
     paste: true,
     searchEnabled: true,
     searchChoices: true,
+    searchDisabledChoices: false,
     searchFloor: 1,
     searchResultLimit: 4,
     searchFields: ['label', 'value'],
@@ -176,6 +177,7 @@ import "choices.js/public/assets/styles/choices.css";
     prependValue: null,
     appendValue: null,
     renderSelectedChoices: 'auto',
+    searchRenderSelectedChoices: true,
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
@@ -483,6 +485,14 @@ Pass an array of objects:
 
 **Usage:** Whether choices should be filtered by input or not. If `false`, the search event will still emit, but choices will not be filtered.
 
+### searchDisabledChoices
+
+**Type:** `Boolean` **Default:** `false`
+
+**Input types affected:** `select-one`, `select-multiple`
+
+**Usage:** Whether disabled choices should be included in search results. If `true`, disabled choices will appear in search results but still cannot be selected. This is useful when you want users to see what options exist but are currently unavailable. Placeholders are always excluded from search results regardless of this setting.
+
 ### searchFields
 
 **Type:** `Array/String` **Default:** `['label', 'value']`
@@ -661,6 +671,23 @@ For backward compatibility, `<option value="">This is a placeholder</option>` an
 **Input types affected:** `select-multiple`
 
 **Usage:** Whether selected choices should be removed from the list. By default choices are removed when they are selected in multiple select box. To always render choices pass `always`.
+
+### searchRenderSelectedChoices
+
+**Type:** `Boolean` **Default:** `true'`
+
+**Input types affected:** `select-multiple`
+
+**Usage:** Whether selected choices should be removed from the list during search.
+
+**Example:**
+
+```js
+// Hide selected choices from search results
+const example = new Choices(element, {
+  searchRenderSelectedChoices: false,
+});
+```
 
 ### loadingText
 
@@ -843,8 +870,11 @@ const example = new Choices(element, {
 or more complex:
 
 ```js
+// StrToEl = (str: string) => HTMLElement | HTMLInputElement | HTMLOptionElement;
+// EscapeForTemplateFn = (allowHTML: boolean, s: StringUntrusted | StringPreEscaped | string) => string;
+// GetClassNamesFn = (s: string | Array<string>) => string;
 const example = new Choices(element, {
-  callbackOnCreateTemplates: function(strToEl, escapeForTemplate, getClassNames) {
+  callbackOnCreateTemplates: function(strToEl /*:StrToEl*/, escapeForTemplate /*:EscapeForTemplateFn*/, getClassNames /*:GetClassNamesFn*/) {
     return {
       item: ({ classNames }, data) => {
         return strToEl(`
@@ -854,10 +884,10 @@ const example = new Choices(element, {
             : classNames.itemSelectable).join(' ')
         } ${
           data.placeholder ? classNames.placeholder : ''
-        }" data-item data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+        }" data-item data-id="${data.id}" data-value="${escapeForTemplate(true, data.value)}" ${
           data.active ? 'aria-selected="true"' : ''
         } ${data.disabled ? 'aria-disabled="true"' : ''}>
-            <span>&bigstar;</span> ${escapeForTemplate(data.label)}
+            <span>&bigstar;</span> ${escapeForTemplate(true, data.label)}
           </div>
         `);
       },
@@ -869,10 +899,10 @@ const example = new Choices(element, {
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'
             : 'data-choice-selectable'
-        } data-id="${data.id}" data-value="${escapeForTemplate(data.value)}" ${
+        } data-id="${data.id}" data-value="${escapeForTemplate(true, data.value)}" ${
           data.groupId > 0 ? 'role="treeitem"' : 'role="option"'
         }>
-            <span>&bigstar;</span> ${escapeForTemplate(data.label)}
+            <span>&bigstar;</span> ${escapeForTemplate(true, data.label)}
           </div>
         `);
       },

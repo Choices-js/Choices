@@ -1,4 +1,5 @@
 import { StringUntrusted } from './string-untrusted';
+import { StringPreEscaped } from './string-pre-escaped';
 import { Types } from './types';
 // eslint-disable-next-line import/no-cycle
 import { GroupFull } from './group-full';
@@ -15,7 +16,7 @@ export interface ChoiceFull {
   itemEl?: HTMLElement;
   choiceEl?: HTMLElement;
   labelClass?: Array<string>;
-  labelDescription?: string;
+  labelDescription?: StringPreEscaped | StringUntrusted | string;
   customProperties?: Types.CustomProperties;
   disabled: boolean;
   active: boolean;

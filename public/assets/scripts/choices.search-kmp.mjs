@@ -1,4 +1,4 @@
-/*! choices.js v11.1.0 | © 2025 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.2.0 | © 2026 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -238,7 +238,7 @@ var getChoiceForOutput = function (choice, keyCode) {
         id: choice.id,
         highlighted: choice.highlighted,
         labelClass: choice.labelClass,
-        labelDescription: choice.labelDescription,
+        labelDescription: unwrapStringForRaw(choice.labelDescription),
         customProperties: choice.customProperties,
         disabled: choice.disabled,
         active: choice.active,
@@ -891,7 +891,9 @@ var WrappedSelect = /** @class */ (function (_super) {
             highlighted: false,
             placeholder: this.extractPlaceholder && (!option.value || option.hasAttribute('placeholder')),
             labelClass: typeof option.dataset.labelClass !== 'undefined' ? stringToHtmlClass(option.dataset.labelClass) : undefined,
-            labelDescription: typeof option.dataset.labelDescription !== 'undefined' ? option.dataset.labelDescription : undefined,
+            labelDescription: typeof option.dataset.labelDescription !== 'undefined'
+                ? { trusted: option.dataset.labelDescription }
+                : undefined,
             customProperties: parseCustomProperties(option.dataset.customProperties),
         };
     };
@@ -965,6 +967,7 @@ var DEFAULT_CONFIG = {
     paste: true,
     searchEnabled: true,
     searchChoices: true,
+    searchDisabledChoices: false,
     searchFloor: 1,
     searchResultLimit: 4,
     searchFields: ['label', 'value'],
@@ -980,6 +983,7 @@ var DEFAULT_CONFIG = {
     prependValue: null,
     appendValue: null,
     renderSelectedChoices: 'auto',
+    searchRenderSelectedChoices: true,
     loadingText: 'Loading...',
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
@@ -1291,7 +1295,8 @@ var Store = /** @class */ (function () {
          * Get choices that can be searched (excluding placeholders or disabled choices)
          */
         get: function () {
-            return this.choices.filter(function (choice) { return !choice.disabled && !choice.placeholder; });
+            var context = this._context;
+            return this.choices.filter(function (choice) { return !choice.placeholder && (context.searchDisabledChoices || !choice.disabled); });
         },
         enumerable: false,
         configurable: true
@@ -1405,11 +1410,12 @@ var SearchByKMP = /** @class */ (function () {
                 var field = this._fields[k];
                 if (field in obj && kmpSearch(needle, obj[field].toLowerCase()) !== -1) {
                     results.push({
-                        item: obj[field],
+                        item: obj,
                         score: count,
                         rank: count + 1,
                     });
                     count++;
+                    break;
                 }
             }
         }
@@ -1445,7 +1451,7 @@ var assignCustomProperties = function (el, choice, withCustomProperties) {
         dataset.labelClass = getClassNames(labelClass).join(' ');
     }
     if (labelDescription) {
-        dataset.labelDescription = labelDescription;
+        dataset.labelDescription = unwrapStringForRaw(labelDescription);
     }
     if (withCustomProperties && customProperties) {
         if (typeof customProperties === 'string') {
@@ -1829,7 +1835,7 @@ var Choices = /** @class */ (function () {
         this.initialised = false;
         this._store = new Store(config);
         this._currentValue = '';
-        config.searchEnabled = (!isText && config.searchEnabled) || isSelectMultiple;
+        config.searchEnabled = !isText && config.searchEnabled;
         this._canSearch = config.searchEnabled;
         this._isScrollingOnIe = false;
         this._highlightPosition = 0;
@@ -2069,6 +2075,11 @@ var Choices = /** @class */ (function () {
                 _this.input.focus();
             }
             _this.passedElement.triggerEvent(EventType.showDropdown);
+            var activeElement = _this.choiceList.element.querySelector(getClassNamesSelector(_this.config.classNames.selectedState));
+            if (activeElement !== null && !isScrolledIntoView(activeElement, _this.choiceList.element)) {
+                // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
+                activeElement.scrollIntoView();
+            }
         });
         return this;
     };
@@ -2077,6 +2088,7 @@ var Choices = /** @class */ (function () {
         if (!this.dropdown.isActive) {
             return this;
         }
+        this._removeHighlightedChoices();
         requestAnimationFrame(function () {
             _this.dropdown.hide();
             _this.containerOuter.close();
@@ -2441,11 +2453,15 @@ var Choices = /** @class */ (function () {
         var fragment = document.createDocumentFragment();
         var renderableChoices = function (choices) {
             return choices.filter(function (choice) {
-                return !choice.placeholder && (isSearching ? !!choice.rank : config.renderSelectedChoices || !choice.selected);
+                return !choice.placeholder &&
+                    (isSearching
+                        ? (config.searchRenderSelectedChoices || !choice.selected) && !!choice.rank
+                        : config.renderSelectedChoices || !choice.selected);
             });
         };
         var showLabel = config.appendGroupInSearch && isSearching;
         var selectableChoices = false;
+        var highlightedEl = null;
         var renderChoices = function (choices, withinGroup) {
             if (isSearching) {
                 // sortByRank is used to ensure stable sorting, as scores are non-unique
@@ -2466,6 +2482,9 @@ var Choices = /** @class */ (function () {
                 fragment.appendChild(dropdownItem);
                 if (isSearching || !choice.selected) {
                     selectableChoices = true;
+                }
+                else if (!highlightedEl) {
+                    highlightedEl = dropdownItem;
                 }
                 return index < choiceLimit;
             });
@@ -2514,9 +2533,7 @@ var Choices = /** @class */ (function () {
         }
         this._renderNotice(fragment);
         this.choiceList.element.replaceChildren(fragment);
-        if (selectableChoices) {
-            this._highlightChoice();
-        }
+        this._highlightChoice(highlightedEl);
     };
     Choices.prototype._renderItems = function () {
         var _this = this;
@@ -2647,7 +2664,7 @@ var Choices = /** @class */ (function () {
         if (!items.length || !this.config.removeItems || !this.config.removeItemButton) {
             return;
         }
-        var id = element && parseDataSetId(element.parentElement);
+        var id = element && parseDataSetId(element.closest('[data-id]'));
         var itemToRemove = id && items.find(function (item) { return item.id === id; });
         if (!itemToRemove) {
             return;
@@ -3227,7 +3244,7 @@ var Choices = /** @class */ (function () {
      */
     Choices.prototype._onMouseDown = function (event) {
         var target = event.target;
-        if (!(target instanceof HTMLElement)) {
+        if (!(target instanceof Element)) {
             return;
         }
         // If we have our mouse down on the scrollbar and are on IE11...
@@ -3369,6 +3386,18 @@ var Choices = /** @class */ (function () {
     Choices.prototype._onInvalid = function () {
         this.containerOuter.addInvalidState();
     };
+    /**
+     * Removes any highlighted choice options
+     */
+    Choices.prototype._removeHighlightedChoices = function () {
+        var highlightedState = this.config.classNames.highlightedState;
+        var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll(getClassNamesSelector(highlightedState)));
+        // Remove any highlighted choices
+        highlightedChoices.forEach(function (choice) {
+            removeClassesFromElement(choice, highlightedState);
+            choice.setAttribute('aria-selected', 'false');
+        });
+    };
     Choices.prototype._highlightChoice = function (el) {
         if (el === void 0) { el = null; }
         var choices = Array.from(this.dropdown.element.querySelectorAll(selectableChoiceIdentifier));
@@ -3377,12 +3406,7 @@ var Choices = /** @class */ (function () {
         }
         var passedEl = el;
         var highlightedState = this.config.classNames.highlightedState;
-        var highlightedChoices = Array.from(this.dropdown.element.querySelectorAll(getClassNamesSelector(highlightedState)));
-        // Remove any highlighted choices
-        highlightedChoices.forEach(function (choice) {
-            removeClassesFromElement(choice, highlightedState);
-            choice.setAttribute('aria-selected', 'false');
-        });
+        this._removeHighlightedChoices();
         if (passedEl) {
             this._highlightPosition = choices.indexOf(passedEl);
         }
@@ -3554,24 +3578,24 @@ var Choices = /** @class */ (function () {
         containerInner.wrap(passedElement.element);
         // Wrapper inner container with outer container
         containerOuter.wrap(containerInner.element);
-        if (this._isSelectOneElement) {
-            this.input.placeholder = this.config.searchPlaceholderValue || '';
-        }
-        else {
-            if (this._placeholderValue) {
-                this.input.placeholder = this._placeholderValue;
-            }
-            this.input.setWidth();
-        }
         containerOuter.element.appendChild(containerInner.element);
         containerOuter.element.appendChild(dropdownElement);
         containerInner.element.appendChild(this.itemList.element);
         dropdownElement.appendChild(this.choiceList.element);
-        if (!this._isSelectOneElement) {
-            containerInner.element.appendChild(this.input.element);
+        if (this._isSelectOneElement) {
+            this.input.placeholder = this.config.searchPlaceholderValue || '';
+            if (this.config.searchEnabled) {
+                dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+            }
         }
-        else if (this.config.searchEnabled) {
-            dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+        else {
+            if (!this._isSelectMultipleElement || this.config.searchEnabled) {
+                containerInner.element.appendChild(this.input.element);
+            }
+            if (this._placeholderValue) {
+                this.input.placeholder = this._placeholderValue;
+            }
+            this.input.setWidth();
         }
         this._highlightPosition = 0;
         this._isSearching = false;
@@ -3654,7 +3678,7 @@ var Choices = /** @class */ (function () {
             throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
         }
     };
-    Choices.version = '11.1.0';
+    Choices.version = '11.2.0';
     return Choices;
 }());
 

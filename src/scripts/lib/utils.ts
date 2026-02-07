@@ -135,7 +135,7 @@ export const getChoiceForOutput = (choice: ChoiceFull, keyCode?: number): EventC
     id: choice.id,
     highlighted: choice.highlighted,
     labelClass: choice.labelClass,
-    labelDescription: choice.labelDescription,
+    labelDescription: unwrapStringForRaw(choice.labelDescription),
     customProperties: choice.customProperties,
     disabled: choice.disabled,
     active: choice.active,

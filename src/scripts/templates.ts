@@ -41,7 +41,7 @@ const assignCustomProperties = (el: HTMLElement, choice: ChoiceFull, withCustomP
   }
 
   if (labelDescription) {
-    dataset.labelDescription = labelDescription;
+    dataset.labelDescription = unwrapStringForRaw(labelDescription);
   }
 
   if (withCustomProperties && customProperties) {

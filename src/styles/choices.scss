@@ -319,14 +319,13 @@ $choices-placeholder-opacity: 0.5 !default;
     }
   }
   .#{$choices-selector}__item--selectable {
-    &[data-select-text] {
+    &.is-highlighted[data-select-text] {
       @media (min-width: 640px) {
         padding-right: 100px;
 
         &::after {
           content: attr(data-select-text);
           font-size: var(--choices-font-size-sm, #{$choices-font-size-sm});
-          opacity: 0;
           position: absolute;
           right: 10px;
           top: 50%;
@@ -346,12 +345,16 @@ $choices-placeholder-opacity: 0.5 !default;
       }
     }
 
+    // Reset the content on selected option
+    &.is-selected {
+      &::after {
+        content: none !important;
+      }
+    }
+
+    &.is-selected,
     &.is-highlighted {
       background-color: var(--choices-highlighted-color, #{$choices-highlighted-color});
-
-      &::after {
-        opacity: 0.5;
-      }
     }
   }
 }

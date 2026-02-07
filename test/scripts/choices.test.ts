@@ -47,6 +47,7 @@ describe('choices', () => {
             searchEnabled: false,
             closeDropdownOnSelect: true,
             renderSelectedChoices: false,
+            searchRenderSelectedChoices: true,
           });
         });
       });
@@ -68,6 +69,7 @@ describe('choices', () => {
             searchEnabled: false,
             closeDropdownOnSelect: true,
             renderSelectedChoices: false,
+            searchRenderSelectedChoices: true,
             ...config,
           });
         });
@@ -96,7 +98,7 @@ describe('choices', () => {
                 searchEnabled: false,
               });
 
-              expect(instance.config.searchEnabled).to.equal(true);
+              expect(instance.config.searchEnabled).to.equal(false);
             });
           });
         });
@@ -113,6 +115,21 @@ describe('choices', () => {
             });
 
             expect(instance.config.renderSelectedChoices).to.equal(false);
+          });
+        });
+
+        describe('passing the searchRenderSelectedChoices config option with false', () => {
+          it('keeps searchRenderSelectedChoices as false', () => {
+            document.body.innerHTML = `
+            <select data-choice multiple></select>
+            `;
+
+            instance = new Choices('[data-choice]', {
+              allowHTML: true,
+              searchRenderSelectedChoices: false,
+            });
+
+            expect(instance.config.searchRenderSelectedChoices).to.equal(false);
           });
         });
       });

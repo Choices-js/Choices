@@ -264,7 +264,7 @@ class Choices {
 
     this._store = new Store(config);
     this._currentValue = '';
-    config.searchEnabled = (!isText && config.searchEnabled) || isSelectMultiple;
+    config.searchEnabled = !isText && config.searchEnabled;
     this._canSearch = config.searchEnabled;
     this._isScrollingOnIe = false;
     this._highlightPosition = 0;
@@ -551,6 +551,15 @@ class Choices {
       }
 
       this.passedElement.triggerEvent(EventType.showDropdown);
+
+      const activeElement = this.choiceList.element.querySelector<HTMLElement>(
+        getClassNamesSelector(this.config.classNames.selectedState),
+      );
+
+      if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
+        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
+        activeElement.scrollIntoView();
+      }
     });
 
     return this;
@@ -560,6 +569,8 @@ class Choices {
     if (!this.dropdown.isActive) {
       return this;
     }
+
+    this._removeHighlightedChoices();
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
@@ -989,11 +1000,15 @@ class Choices {
     const renderableChoices = (choices: ChoiceFull[]): ChoiceFull[] =>
       choices.filter(
         (choice) =>
-          !choice.placeholder && (isSearching ? !!choice.rank : config.renderSelectedChoices || !choice.selected),
+          !choice.placeholder &&
+          (isSearching
+            ? (config.searchRenderSelectedChoices || !choice.selected) && !!choice.rank
+            : config.renderSelectedChoices || !choice.selected),
       );
 
     const showLabel = config.appendGroupInSearch && isSearching;
     let selectableChoices = false;
+    let highlightedEl: HTMLElement | null = null;
     const renderChoices = (choices: ChoiceFull[], withinGroup: boolean): void => {
       if (isSearching) {
         // sortByRank is used to ensure stable sorting, as scores are non-unique
@@ -1021,6 +1036,8 @@ class Choices {
         fragment.appendChild(dropdownItem);
         if (isSearching || !choice.selected) {
           selectableChoices = true;
+        } else if (!highlightedEl) {
+          highlightedEl = dropdownItem;
         }
 
         return index < choiceLimit;
@@ -1082,9 +1099,7 @@ class Choices {
     this._renderNotice(fragment);
     this.choiceList.element.replaceChildren(fragment);
 
-    if (selectableChoices) {
-      this._highlightChoice();
-    }
+    this._highlightChoice(highlightedEl);
   }
 
   _renderItems(): void {
@@ -2069,14 +2084,10 @@ class Choices {
     this.containerOuter.addInvalidState();
   }
 
-  _highlightChoice(el: HTMLElement | null = null): void {
-    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
-
-    if (!choices.length) {
-      return;
-    }
-
-    let passedEl = el;
+  /**
+   * Removes any highlighted choice options
+   */
+  _removeHighlightedChoices(): void {
     const { highlightedState } = this.config.classNames;
     const highlightedChoices = Array.from(
       this.dropdown.element.querySelectorAll<HTMLElement>(getClassNamesSelector(highlightedState)),
@@ -2087,6 +2098,19 @@ class Choices {
       removeClassesFromElement(choice, highlightedState);
       choice.setAttribute('aria-selected', 'false');
     });
+  }
+
+  _highlightChoice(el: HTMLElement | null = null): void {
+    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
+
+    if (!choices.length) {
+      return;
+    }
+
+    let passedEl = el;
+    const { highlightedState } = this.config.classNames;
+
+    this._removeHighlightedChoices();
 
     if (passedEl) {
       this._highlightPosition = choices.indexOf(passedEl);
@@ -2295,15 +2319,6 @@ class Choices {
     // Wrapper inner container with outer container
     containerOuter.wrap(containerInner.element);
 
-    if (this._isSelectOneElement) {
-      this.input.placeholder = this.config.searchPlaceholderValue || '';
-    } else {
-      if (this._placeholderValue) {
-        this.input.placeholder = this._placeholderValue;
-      }
-      this.input.setWidth();
-    }
-
     if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
       dropdownParent = this._dropdownParent;
     }
@@ -2313,10 +2328,19 @@ class Choices {
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 
-    if (!this._isSelectOneElement) {
-      containerInner.element.appendChild(this.input.element);
-    } else if (this.config.searchEnabled) {
-      dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+    if (this._isSelectOneElement) {
+      this.input.placeholder = this.config.searchPlaceholderValue || '';
+      if (this.config.searchEnabled) {
+        dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+      }
+    } else {
+      if (!this._isSelectMultipleElement || this.config.searchEnabled) {
+        containerInner.element.appendChild(this.input.element);
+      }
+      if (this._placeholderValue) {
+        this.input.placeholder = this._placeholderValue;
+      }
+      this.input.setWidth();
     }
 
     this._highlightPosition = 0;

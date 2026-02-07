@@ -118,7 +118,15 @@ describe('search', () => {
     });
     it('label suffix', () => {
       const results = searcher.search(`${haystack.length - 1}`);
-      expect(results.length).eq(2);
+      expect(results.length).eq(1);
+    });
+    it('search order', () => {
+      const results = searcher.search('label');
+
+      expect(results.length).eq(haystack.length);
+      haystack.forEach((value, index) => {
+        expect(results[index].item.value).eq(value.value);
+      });
     });
   });
 
@@ -140,6 +148,14 @@ describe('search', () => {
     it('label suffix', () => {
       const results = searcher.search(`${haystack.length - 1}`);
       expect(results.length).eq(0);
+    });
+    it('search order', () => {
+      const results = searcher.search('label');
+
+      expect(results.length).eq(haystack.length);
+      haystack.forEach((value, index) => {
+        expect(results[index].item.value).eq(value.value);
+      });
     });
   });
 });

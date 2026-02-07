@@ -214,6 +214,19 @@ describe(`Choices - select one`, () => {
       });
     });
 
+    describe('selected choice highlighted in dropdown', () => {
+      const selectedChoice = 'Choice 3';
+      test('on', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'selected-choice-in-dropdown');
+        await suite.startWithClick();
+
+        await suite.expectedItemCount(1);
+        await suite.expectedValue(selectedChoice);
+
+        await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
+      });
+    });
+
     describe('remove button', () => {
       const testId = 'remove-button';
       describe('on click', () => {

@@ -278,6 +278,15 @@ describe('reducers/store', () => {
         const expectedResponse = state.choices.filter((choice) => !choice.disabled && !choice.placeholder);
         expect(instance.searchableChoices).to.deep.equal(expectedResponse);
       });
+
+      it('includes disabled choices when searchDisabledChoices is true', () => {
+        const configWithDisabled = { ...Choices.defaults.allOptions, searchDisabledChoices: true };
+        const instanceWithConfig = new Store(configWithDisabled);
+        instanceWithConfig._state = state;
+
+        const expectedResponse = state.choices.filter((choice) => !choice.placeholder);
+        expect(instanceWithConfig.searchableChoices).to.deep.equal(expectedResponse);
+      });
     });
 
     describe('getChoiceById', () => {
