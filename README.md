@@ -536,6 +536,14 @@ var choices = new Choices(el, {
 });
 ```
 
+### dropdownParent
+
+**Type:** `string | null` **Default:** null
+
+**Input types affected:** `select-one`, `select-multiple`
+
+**Usage:**  CSS selector for the element to append the dropdown to. Similar to select2's appendTo option
+
 ### position
 
 **Type:** `String` **Default:** `auto`
