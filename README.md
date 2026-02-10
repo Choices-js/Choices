@@ -39,6 +39,7 @@ A vanilla, lightweight (~20kb gzipped 🎉), configurable select box/text input 
 
 - [Installation](#installation)
 - [Setup](#setup)
+- [Debug] (#debug)
 - [Terminology](#terminology)
 - [Input Types](#input-types)
 - [Configuration Options](#configuration-options)
@@ -237,6 +238,16 @@ import "choices.js/public/assets/styles/choices.css";
     callbackOnCreateTemplates: null,
     appendGroupInSearch: false,
   });
+```
+
+## Debug
+
+Sometimes when you click the dropdown and it opens, you may not be able to inspect styles because the menu closes as soon as you move the mouse.
+
+To work around this, paste the click code below into the browser console. After triggering it, select the related HTML element from the Elements panel and debug the styles normally.
+
+```js
+document.getElementsByClassName('choices')[0].click();
 ```
 
 ## Terminology
@@ -1402,6 +1413,8 @@ To setup a local environment: clone this repo, navigate into its directory in a 
 
 `npm install`
 
+Note: Node.js version: 20.14.0
+
 ### playwright
 
 e2e (End-to-end) tests are implemented using playwright, which requires installing likely with OS support.
@@ -1428,7 +1441,6 @@ https://www.jetbrains.com/help/phpstorm/playwright.html
 | `npm run js:build`        | Compile Choices to an uglified JavaScript file               |
 | `npm run css:watch`       | Watch SCSS files for changes. On a change, run build process |
 | `npm run css:build`       | Compile, minify and prefix SCSS files to CSS                 |
-
 
 ### Build flags
 
