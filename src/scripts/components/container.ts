@@ -68,7 +68,7 @@ export default class Container {
     this.element.removeAttribute('aria-activedescendant');
   }
 
-  open(dropdown: HTMLElement, dropdownPos: number, dropdownHeight: number): boolean {
+  open(dropdownPos: number, dropdownHeight: number, dropdown: HTMLElement): boolean {
     addClassesToElement(this.element, this.classNames.openState);
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
