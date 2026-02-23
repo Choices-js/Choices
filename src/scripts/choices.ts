@@ -264,7 +264,7 @@ class Choices {
 
     this._store = new Store(config);
     this._currentValue = '';
-    config.searchEnabled = (!isText && config.searchEnabled) || isSelectMultiple;
+    config.searchEnabled = !isText && config.searchEnabled;
     this._canSearch = config.searchEnabled;
     this._isScrollingOnIe = false;
     this._highlightPosition = 0;
@@ -310,6 +310,7 @@ class Choices {
     this._onDeleteKey = this._onDeleteKey.bind(this);
     this._onChange = this._onChange.bind(this);
     this._onInvalid = this._onInvalid.bind(this);
+    this._onWindowResize = this._onWindowResize.bind(this);
 
     // If element has already been initialised with Choices, fail silently
     if (this.passedElement.isActive) {
@@ -528,23 +529,17 @@ class Choices {
     }
 
     requestAnimationFrame(() => {
-      const containerRect = this.containerOuter.element.getBoundingClientRect();
-      const dropdownElement = this.dropdown.element;
-
       if (this._dropdownDetached) {
-        dropdownElement.style.top = `${window.scrollY + containerRect.bottom}px`;
-        dropdownElement.style.left = `${containerRect.left}px`;
-        dropdownElement.style.width = `${containerRect.width}px`;
+        this.setHorizontalDropdownPosition();
       }
 
       this.dropdown.show();
 
-      const dropdownRect = dropdownElement.getBoundingClientRect();
-      const flipped = this.containerOuter.open(dropdownElement, dropdownRect.bottom, dropdownRect.height);
+      const rect = this.dropdown.element.getBoundingClientRect();
+      const dropdownAbove = this.containerOuter.open(rect.bottom, rect.height, this.dropdown.element);
 
-      if (this._dropdownDetached && flipped) {
-        dropdownElement.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
-        dropdownElement.style.bottom = `${document.body.offsetHeight - containerRect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
+      if (this._dropdownDetached) {
+        this.setVerticalDropdownPosition(dropdownAbove);
       }
 
       if (!preventInputFocus) {
@@ -552,6 +547,15 @@ class Choices {
       }
 
       this.passedElement.triggerEvent(EventType.showDropdown);
+
+      const activeElement = this.choiceList.element.querySelector<HTMLElement>(
+        getClassNamesSelector(this.config.classNames.selectedState),
+      );
+
+      if (activeElement !== null && !isScrolledIntoView(activeElement, this.choiceList.element)) {
+        // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
+        activeElement.scrollIntoView();
+      }
     });
 
     return this;
@@ -561,6 +565,8 @@ class Choices {
     if (!this.dropdown.isActive) {
       return this;
     }
+
+    this._removeHighlightedChoices();
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
@@ -573,6 +579,29 @@ class Choices {
 
       this.passedElement.triggerEvent(EventType.hideDropdown);
     });
+
+    return this;
+  }
+
+  setHorizontalDropdownPosition(): this {
+    const containerRect = this.containerOuter.element.getBoundingClientRect();
+
+    this.dropdown.element.style.top = `${window.scrollY + containerRect.bottom}px`;
+    this.dropdown.element.style.left = `${containerRect.left}px`;
+    this.dropdown.element.style.width = `${containerRect.width}px`;
+
+    return this;
+  }
+
+  setVerticalDropdownPosition(above: boolean = false): this {
+    if (!above) {
+      return this;
+    }
+
+    const rect = this.containerOuter.element.getBoundingClientRect();
+
+    this.dropdown.element.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
+    this.dropdown.element.style.bottom = `${document.body.offsetHeight - rect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
 
     return this;
   }
@@ -990,11 +1019,15 @@ class Choices {
     const renderableChoices = (choices: ChoiceFull[]): ChoiceFull[] =>
       choices.filter(
         (choice) =>
-          !choice.placeholder && (isSearching ? !!choice.rank : config.renderSelectedChoices || !choice.selected),
+          !choice.placeholder &&
+          (isSearching
+            ? (config.searchRenderSelectedChoices || !choice.selected) && !!choice.rank
+            : config.renderSelectedChoices || !choice.selected),
       );
 
     const showLabel = config.appendGroupInSearch && isSearching;
     let selectableChoices = false;
+    let highlightedEl: HTMLElement | null = null;
     const renderChoices = (choices: ChoiceFull[], withinGroup: boolean): void => {
       if (isSearching) {
         // sortByRank is used to ensure stable sorting, as scores are non-unique
@@ -1022,6 +1055,8 @@ class Choices {
         fragment.appendChild(dropdownItem);
         if (isSearching || !choice.selected) {
           selectableChoices = true;
+        } else if (!highlightedEl) {
+          highlightedEl = dropdownItem;
         }
 
         return index < choiceLimit;
@@ -1083,9 +1118,7 @@ class Choices {
     this._renderNotice(fragment);
     this.choiceList.element.replaceChildren(fragment);
 
-    if (selectableChoices) {
-      this._highlightChoice();
-    }
+    this._highlightChoice(highlightedEl);
   }
 
   _renderItems(): void {
@@ -1532,6 +1565,7 @@ class Choices {
   _addEventListeners(): void {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
+    const dropdownElement = this.dropdown.element;
     const inputElement = this.input.element;
     const passedElement = this.passedElement.element;
 
@@ -1539,13 +1573,15 @@ class Choices {
     documentElement.addEventListener('touchend', this._onTouchEnd, true);
     outerElement.addEventListener('keydown', this._onKeyDown, true);
     outerElement.addEventListener('mousedown', this._onMouseDown, true);
+    dropdownElement.addEventListener('keydown', this._onKeyDown, true);
+    dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
 
     // passive events - doesn't call `preventDefault` or `stopPropagation`
     documentElement.addEventListener('click', this._onClick, { passive: true });
     documentElement.addEventListener('touchmove', this._onTouchMove, {
       passive: true,
     });
-    this.dropdown.element.addEventListener('mouseover', this._onMouseOver, {
+    dropdownElement.addEventListener('mouseover', this._onMouseOver, {
       passive: true,
     });
 
@@ -1588,22 +1624,29 @@ class Choices {
       });
     }
 
+    if (this._dropdownDetached) {
+      window.addEventListener('resize', this._onWindowResize);
+    }
+
     this.input.addEventListeners();
   }
 
   _removeEventListeners(): void {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
+    const dropdownElement = this.dropdown.element;
     const inputElement = this.input.element;
     const passedElement = this.passedElement.element;
 
     documentElement.removeEventListener('touchend', this._onTouchEnd, true);
     outerElement.removeEventListener('keydown', this._onKeyDown, true);
     outerElement.removeEventListener('mousedown', this._onMouseDown, true);
+    dropdownElement.removeEventListener('keydown', this._onKeyDown);
+    dropdownElement.removeEventListener('mousedown', this._onMouseDown);
 
     documentElement.removeEventListener('click', this._onClick);
     documentElement.removeEventListener('touchmove', this._onTouchMove);
-    this.dropdown.element.removeEventListener('mouseover', this._onMouseOver);
+    dropdownElement.removeEventListener('mouseover', this._onMouseOver);
 
     if (this._isSelectOneElement) {
       outerElement.removeEventListener('focus', this._onFocus);
@@ -1622,6 +1665,10 @@ class Choices {
     if (passedElement.hasAttribute('required')) {
       passedElement.removeEventListener('change', this._onChange);
       passedElement.removeEventListener('invalid', this._onInvalid);
+    }
+
+    if (this._dropdownDetached) {
+      window.removeEventListener('resize', this._onWindowResize);
     }
 
     this.input.removeEventListeners();
@@ -2070,14 +2117,24 @@ class Choices {
     this.containerOuter.addInvalidState();
   }
 
-  _highlightChoice(el: HTMLElement | null = null): void {
-    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
+  _onWindowResize(): void {
+    this.setHorizontalDropdownPosition();
 
-    if (!choices.length) {
+    if (!this.dropdown.isActive) {
       return;
     }
 
-    let passedEl = el;
+    const rect = this.dropdown.element.getBoundingClientRect();
+
+    const dropdownAbove = this.containerOuter.shouldFlip(rect.bottom, rect.height);
+
+    this.setVerticalDropdownPosition(dropdownAbove);
+  }
+
+  /**
+   * Removes any highlighted choice options
+   */
+  _removeHighlightedChoices(): void {
     const { highlightedState } = this.config.classNames;
     const highlightedChoices = Array.from(
       this.dropdown.element.querySelectorAll<HTMLElement>(getClassNamesSelector(highlightedState)),
@@ -2088,6 +2145,19 @@ class Choices {
       removeClassesFromElement(choice, highlightedState);
       choice.setAttribute('aria-selected', 'false');
     });
+  }
+
+  _highlightChoice(el: HTMLElement | null = null): void {
+    const choices = Array.from(this.dropdown.element.querySelectorAll<HTMLElement>(selectableChoiceIdentifier));
+
+    if (!choices.length) {
+      return;
+    }
+
+    let passedEl = el;
+    const { highlightedState } = this.config.classNames;
+
+    this._removeHighlightedChoices();
 
     if (passedEl) {
       this._highlightPosition = choices.indexOf(passedEl);
@@ -2296,15 +2366,6 @@ class Choices {
     // Wrapper inner container with outer container
     containerOuter.wrap(containerInner.element);
 
-    if (this._isSelectOneElement) {
-      this.input.placeholder = this.config.searchPlaceholderValue || '';
-    } else {
-      if (this._placeholderValue) {
-        this.input.placeholder = this._placeholderValue;
-      }
-      this.input.setWidth();
-    }
-
     if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
       dropdownParent = this._dropdownParent;
     }
@@ -2314,10 +2375,19 @@ class Choices {
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 
-    if (!this._isSelectOneElement) {
-      containerInner.element.appendChild(this.input.element);
-    } else if (this.config.searchEnabled) {
-      dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+    if (this._isSelectOneElement) {
+      this.input.placeholder = this.config.searchPlaceholderValue || '';
+      if (this.config.searchEnabled) {
+        dropdownElement.insertBefore(this.input.element, dropdownElement.firstChild);
+      }
+    } else {
+      if (!this._isSelectMultipleElement || this.config.searchEnabled) {
+        containerInner.element.appendChild(this.input.element);
+      }
+      if (this._placeholderValue) {
+        this.input.placeholder = this._placeholderValue;
+      }
+      this.input.setWidth();
     }
 
     this._highlightPosition = 0;
