@@ -394,25 +394,26 @@ var Container = /** @class */ (function () {
     Container.prototype.removeActiveDescendant = function () {
         this.element.removeAttribute('aria-activedescendant');
     };
-    Container.prototype.open = function (dropdownPos, dropdownHeight) {
+    Container.prototype.open = function (dropdownPos, dropdownHeight, dropdown) {
         addClassesToElement(this.element, this.classNames.openState);
         this.element.setAttribute('aria-expanded', 'true');
         this.isOpen = true;
         if (this.shouldFlip(dropdownPos, dropdownHeight)) {
             addClassesToElement(this.element, this.classNames.flippedState);
+            addClassesToElement(dropdown, this.classNames.flippedState);
             this.isFlipped = true;
         }
+        return this.isFlipped;
     };
-    Container.prototype.close = function () {
+    Container.prototype.close = function (dropdown) {
         removeClassesFromElement(this.element, this.classNames.openState);
         this.element.setAttribute('aria-expanded', 'false');
         this.removeActiveDescendant();
         this.isOpen = false;
         // A dropdown flips if it does not have space within the page
-        if (this.isFlipped) {
-            removeClassesFromElement(this.element, this.classNames.flippedState);
-            this.isFlipped = false;
-        }
+        removeClassesFromElement(this.element, this.classNames.flippedState);
+        removeClassesFromElement(dropdown, this.classNames.flippedState);
+        this.isFlipped = false;
     };
     Container.prototype.addFocusState = function () {
         addClassesToElement(this.element, this.classNames.focusState);
@@ -922,6 +923,8 @@ var DEFAULT_CLASSNAMES = {
     listItems: ['choices__list--multiple'],
     listSingle: ['choices__list--single'],
     listDropdown: ['choices__list--dropdown'],
+    dropdownMultiple: ['choices__dropdown--multiple'],
+    dropdownSingle: ['choices__dropdown--single'],
     item: ['choices__item'],
     itemSelectable: ['choices__item--selectable'],
     itemDisabled: ['choices__item--disabled'],
@@ -1005,6 +1008,7 @@ var DEFAULT_CONFIG = {
     callbackOnCreateTemplates: null,
     classNames: DEFAULT_CLASSNAMES,
     appendGroupInSearch: false,
+    dropdownParent: null,
 };
 
 var removeItem = function (item) {
@@ -1645,11 +1649,12 @@ var templates = {
         }
         return inp;
     },
-    dropdown: function (_a) {
-        var _b = _a.classNames, list = _b.list, listDropdown = _b.listDropdown;
+    dropdown: function (_a, isSelectOneElement) {
+        var _b = _a.classNames, list = _b.list, listDropdown = _b.listDropdown, dropdownSingle = _b.dropdownSingle, dropdownMultiple = _b.dropdownMultiple;
         var div = document.createElement('div');
         addClassesToElement(div, list);
         addClassesToElement(div, listDropdown);
+        addClassesToElement(div, isSelectOneElement ? dropdownSingle : dropdownMultiple);
         div.setAttribute('aria-expanded', 'false');
         return div;
     },
@@ -1835,6 +1840,7 @@ var Choices = /** @class */ (function () {
         this._onDeleteKey = this._onDeleteKey.bind(this);
         this._onChange = this._onChange.bind(this);
         this._onInvalid = this._onInvalid.bind(this);
+        this._onWindowResize = this._onWindowResize.bind(this);
         // If element has already been initialised with Choices, fail silently
         if (this.passedElement.isActive) {
             if (!config.silent) {
@@ -1843,6 +1849,15 @@ var Choices = /** @class */ (function () {
             this.initialised = true;
             this.initialisedOK = false;
             return;
+        }
+        // Dropdown is detached from the original wrapper
+        this._dropdownDetached = false;
+        if (config.dropdownParent) {
+            var parent_1 = this._docRoot.querySelector(config.dropdownParent);
+            if (parent_1) {
+                this._dropdownDetached = true;
+                this._dropdownParent = parent_1;
+            }
         }
         // Let's go
         this.init();
@@ -2026,9 +2041,15 @@ var Choices = /** @class */ (function () {
             preventInputFocus = !this._canSearch;
         }
         requestAnimationFrame(function () {
+            if (_this._dropdownDetached) {
+                _this.setHorizontalDropdownPosition();
+            }
             _this.dropdown.show();
             var rect = _this.dropdown.element.getBoundingClientRect();
-            _this.containerOuter.open(rect.bottom, rect.height);
+            var dropdownAbove = _this.containerOuter.open(rect.bottom, rect.height, _this.dropdown.element);
+            if (_this._dropdownDetached) {
+                _this.setVerticalDropdownPosition(dropdownAbove);
+            }
             if (!preventInputFocus) {
                 _this.input.focus();
             }
@@ -2049,13 +2070,29 @@ var Choices = /** @class */ (function () {
         this._removeHighlightedChoices();
         requestAnimationFrame(function () {
             _this.dropdown.hide();
-            _this.containerOuter.close();
+            _this.containerOuter.close(_this.dropdown.element);
             if (!preventInputBlur && _this._canSearch) {
                 _this.input.removeActiveDescendant();
                 _this.input.blur();
             }
             _this.passedElement.triggerEvent(EventType.hideDropdown);
         });
+        return this;
+    };
+    Choices.prototype.setHorizontalDropdownPosition = function () {
+        var containerRect = this.containerOuter.element.getBoundingClientRect();
+        this.dropdown.element.style.top = "".concat(window.scrollY + containerRect.bottom, "px");
+        this.dropdown.element.style.left = "".concat(containerRect.left, "px");
+        this.dropdown.element.style.width = "".concat(containerRect.width, "px");
+        return this;
+    };
+    Choices.prototype.setVerticalDropdownPosition = function (above) {
+        if (above === void 0) { above = false; }
+        if (!above || !(this._dropdownParent instanceof HTMLElement)) {
+            return this;
+        }
+        var dropdownRect = this.dropdown.element.getBoundingClientRect();
+        this.dropdown.element.style.top = "".concat(this.containerOuter.element.offsetTop + 1 - dropdownRect.height, "px");
         return this;
     };
     Choices.prototype.getValue = function (valueOnly) {
@@ -2878,18 +2915,21 @@ var Choices = /** @class */ (function () {
     Choices.prototype._addEventListeners = function () {
         var documentElement = this._docRoot;
         var outerElement = this.containerOuter.element;
+        var dropdownElement = this.dropdown.element;
         var inputElement = this.input.element;
         var passedElement = this.passedElement.element;
         // capture events - can cancel event processing or propagation
         documentElement.addEventListener('touchend', this._onTouchEnd, true);
         outerElement.addEventListener('keydown', this._onKeyDown, true);
         outerElement.addEventListener('mousedown', this._onMouseDown, true);
+        dropdownElement.addEventListener('keydown', this._onKeyDown, true);
+        dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
         // passive events - doesn't call `preventDefault` or `stopPropagation`
         documentElement.addEventListener('click', this._onClick, { passive: true });
         documentElement.addEventListener('touchmove', this._onTouchMove, {
             passive: true,
         });
-        this.dropdown.element.addEventListener('mouseover', this._onMouseOver, {
+        dropdownElement.addEventListener('mouseover', this._onMouseOver, {
             passive: true,
         });
         if (this._isSelectOneElement) {
@@ -2925,19 +2965,25 @@ var Choices = /** @class */ (function () {
                 passive: true,
             });
         }
+        if (this._dropdownDetached) {
+            window.addEventListener('resize', this._onWindowResize);
+        }
         this.input.addEventListeners();
     };
     Choices.prototype._removeEventListeners = function () {
         var documentElement = this._docRoot;
         var outerElement = this.containerOuter.element;
+        var dropdownElement = this.dropdown.element;
         var inputElement = this.input.element;
         var passedElement = this.passedElement.element;
         documentElement.removeEventListener('touchend', this._onTouchEnd, true);
         outerElement.removeEventListener('keydown', this._onKeyDown, true);
         outerElement.removeEventListener('mousedown', this._onMouseDown, true);
+        dropdownElement.removeEventListener('keydown', this._onKeyDown);
+        dropdownElement.removeEventListener('mousedown', this._onMouseDown);
         documentElement.removeEventListener('click', this._onClick);
         documentElement.removeEventListener('touchmove', this._onTouchMove);
-        this.dropdown.element.removeEventListener('mouseover', this._onMouseOver);
+        dropdownElement.removeEventListener('mouseover', this._onMouseOver);
         if (this._isSelectOneElement) {
             outerElement.removeEventListener('focus', this._onFocus);
             outerElement.removeEventListener('blur', this._onBlur);
@@ -2952,6 +2998,9 @@ var Choices = /** @class */ (function () {
         if (passedElement.hasAttribute('required')) {
             passedElement.removeEventListener('change', this._onChange);
             passedElement.removeEventListener('invalid', this._onInvalid);
+        }
+        if (this._dropdownDetached) {
+            window.removeEventListener('resize', this._onWindowResize);
         }
         this.input.removeEventListeners();
     };
@@ -3344,6 +3393,15 @@ var Choices = /** @class */ (function () {
     Choices.prototype._onInvalid = function () {
         this.containerOuter.addInvalidState();
     };
+    Choices.prototype._onWindowResize = function () {
+        if (!this.dropdown.isActive) {
+            return;
+        }
+        this.setHorizontalDropdownPosition();
+        var rect = this.dropdown.element.getBoundingClientRect();
+        var dropdownAbove = this.containerOuter.shouldFlip(rect.bottom, rect.height);
+        this.setVerticalDropdownPosition(dropdownAbove);
+    };
     /**
      * Removes any highlighted choice options
      */
@@ -3522,7 +3580,7 @@ var Choices = /** @class */ (function () {
             element: templating.itemList(config, isSelectOneElement),
         });
         this.dropdown = new Dropdown({
-            element: templating.dropdown(config),
+            element: templating.dropdown(config, isSelectOneElement),
             classNames: classNames,
             type: elementType,
         });
@@ -3530,14 +3588,18 @@ var Choices = /** @class */ (function () {
     Choices.prototype._createStructure = function () {
         var _a = this, containerInner = _a.containerInner, containerOuter = _a.containerOuter, passedElement = _a.passedElement;
         var dropdownElement = this.dropdown.element;
+        var dropdownParent = containerOuter.element;
         // Hide original element
         passedElement.conceal();
         // Wrap input in container preserving DOM ordering
         containerInner.wrap(passedElement.element);
         // Wrapper inner container with outer container
         containerOuter.wrap(containerInner.element);
+        if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
+            dropdownParent = this._dropdownParent;
+        }
         containerOuter.element.appendChild(containerInner.element);
-        containerOuter.element.appendChild(dropdownElement);
+        dropdownParent.appendChild(dropdownElement);
         containerInner.element.appendChild(this.itemList.element);
         dropdownElement.appendChild(this.choiceList.element);
         if (this._isSelectOneElement) {
