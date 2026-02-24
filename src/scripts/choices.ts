@@ -594,14 +594,13 @@ class Choices {
   }
 
   setVerticalDropdownPosition(above: boolean = false): this {
-    if (!above) {
+    if (!above || !(this._dropdownParent instanceof HTMLElement)) {
       return this;
     }
 
-    const rect = this.containerOuter.element.getBoundingClientRect();
+    const dropdownRect = this.dropdown.element.getBoundingClientRect();
 
-    this.dropdown.element.style.top = 'auto'; // ToDo: calc from bottom or top - find a better way
-    this.dropdown.element.style.bottom = `${document.body.offsetHeight - rect.top}px`; //  /*- (containerRect.height + dropdownRect.height)}*/
+    this.dropdown.element.style.top = `${this.containerOuter.element.offsetTop + 1 - dropdownRect.height}px`;
 
     return this;
   }
@@ -2118,14 +2117,13 @@ class Choices {
   }
 
   _onWindowResize(): void {
-    this.setHorizontalDropdownPosition();
-
     if (!this.dropdown.isActive) {
       return;
     }
 
-    const rect = this.dropdown.element.getBoundingClientRect();
+    this.setHorizontalDropdownPosition();
 
+    const rect = this.dropdown.element.getBoundingClientRect();
     const dropdownAbove = this.containerOuter.shouldFlip(rect.bottom, rect.height);
 
     this.setVerticalDropdownPosition(dropdownAbove);
@@ -2348,7 +2346,7 @@ class Choices {
     });
 
     this.dropdown = new Dropdown({
-      element: templating.dropdown(config),
+      element: templating.dropdown(config, isSelectOneElement),
       classNames,
       type: elementType,
     });
