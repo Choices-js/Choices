@@ -74,6 +74,7 @@ export default class Container {
     this.isOpen = true;
 
     if (this.shouldFlip(dropdownPos, dropdownHeight)) {
+      addClassesToElement(this.element, this.classNames.flippedState);
       addClassesToElement(dropdown, this.classNames.flippedState);
       this.isFlipped = true;
     }
@@ -88,6 +89,7 @@ export default class Container {
     this.isOpen = false;
 
     // A dropdown flips if it does not have space within the page
+    removeClassesFromElement(this.element, this.classNames.flippedState);
     removeClassesFromElement(dropdown, this.classNames.flippedState);
     this.isFlipped = false;
   }
