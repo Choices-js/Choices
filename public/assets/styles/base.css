@@ -47,7 +47,6 @@ body {
   position: relative;
   margin: 0;
   width: 100%;
-  height: 100%;
 }
 
 body {
@@ -167,6 +166,11 @@ label + p {
 .section a:visited,
 .section a:focus {
   color: var(--link-color-section, var(--color-primary));
+}
+
+/** Set the section color on the dropdown list to not inherit the white color */
+body > .choices__list {
+  color: var(--section-color, #333);
 }
 
 .logo {
