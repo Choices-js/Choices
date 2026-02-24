@@ -181,6 +181,7 @@ label + p {
 }
 
 /** Set the section color on the dropdown list to not inherit the white color */
+// stylelint-disable-next-line selector-class-pattern
 body > .choices__list {
   color: var(--section-color, #333);
 }
