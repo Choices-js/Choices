@@ -204,6 +204,8 @@ import "choices.js/public/assets/styles/choices.css";
       listItems: ['choices__list--multiple'],
       listSingle: ['choices__list--single'],
       listDropdown: ['choices__list--dropdown'],
+      dropdownMultiple: ['choices__dropdown--multiple'],
+      dropdownSingle: ['choices__dropdown--single'],
       item: ['choices__item'],
       itemSelectable: ['choices__item--selectable'],
       itemDisabled: ['choices__item--disabled'],
