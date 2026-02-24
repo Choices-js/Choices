@@ -23,8 +23,8 @@ export default class Container {
     shouldFlip(dropdownPos: number, dropdownHeight: number): boolean;
     setActiveDescendant(activeDescendantID: string): void;
     removeActiveDescendant(): void;
-    open(dropdownPos: number, dropdownHeight: number, dropdown: HTMLElement): boolean;
-    close(dropdown: HTMLElement): void;
+    open(dropdownPos: number, dropdownHeight: number, dropdown?: HTMLElement | null): boolean;
+    close(dropdown?: HTMLElement | null): void;
     addFocusState(): void;
     removeFocusState(): void;
     addInvalidState(): void;

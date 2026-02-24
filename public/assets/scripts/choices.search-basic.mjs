@@ -404,24 +404,30 @@ var Container = /** @class */ (function () {
         this.element.removeAttribute('aria-activedescendant');
     };
     Container.prototype.open = function (dropdownPos, dropdownHeight, dropdown) {
+        if (dropdown === void 0) { dropdown = null; }
         addClassesToElement(this.element, this.classNames.openState);
         this.element.setAttribute('aria-expanded', 'true');
         this.isOpen = true;
         if (this.shouldFlip(dropdownPos, dropdownHeight)) {
             addClassesToElement(this.element, this.classNames.flippedState);
-            addClassesToElement(dropdown, this.classNames.flippedState);
+            if (dropdown !== null) {
+                addClassesToElement(dropdown, this.classNames.flippedState);
+            }
             this.isFlipped = true;
         }
         return this.isFlipped;
     };
     Container.prototype.close = function (dropdown) {
+        if (dropdown === void 0) { dropdown = null; }
         removeClassesFromElement(this.element, this.classNames.openState);
         this.element.setAttribute('aria-expanded', 'false');
         this.removeActiveDescendant();
         this.isOpen = false;
         // A dropdown flips if it does not have space within the page
         removeClassesFromElement(this.element, this.classNames.flippedState);
-        removeClassesFromElement(dropdown, this.classNames.flippedState);
+        if (dropdown !== null) {
+            removeClassesFromElement(dropdown, this.classNames.flippedState);
+        }
         this.isFlipped = false;
     };
     Container.prototype.addFocusState = function () {
@@ -4077,8 +4083,6 @@ var Choices = /** @class */ (function () {
         documentElement.addEventListener('touchend', this._onTouchEnd, true);
         outerElement.addEventListener('keydown', this._onKeyDown, true);
         outerElement.addEventListener('mousedown', this._onMouseDown, true);
-        dropdownElement.addEventListener('keydown', this._onKeyDown, true);
-        dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
         // passive events - doesn't call `preventDefault` or `stopPropagation`
         documentElement.addEventListener('click', this._onClick, { passive: true });
         documentElement.addEventListener('touchmove', this._onTouchMove, {
@@ -4121,6 +4125,8 @@ var Choices = /** @class */ (function () {
             });
         }
         if (this._dropdownDetached) {
+            dropdownElement.addEventListener('keydown', this._onKeyDown, true);
+            dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
             window.addEventListener('resize', this._onWindowResize);
         }
         this.input.addEventListeners();
@@ -4134,8 +4140,6 @@ var Choices = /** @class */ (function () {
         documentElement.removeEventListener('touchend', this._onTouchEnd, true);
         outerElement.removeEventListener('keydown', this._onKeyDown, true);
         outerElement.removeEventListener('mousedown', this._onMouseDown, true);
-        dropdownElement.removeEventListener('keydown', this._onKeyDown);
-        dropdownElement.removeEventListener('mousedown', this._onMouseDown);
         documentElement.removeEventListener('click', this._onClick);
         documentElement.removeEventListener('touchmove', this._onTouchMove);
         dropdownElement.removeEventListener('mouseover', this._onMouseOver);
@@ -4155,6 +4159,8 @@ var Choices = /** @class */ (function () {
             passedElement.removeEventListener('invalid', this._onInvalid);
         }
         if (this._dropdownDetached) {
+            dropdownElement.removeEventListener('keydown', this._onKeyDown);
+            dropdownElement.removeEventListener('mousedown', this._onMouseDown);
             window.removeEventListener('resize', this._onWindowResize);
         }
         this.input.removeEventListeners();
