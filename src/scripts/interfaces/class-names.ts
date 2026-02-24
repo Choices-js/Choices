@@ -16,6 +16,10 @@ export interface ClassNames {
   listSingle: string | Array<string>;
   /** @default ['choices__list--dropdown'] */
   listDropdown: string | Array<string>;
+  /** @default ['choices__dropdown--multiple'] */
+  dropdownMultiple: string | Array<string>;
+  /** @default ['choices__dropdown--single'] */
+  dropdownSingle: string | Array<string>;
   /** @default ['choices__item'] */
   item: string | Array<string>;
   /** @default ['choices__item--selectable'] */
