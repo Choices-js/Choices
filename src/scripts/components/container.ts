@@ -68,21 +68,25 @@ export default class Container {
     this.element.removeAttribute('aria-activedescendant');
   }
 
-  open(dropdownPos: number, dropdownHeight: number, dropdown: HTMLElement): boolean {
+  open(dropdownPos: number, dropdownHeight: number, dropdown: HTMLElement | null = null): boolean {
     addClassesToElement(this.element, this.classNames.openState);
     this.element.setAttribute('aria-expanded', 'true');
     this.isOpen = true;
 
     if (this.shouldFlip(dropdownPos, dropdownHeight)) {
       addClassesToElement(this.element, this.classNames.flippedState);
-      addClassesToElement(dropdown, this.classNames.flippedState);
+
+      if (dropdown !== null) {
+        addClassesToElement(dropdown, this.classNames.flippedState);
+      }
+
       this.isFlipped = true;
     }
 
     return this.isFlipped;
   }
 
-  close(dropdown: HTMLElement): void {
+  close(dropdown: HTMLElement | null = null): void {
     removeClassesFromElement(this.element, this.classNames.openState);
     this.element.setAttribute('aria-expanded', 'false');
     this.removeActiveDescendant();
@@ -90,7 +94,11 @@ export default class Container {
 
     // A dropdown flips if it does not have space within the page
     removeClassesFromElement(this.element, this.classNames.flippedState);
-    removeClassesFromElement(dropdown, this.classNames.flippedState);
+
+    if (dropdown !== null) {
+      removeClassesFromElement(dropdown, this.classNames.flippedState);
+    }
+
     this.isFlipped = false;
   }
 

@@ -1572,8 +1572,6 @@ class Choices {
     documentElement.addEventListener('touchend', this._onTouchEnd, true);
     outerElement.addEventListener('keydown', this._onKeyDown, true);
     outerElement.addEventListener('mousedown', this._onMouseDown, true);
-    dropdownElement.addEventListener('keydown', this._onKeyDown, true);
-    dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
 
     // passive events - doesn't call `preventDefault` or `stopPropagation`
     documentElement.addEventListener('click', this._onClick, { passive: true });
@@ -1624,6 +1622,8 @@ class Choices {
     }
 
     if (this._dropdownDetached) {
+      dropdownElement.addEventListener('keydown', this._onKeyDown, true);
+      dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
       window.addEventListener('resize', this._onWindowResize);
     }
 
@@ -1640,8 +1640,6 @@ class Choices {
     documentElement.removeEventListener('touchend', this._onTouchEnd, true);
     outerElement.removeEventListener('keydown', this._onKeyDown, true);
     outerElement.removeEventListener('mousedown', this._onMouseDown, true);
-    dropdownElement.removeEventListener('keydown', this._onKeyDown);
-    dropdownElement.removeEventListener('mousedown', this._onMouseDown);
 
     documentElement.removeEventListener('click', this._onClick);
     documentElement.removeEventListener('touchmove', this._onTouchMove);
@@ -1667,6 +1665,8 @@ class Choices {
     }
 
     if (this._dropdownDetached) {
+      dropdownElement.removeEventListener('keydown', this._onKeyDown);
+      dropdownElement.removeEventListener('mousedown', this._onMouseDown);
       window.removeEventListener('resize', this._onWindowResize);
     }
 
