@@ -205,6 +205,8 @@ declare class Choices {
     }): void;
     _onInvalid(): void;
     _onWindowResize(): void;
+    _onScroll(): void;
+    _moveDropdown(): void;
     /**
      * Removes any highlighted choice options
      */
