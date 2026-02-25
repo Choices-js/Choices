@@ -1889,6 +1889,7 @@ var Choices = /** @class */ (function () {
         this._onChange = this._onChange.bind(this);
         this._onInvalid = this._onInvalid.bind(this);
         this._onWindowResize = this._onWindowResize.bind(this);
+        this._onScroll = this._onScroll.bind(this);
         // If element has already been initialised with Choices, fail silently
         if (this.passedElement.isActive) {
             if (!config.silent) {
@@ -3015,6 +3016,9 @@ var Choices = /** @class */ (function () {
             dropdownElement.addEventListener('keydown', this._onKeyDown, true);
             dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
             window.addEventListener('resize', this._onWindowResize);
+            window.addEventListener('scroll', this._onScroll, {
+                passive: true,
+            });
         }
         this.input.addEventListeners();
     };
@@ -3049,6 +3053,7 @@ var Choices = /** @class */ (function () {
             dropdownElement.removeEventListener('keydown', this._onKeyDown);
             dropdownElement.removeEventListener('mousedown', this._onMouseDown);
             window.removeEventListener('resize', this._onWindowResize);
+            window.removeEventListener('scroll', this._onScroll);
         }
         this.input.removeEventListeners();
     };
@@ -3442,6 +3447,12 @@ var Choices = /** @class */ (function () {
         this.containerOuter.addInvalidState();
     };
     Choices.prototype._onWindowResize = function () {
+        this._moveDropdown();
+    };
+    Choices.prototype._onScroll = function () {
+        this._moveDropdown();
+    };
+    Choices.prototype._moveDropdown = function () {
         if (!this.dropdown.isActive) {
             return;
         }
