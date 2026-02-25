@@ -634,4 +634,13 @@ export interface Options {
   callbackOnCreateTemplates: CallbackOnCreateTemplatesFn | null;
 
   appendGroupInSearch: boolean;
+
+  /**
+   * CSS selector for the element to append the dropdown to. Similar to select2's appendTo option
+   *
+   * **Input types affected:** `select-one`, `select-multiple`
+   *
+   * @default null
+   */
+  dropdownParent: string | null;
 }

@@ -81,7 +81,7 @@ describe('components/container', () => {
 
   describe('open', () => {
     beforeEach(() => {
-      instance.open();
+      instance.open(element);
     });
 
     it('adds open state class', () => {
@@ -102,7 +102,7 @@ describe('components/container', () => {
         shouldFlipStub = stub().returns(true);
 
         instance.shouldFlip = shouldFlipStub;
-        instance.open();
+        instance.open(element);
       });
 
       afterEach(() => {
@@ -121,7 +121,7 @@ describe('components/container', () => {
 
   describe('close', () => {
     beforeEach(() => {
-      instance.close();
+      instance.close(element);
     });
 
     it('adds open state class', () => {
@@ -139,7 +139,7 @@ describe('components/container', () => {
     describe('flipped dropdown', () => {
       beforeEach(() => {
         instance.isFlipped = true;
-        instance.close();
+        instance.close(element);
       });
 
       it('removes adds flipped state class', () => {

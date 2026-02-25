@@ -23,7 +23,7 @@ export interface Templates {
     choiceGroup(options: TemplateOptions, group: GroupFull): HTMLDivElement;
     choice(options: TemplateOptions, choice: ChoiceFull, selectText: string, groupText?: string): HTMLDivElement;
     input(options: TemplateOptions, placeholderValue: string | null): HTMLInputElement;
-    dropdown(options: TemplateOptions): HTMLDivElement;
+    dropdown(options: TemplateOptions, isSelectOneElement: boolean): HTMLDivElement;
     notice(options: TemplateOptions, innerText: string, type: NoticeType): HTMLDivElement;
     option(choice: ChoiceFull): HTMLOptionElement;
 }

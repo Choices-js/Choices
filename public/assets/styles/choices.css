@@ -16,6 +16,10 @@
 .choices.is-open {
   overflow: visible;
 }
+.choices.is-flipped .choices__list {
+  top: auto;
+  bottom: 100%;
+}
 .choices.is-disabled :is(.choices__inner, .choices__input) {
   background-color: var(--choices-bg-color-disabled, #eaeaea);
   cursor: not-allowed !important;
@@ -38,14 +42,6 @@
 }
 .choices[data-type*=select-one] .choices__inner {
   padding-bottom: var(--choices-inner-one-padding, 7.5px);
-}
-.choices[data-type*=select-one] .choices__input {
-  display: block;
-  width: var(--choices-width, 100%);
-  padding: var(--choices-dropdown-item-padding, 10px);
-  border-bottom: var(--choices-base-border, 1px solid) var(--choices-keyline-color, #ddd);
-  background-color: var(--choices-bg-color-dropdown, #fff);
-  margin: 0;
 }
 .choices[data-type*=select-one] .choices__button {
   background-image: var(--choices-icon-cross-inverse, url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMSAyMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yLjU5Mi4wNDRsMTguMzY0IDE4LjM2NC0yLjU0OCAyLjU0OEwuMDQ0IDIuNTkyeiIvPjxwYXRoIGQ9Ik0wIDE4LjM2NEwxOC4zNjQgMGwyLjU0OCAyLjU0OEwyLjU0OCAyMC45MTJ6Ii8+PC9nPjwvc3ZnPg=="));
@@ -96,6 +92,15 @@
   left: 0;
   margin-left: 25px;
   margin-right: 0;
+}
+
+.choices__dropdown--single .choices__input {
+  display: block;
+  width: var(--choices-width, 100%);
+  padding: var(--choices-dropdown-item-padding, 10px);
+  border-bottom: var(--choices-base-border, 1px solid) var(--choices-keyline-color, #ddd);
+  background-color: var(--choices-bg-color-dropdown, #fff);
+  margin: 0;
 }
 
 .choices:is([data-type*=select-multiple], [data-type*=text]) .choices__inner {
@@ -215,12 +220,10 @@
 .is-open .choices__list--dropdown, .is-open .choices__list[aria-expanded] {
   border-color: color-mix(in srgb, var(--choices-keyline-color, #ddd) 85%, var(--choices-darken, black));
 }
-.is-flipped .choices__list--dropdown, .is-flipped .choices__list[aria-expanded] {
-  top: auto;
-  bottom: 100%;
+.is-flipped.choices__list--dropdown, .is-flipped.choices__list[aria-expanded] {
   margin-top: 0;
   margin-bottom: -1px;
-  border-radius: 0.25rem 0.25rem 0 0;
+  border-radius: var(--choices-border-radius, 2.5px) var(--choices-border-radius, 2.5px) 0 0;
 }
 .choices__list--dropdown .choices__list, .choices__list[aria-expanded] .choices__list {
   position: relative;

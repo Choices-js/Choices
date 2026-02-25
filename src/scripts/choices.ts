@@ -158,6 +158,10 @@ class Choices {
 
   _docRoot: ShadowRoot | HTMLElement;
 
+  _dropdownParent: HTMLElement | null;
+
+  _dropdownDetached: boolean;
+
   constructor(
     element: string | Element | HTMLInputElement | HTMLSelectElement = '[data-choice]',
     userConfig: Partial<Options> = {},
@@ -306,6 +310,8 @@ class Choices {
     this._onDeleteKey = this._onDeleteKey.bind(this);
     this._onChange = this._onChange.bind(this);
     this._onInvalid = this._onInvalid.bind(this);
+    this._onWindowResize = this._onWindowResize.bind(this);
+    this._onScroll = this._onScroll.bind(this);
 
     // If element has already been initialised with Choices, fail silently
     if (this.passedElement.isActive) {
@@ -317,6 +323,18 @@ class Choices {
       this.initialisedOK = false;
 
       return;
+    }
+
+    // Dropdown is detached from the original wrapper
+    this._dropdownDetached = false;
+
+    if (config.dropdownParent) {
+      const parent = this._docRoot.querySelector<HTMLElement>(config.dropdownParent);
+
+      if (parent) {
+        this._dropdownDetached = true;
+        this._dropdownParent = parent;
+      }
     }
 
     // Let's go
@@ -512,9 +530,18 @@ class Choices {
     }
 
     requestAnimationFrame(() => {
+      if (this._dropdownDetached) {
+        this.setHorizontalDropdownPosition();
+      }
+
       this.dropdown.show();
+
       const rect = this.dropdown.element.getBoundingClientRect();
-      this.containerOuter.open(rect.bottom, rect.height);
+      const dropdownAbove = this.containerOuter.open(rect.bottom, rect.height, this.dropdown.element);
+
+      if (this._dropdownDetached) {
+        this.setVerticalDropdownPosition(dropdownAbove);
+      }
 
       if (!preventInputFocus) {
         this.input.focus();
@@ -544,7 +571,7 @@ class Choices {
 
     requestAnimationFrame(() => {
       this.dropdown.hide();
-      this.containerOuter.close();
+      this.containerOuter.close(this.dropdown.element);
 
       if (!preventInputBlur && this._canSearch) {
         this.input.removeActiveDescendant();
@@ -553,6 +580,28 @@ class Choices {
 
       this.passedElement.triggerEvent(EventType.hideDropdown);
     });
+
+    return this;
+  }
+
+  setHorizontalDropdownPosition(): this {
+    const containerRect = this.containerOuter.element.getBoundingClientRect();
+
+    this.dropdown.element.style.top = `${window.scrollY + containerRect.bottom}px`;
+    this.dropdown.element.style.left = `${containerRect.left}px`;
+    this.dropdown.element.style.width = `${containerRect.width}px`;
+
+    return this;
+  }
+
+  setVerticalDropdownPosition(above: boolean = false): this {
+    if (!above || !(this._dropdownParent instanceof HTMLElement)) {
+      return this;
+    }
+
+    const dropdownRect = this.dropdown.element.getBoundingClientRect();
+
+    this.dropdown.element.style.top = `${this.containerOuter.element.offsetTop + 1 - dropdownRect.height}px`;
 
     return this;
   }
@@ -1516,6 +1565,7 @@ class Choices {
   _addEventListeners(): void {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
+    const dropdownElement = this.dropdown.element;
     const inputElement = this.input.element;
     const passedElement = this.passedElement.element;
 
@@ -1529,7 +1579,7 @@ class Choices {
     documentElement.addEventListener('touchmove', this._onTouchMove, {
       passive: true,
     });
-    this.dropdown.element.addEventListener('mouseover', this._onMouseOver, {
+    dropdownElement.addEventListener('mouseover', this._onMouseOver, {
       passive: true,
     });
 
@@ -1572,12 +1622,22 @@ class Choices {
       });
     }
 
+    if (this._dropdownDetached) {
+      dropdownElement.addEventListener('keydown', this._onKeyDown, true);
+      dropdownElement.addEventListener('mousedown', this._onMouseDown, true);
+      window.addEventListener('resize', this._onWindowResize);
+      window.addEventListener('scroll', this._onScroll, {
+        passive: true,
+      });
+    }
+
     this.input.addEventListeners();
   }
 
   _removeEventListeners(): void {
     const documentElement = this._docRoot;
     const outerElement = this.containerOuter.element;
+    const dropdownElement = this.dropdown.element;
     const inputElement = this.input.element;
     const passedElement = this.passedElement.element;
 
@@ -1587,7 +1647,7 @@ class Choices {
 
     documentElement.removeEventListener('click', this._onClick);
     documentElement.removeEventListener('touchmove', this._onTouchMove);
-    this.dropdown.element.removeEventListener('mouseover', this._onMouseOver);
+    dropdownElement.removeEventListener('mouseover', this._onMouseOver);
 
     if (this._isSelectOneElement) {
       outerElement.removeEventListener('focus', this._onFocus);
@@ -1606,6 +1666,13 @@ class Choices {
     if (passedElement.hasAttribute('required')) {
       passedElement.removeEventListener('change', this._onChange);
       passedElement.removeEventListener('invalid', this._onInvalid);
+    }
+
+    if (this._dropdownDetached) {
+      dropdownElement.removeEventListener('keydown', this._onKeyDown);
+      dropdownElement.removeEventListener('mousedown', this._onMouseDown);
+      window.removeEventListener('resize', this._onWindowResize);
+      window.removeEventListener('scroll', this._onScroll);
     }
 
     this.input.removeEventListeners();
@@ -2054,6 +2121,27 @@ class Choices {
     this.containerOuter.addInvalidState();
   }
 
+  _onWindowResize(): void {
+    this._moveDropdown();
+  }
+
+  _onScroll(): void {
+    this._moveDropdown();
+  }
+
+  _moveDropdown(): void {
+    if (!this.dropdown.isActive) {
+      return;
+    }
+
+    this.setHorizontalDropdownPosition();
+
+    const rect = this.dropdown.element.getBoundingClientRect();
+    const dropdownAbove = this.containerOuter.shouldFlip(rect.bottom, rect.height);
+
+    this.setVerticalDropdownPosition(dropdownAbove);
+  }
+
   /**
    * Removes any highlighted choice options
    */
@@ -2271,7 +2359,7 @@ class Choices {
     });
 
     this.dropdown = new Dropdown({
-      element: templating.dropdown(config),
+      element: templating.dropdown(config, isSelectOneElement),
       classNames,
       type: elementType,
     });
@@ -2280,6 +2368,7 @@ class Choices {
   _createStructure(): void {
     const { containerInner, containerOuter, passedElement } = this;
     const dropdownElement = this.dropdown.element;
+    let dropdownParent: HTMLElement = containerOuter.element;
 
     // Hide original element
     passedElement.conceal();
@@ -2288,8 +2377,12 @@ class Choices {
     // Wrapper inner container with outer container
     containerOuter.wrap(containerInner.element);
 
+    if (this._dropdownDetached && this._dropdownParent instanceof HTMLElement) {
+      dropdownParent = this._dropdownParent;
+    }
+
     containerOuter.element.appendChild(containerInner.element);
-    containerOuter.element.appendChild(dropdownElement);
+    dropdownParent.appendChild(dropdownElement);
     containerInner.element.appendChild(this.itemList.element);
     dropdownElement.appendChild(this.choiceList.element);
 
