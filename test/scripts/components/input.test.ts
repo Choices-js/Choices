@@ -270,6 +270,32 @@ describe('components/input', () => {
       expect(instance.element.style.width).to.equal('16ch');
       expect(instance.element.style.minWidth).to.equal('22ch');
     });
+
+    describe('wide (CJK / fullwidth) characters', () => {
+      it('counts each Japanese character as 2ch for placeholder min-width', () => {
+        // 'エリアを選択してください' = 12 wide chars → 12×2 = 24ch → minWidth 25ch
+        instance.placeholder = 'エリアを選択してください';
+        instance.element.value = '';
+        instance.setWidth();
+        expect(instance.element.style.minWidth).to.equal('25ch');
+      });
+
+      it('counts each Japanese character as 2ch for value width', () => {
+        // 'テスト' = 3 wide chars → 3×2 = 6ch → width 7ch
+        instance.placeholder = '';
+        instance.element.value = 'テスト';
+        instance.setWidth();
+        expect(instance.element.style.width).to.equal('7ch');
+      });
+
+      it('mixes ASCII and CJK characters correctly', () => {
+        // 'abc' (3×1) + 'テ' (1×2) = 5ch → width 6ch
+        instance.placeholder = '';
+        instance.element.value = 'abcテ';
+        instance.setWidth();
+        expect(instance.element.style.width).to.equal('6ch');
+      });
+    });
   });
 
   describe('placeholder setter', () => {
