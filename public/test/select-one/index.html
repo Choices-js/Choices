@@ -1205,6 +1205,42 @@
           </script>
         </div>
 
+        <div data-test-hook="input-width-placeholder">
+          <label for="choices-input-width-placeholder">Input width with CJK placeholder</label>
+          <select
+            class="form-control"
+            name="choices-input-width-placeholder"
+            id="choices-input-width-placeholder"
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-input-width-placeholder', {
+                searchPlaceholderValue: '搜索',
+              });
+            });
+          </script>
+        </div>
+
+        <div data-test-hook="input-width-typing">
+          <label for="choices-input-width-typing">Input width while typing</label>
+          <select
+            class="form-control"
+            name="choices-input-width-typing"
+            id="choices-input-width-typing"
+          >
+            <option value="Choice 1">Choice 1</option>
+            <option value="Choice 2">Choice 2</option>
+          </select>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-input-width-typing', {});
+            });
+          </script>
+        </div>
+
       </div>
     </div>
   </body>

@@ -84,10 +84,10 @@ describe('components/input', () => {
     });
 
     describe('when element is select one', () => {
-      it('does not set input width', () => {
+      it('sets input width', () => {
         instance.type = 'select-one';
         instance._onInput();
-        expect(setWidthStub.callCount).to.equal(0);
+        expect(setWidthStub.callCount).to.equal(1);
       });
     });
 
@@ -258,17 +258,6 @@ describe('components/input', () => {
     it('returns instance', () => {
       const response = instance.clear();
       expect(response).to.deep.equal(instance);
-    });
-  });
-
-  describe('setWidth', () => {
-    it('sets the width of the element based on input value and placeholder', () => {
-      instance.placeholder = 'This is a placeholder';
-      instance.element.value = 'This is a value';
-      expect(instance.element.style.width).to.not.equal('16ch');
-      instance.setWidth();
-      expect(instance.element.style.width).to.equal('16ch');
-      expect(instance.element.style.minWidth).to.equal('22ch');
     });
   });
 
