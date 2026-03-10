@@ -1,4 +1,4 @@
-/*! choices.js v11.2.0 | © 2026 Josh Johnson | https://github.com/jshjohnson/Choices#readme */
+/*! choices.js v11.2.0 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
