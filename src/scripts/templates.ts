@@ -349,12 +349,15 @@ const templates: TemplatesInterface = {
 
     return inp;
   },
-
-  dropdown({ classNames: { list, listDropdown } }: TemplateOptions): HTMLDivElement {
+  dropdown(
+    { classNames: { list, listDropdown, dropdownSingle, dropdownMultiple } }: TemplateOptions,
+    isSelectOneElement: boolean,
+  ): HTMLDivElement {
     const div = document.createElement('div');
 
     addClassesToElement(div, list);
     addClassesToElement(div, listDropdown);
+    addClassesToElement(div, isSelectOneElement ? dropdownSingle : dropdownMultiple);
     div.setAttribute('aria-expanded', 'false');
 
     return div;

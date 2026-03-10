@@ -65,6 +65,14 @@ $choices-placeholder-opacity: 0.5 !default;
     overflow: visible;
   }
 
+  // Only apply the normal positioning for dropdowns that are not detached from the choices-selector
+  &.is-flipped {
+    .#{$choices-selector}__list {
+      top: auto;
+      bottom: 100%;
+    }
+  }
+
   &.is-disabled {
     :is(.#{$choices-selector}__inner, .#{$choices-selector}__input) {
       background-color: var(--choices-bg-color-disabled, #{$choices-bg-color-disabled});
@@ -89,14 +97,6 @@ $choices-placeholder-opacity: 0.5 !default;
   cursor: pointer;
   .#{$choices-selector}__inner {
     padding-bottom: var(--choices-inner-one-padding, #{$choices-inner-one-padding});
-  }
-  .#{$choices-selector}__input {
-    display: block;
-    width: var(--choices-width, #{$choices-width});
-    padding: var(--choices-dropdown-item-padding, #{$choices-dropdown-item-padding});
-    border-bottom: var(--choices-base-border, #{$choices-base-border}) var(--choices-keyline-color, #{$choices-keyline-color});
-    background-color: var(--choices-bg-color-dropdown, #{$choices-bg-color-dropdown});
-    margin: 0;
   }
   .#{$choices-selector}__button {
     background-image: var(--choices-icon-cross-inverse, #{$choices-icon-cross-inverse});
@@ -154,6 +154,17 @@ $choices-placeholder-opacity: 0.5 !default;
       margin-left: 25px;
       margin-right: 0;
     }
+  }
+}
+
+.#{$choices-selector}__dropdown--single {
+  .#{$choices-selector}__input {
+    display: block;
+    width: var(--choices-width, #{$choices-width});
+    padding: var(--choices-dropdown-item-padding, #{$choices-dropdown-item-padding});
+    border-bottom: var(--choices-base-border, #{$choices-base-border}) var(--choices-keyline-color, #{$choices-keyline-color});
+    background-color: var(--choices-bg-color-dropdown, #{$choices-bg-color-dropdown});
+    margin: 0;
   }
 }
 
@@ -294,12 +305,10 @@ $choices-placeholder-opacity: 0.5 !default;
     border-color: color-mix(in srgb, var(--choices-keyline-color, #{$choices-keyline-color}) 85%, var(--choices-darken, black));
   }
 
-  .is-flipped & {
-    top: auto;
-    bottom: 100%;
+  &.is-flipped {
     margin-top: 0;
     margin-bottom: -1px;
-    border-radius: 0.25rem 0.25rem 0 0;
+    border-radius: var(--choices-border-radius, #{$choices-border-radius}) var(--choices-border-radius, #{$choices-border-radius}) 0 0;
   }
   .#{$choices-selector}__list {
     position: relative;
