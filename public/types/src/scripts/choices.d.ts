@@ -62,6 +62,8 @@ declare class Choices {
         text: string;
     };
     _docRoot: ShadowRoot | HTMLElement;
+    _dropdownParent: HTMLElement | null;
+    _dropdownDetached: boolean;
     constructor(element?: string | Element | HTMLInputElement | HTMLSelectElement, userConfig?: Partial<Options>);
     init(): void;
     destroy(): void;
@@ -76,6 +78,8 @@ declare class Choices {
     removeHighlightedItems(runEvent?: boolean): this;
     showDropdown(preventInputFocus?: boolean): this;
     hideDropdown(preventInputBlur?: boolean): this;
+    setHorizontalDropdownPosition(): this;
+    setVerticalDropdownPosition(above?: boolean): this;
     getValue<B extends boolean = false>(valueOnly?: B): EventChoiceValueType<B> | EventChoiceValueType<B>[];
     setValue(items: string[] | InputChoice[]): this;
     setChoiceByValue(value: string | string[]): this;
@@ -200,6 +204,9 @@ declare class Choices {
         target: HTMLInputElement | HTMLSelectElement;
     }): void;
     _onInvalid(): void;
+    _onWindowResize(): void;
+    _onScroll(): void;
+    _moveDropdown(): void;
     /**
      * Removes any highlighted choice options
      */

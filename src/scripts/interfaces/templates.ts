@@ -58,7 +58,7 @@ export interface Templates {
 
   input(options: TemplateOptions, placeholderValue: string | null): HTMLInputElement;
 
-  dropdown(options: TemplateOptions): HTMLDivElement;
+  dropdown(options: TemplateOptions, isSelectOneElement: boolean): HTMLDivElement;
 
   notice(options: TemplateOptions, innerText: string, type: NoticeType): HTMLDivElement;
 
