@@ -1,5 +1,6 @@
 import { ClassNames } from '../interfaces/class-names';
-import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
+import { PassedElementType } from '../interfaces/passed-element-type';
+import { addClassesToElement } from '../lib/utils';
 
 export default class Input {
   element: HTMLInputElement;
@@ -106,14 +107,45 @@ export default class Input {
   }
 
   /**
-   * Set the correct input width based on placeholder
-   * value or input value
+   * Set the correct input width based on placeholder value or input value.
+   * Renders text into a hidden off-screen span that inherits the input's
+   * CSS classes and measures its pixel width, then converts to `ch` units.
+   * This correctly handles CJK, Hangul, fullwidth forms, emoji, and any
+   * font — no hard-coded code-point ranges required.
    */
   setWidth(): void {
-    // Resize input to contents or placeholder
     const { element } = this;
-    element.style.minWidth = `${element.placeholder.length + 1}ch`;
-    element.style.width = `${element.value.length + 1}ch`;
+    const { value, placeholder } = element;
+    let minWidth = 0;
+    let width = 0;
+
+    if (value || placeholder) {
+      const e = document.createElement('span');
+      e.style.position = 'absolute';
+      e.style.visibility = 'hidden';
+      e.style.whiteSpace = 'pre';
+      e.style.height = 'auto';
+      e.style.width = 'auto';
+      e.style.minWidth = '1ch';
+      addClassesToElement(e, Array.from(element.classList));
+      element.after(e);
+      const chInPx = e.clientWidth;
+
+      if (placeholder) {
+        e.innerText = placeholder;
+        minWidth = e.clientWidth / chInPx;
+      }
+
+      if (value) {
+        e.innerText = value;
+        width = e.clientWidth / chInPx;
+      }
+
+      e.remove();
+    }
+
+    element.style.minWidth = `${Math.ceil(minWidth) + 1}ch`;
+    element.style.width = `${Math.ceil(width) + 1}ch`;
   }
 
   setActiveDescendant(activeDescendantID: string): void {
@@ -125,9 +157,7 @@ export default class Input {
   }
 
   _onInput(): void {
-    if (this.type !== PassedElementTypes.SelectOne) {
-      this.setWidth();
-    }
+    this.setWidth();
   }
 
   _onPaste(event: ClipboardEvent): void {
