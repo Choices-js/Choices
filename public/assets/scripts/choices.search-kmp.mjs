@@ -2077,8 +2077,8 @@ var Choices = /** @class */ (function () {
             _this.passedElement.triggerEvent(EventType.showDropdown);
             var activeElement = _this.choiceList.element.querySelector(getClassNamesSelector(_this.config.classNames.selectedState));
             if (activeElement !== null && !isScrolledIntoView(activeElement, _this.choiceList.element)) {
-                // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
-                activeElement.scrollIntoView();
+                // scrollIntoView can cause entire page scrolling, scrollToChildElement causes undesired animation
+                _this.choiceList.element.scrollTop = activeElement.offsetTop;
             }
         });
         return this;
@@ -2248,8 +2248,7 @@ var Choices = /** @class */ (function () {
             if (!Array.isArray(fetcher_1)) {
                 throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: ".concat(typeof fetcher_1));
             }
-            // recursion with results, it's sync and choices were cleared already
-            return this.setChoices(fetcher_1, value, label, false);
+            choicesArrayOrFetcher = fetcher_1;
         }
         if (!Array.isArray(choicesArrayOrFetcher)) {
             throw new TypeError(".setChoices must be called either with array of choices with a function resulting into Promise of array of choices");
@@ -2287,6 +2286,10 @@ var Choices = /** @class */ (function () {
             });
             _this.unhighlightAll();
         });
+        // ensure any notice is displayed as expected when the dropdown is open
+        if (this.dropdown.isActive && this._canAddUserChoices) {
+            this._canCreateItem(this.input.value);
+        }
         // @todo integrate with Store
         this._searcher.reset();
         return this;

@@ -725,8 +725,8 @@ class Choices {
         );
       }
 
-      // recursion with results, it's sync and choices were cleared already
-      return this.setChoices(fetcher, value, label, false);
+      // eslint-disable-next-line no-param-reassign
+      choicesArrayOrFetcher = fetcher;
     }
 
     if (!Array.isArray(choicesArrayOrFetcher)) {
@@ -778,6 +778,10 @@ class Choices {
 
       this.unhighlightAll();
     });
+    // ensure any notice is displayed as expected when the dropdown is open
+    if (this.dropdown.isActive && this._canAddUserChoices) {
+      this._canCreateItem(this.input.value);
+    }
 
     // @todo integrate with Store
     this._searcher.reset();
