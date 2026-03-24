@@ -611,7 +611,7 @@ describe('templates', () => {
 
     it('returns expected html', () => {
       const expectedOutput = strToEl(
-        `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}" aria-expanded="false"></div>`,
+        `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}"></div>`,
       );
       const actualOutput = templates.dropdown(dropdownOptions);
 

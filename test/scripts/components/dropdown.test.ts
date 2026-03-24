@@ -69,12 +69,12 @@ describe('components/dropdown', () => {
       });
     });
 
-    it('sets expanded attribute', () => {
+    it('does not set an expanded attribute', () => {
       expect(instance).to.not.be.null;
       if (!instance) {
         return;
       }
-      expect(instance.element.getAttribute('aria-expanded')).to.equal('true');
+      expect(instance.element.hasAttribute('aria-expanded')).to.equal(false);
     });
 
     it('sets isActive instance flag', () => {
@@ -119,12 +119,12 @@ describe('components/dropdown', () => {
       });
     });
 
-    it('sets expanded attribute', () => {
+    it('does not set an expanded attribute', () => {
       expect(instance).to.not.be.null;
       if (!instance) {
         return;
       }
-      expect(instance.element.getAttribute('aria-expanded')).to.equal('false');
+      expect(instance.element.hasAttribute('aria-expanded')).to.equal(false);
     });
 
     it('sets isActive instance flag', () => {
