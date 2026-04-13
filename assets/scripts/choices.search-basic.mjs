@@ -1,4 +1,4 @@
-/*! choices.js v11.2.1 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
+/*! choices.js v11.2.2 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -567,14 +567,40 @@ var Input = /** @class */ (function () {
         return this;
     };
     /**
-     * Set the correct input width based on placeholder
-     * value or input value
+     * Set the correct input width based on placeholder value or input value.
+     * Renders text into a hidden off-screen span that inherits the input's
+     * CSS classes and measures its pixel width, then converts to `ch` units.
+     * This correctly handles CJK, Hangul, fullwidth forms, emoji, and any
+     * font — no hard-coded code-point ranges required.
      */
     Input.prototype.setWidth = function () {
-        // Resize input to contents or placeholder
         var element = this.element;
-        element.style.minWidth = "".concat(element.placeholder.length + 1, "ch");
-        element.style.width = "".concat(element.value.length + 1, "ch");
+        var value = element.value, placeholder = element.placeholder;
+        var minWidth = 0;
+        var width = 0;
+        if (value || placeholder) {
+            var e = document.createElement('span');
+            e.style.position = 'absolute';
+            e.style.visibility = 'hidden';
+            e.style.whiteSpace = 'pre';
+            e.style.height = 'auto';
+            e.style.width = 'auto';
+            e.style.minWidth = '1ch';
+            addClassesToElement(e, Array.from(element.classList));
+            element.after(e);
+            var chInPx = parseFloat(getComputedStyle(e).width);
+            if (placeholder) {
+                e.innerText = placeholder;
+                minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+            }
+            if (value) {
+                e.innerText = value;
+                width = parseFloat(getComputedStyle(e).width) / chInPx;
+            }
+            e.remove();
+        }
+        element.style.minWidth = "".concat(Math.ceil(minWidth) + 1, "ch");
+        element.style.width = "".concat(Math.ceil(width) + 1, "ch");
     };
     Input.prototype.setActiveDescendant = function (activeDescendantID) {
         this.element.setAttribute('aria-activedescendant', activeDescendantID);
@@ -583,9 +609,7 @@ var Input = /** @class */ (function () {
         this.element.removeAttribute('aria-activedescendant');
     };
     Input.prototype._onInput = function () {
-        if (this.type !== PassedElementTypes.SelectOne) {
-            this.setWidth();
-        }
+        this.setWidth();
     };
     Input.prototype._onPaste = function (event) {
         if (this.preventPaste) {
@@ -3190,8 +3214,8 @@ var Choices = /** @class */ (function () {
             _this.passedElement.triggerEvent(EventType.showDropdown);
             var activeElement = _this.choiceList.element.querySelector(getClassNamesSelector(_this.config.classNames.selectedState));
             if (activeElement !== null && !isScrolledIntoView(activeElement, _this.choiceList.element)) {
-                // We use the native scrollIntoView function instead of choiceList.scrollToChildElement to avoid animated scroll.
-                activeElement.scrollIntoView();
+                // scrollIntoView can cause entire page scrolling, scrollToChildElement causes undesired animation
+                _this.choiceList.element.scrollTop = activeElement.offsetTop;
             }
         });
         return this;
@@ -3361,8 +3385,8 @@ var Choices = /** @class */ (function () {
             if (!Array.isArray(fetcher_1)) {
                 throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: ".concat(typeof fetcher_1));
             }
-            // recursion with results, it's sync and choices were cleared already
-            return this.setChoices(fetcher_1, value, label, false);
+            // eslint-disable-next-line no-param-reassign
+            choicesArrayOrFetcher = fetcher_1;
         }
         if (!Array.isArray(choicesArrayOrFetcher)) {
             throw new TypeError(".setChoices must be called either with array of choices with a function resulting into Promise of array of choices");
@@ -3400,6 +3424,10 @@ var Choices = /** @class */ (function () {
             });
             _this.unhighlightAll();
         });
+        // ensure any notice is displayed as expected when the dropdown is open
+        if (this.dropdown.isActive && this._canAddUserChoices) {
+            this._canCreateItem(this.input.value);
+        }
         // @todo integrate with Store
         this._searcher.reset();
         return this;
@@ -3952,7 +3980,7 @@ var Choices = /** @class */ (function () {
         if (!config.singleModeForMultiSelect && maxItemCount > 0 && maxItemCount <= this._store.items.length) {
             this.choiceList.element.replaceChildren('');
             this._notice = undefined;
-            this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice);
+            this._displayNotice(typeof maxItemText === 'function' ? maxItemText(maxItemCount) : maxItemText, NoticeTypes.addChoice, false);
             return false;
         }
         if (this._notice && this._notice.type === NoticeTypes.addChoice) {
@@ -4791,7 +4819,7 @@ var Choices = /** @class */ (function () {
             throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
         }
     };
-    Choices.version = '11.2.1';
+    Choices.version = '11.2.2';
     return Choices;
 }());
 
