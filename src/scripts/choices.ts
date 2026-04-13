@@ -895,7 +895,7 @@ class Choices {
     });
     // @todo integrate with Store
     this._searcher.reset();
-
+    this.passedElement.triggerEvent(EventType.clear, {});
     return this;
   }
 
