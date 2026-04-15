@@ -109,6 +109,29 @@ describe(`Choices - select one`, () => {
           await expect(suite.choices.first()).toHaveClass(/is-highlighted/);
           await expect(suite.choices.last()).not.toHaveClass(/is-highlighted/);
         });
+
+        test('arrow key navigation resumes from selected item after closing without confirming', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          // Navigate down twice so choices.nth(2) is highlighted, then escape
+          await suite.input.press('ArrowDown');
+          await suite.input.press('ArrowDown');
+          await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
+          await suite.escapeKey();
+          await suite.expectHiddenDropdown();
+
+          // The first choice should still be the selected (confirmed) item
+          await expect(suite.choices.first()).toHaveClass(/is-selected/);
+
+          // Reopen and press ArrowDown — should move relative to the selected item
+          await suite.startWithClick();
+          await suite.input.press('ArrowDown');
+
+          // Navigation should continue from the selected item, not restart from item 0
+          await expect(suite.choices.first()).not.toHaveClass(/is-highlighted/);
+          await expect(suite.choices.nth(1)).toHaveClass(/is-highlighted/);
+        });
       });
 
       describe('searching choices', () => {
