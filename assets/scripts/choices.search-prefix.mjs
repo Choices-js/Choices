@@ -1,4 +1,4 @@
-/*! choices.js v11.2.2 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
+/*! choices.js v11.2.3 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -580,13 +580,19 @@ var Input = /** @class */ (function () {
             addClassesToElement(e, Array.from(element.classList));
             element.after(e);
             var chInPx = parseFloat(getComputedStyle(e).width);
-            if (placeholder) {
-                e.innerText = placeholder;
-                minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+            if (Number.isNaN(chInPx)) {
+                minWidth = placeholder.length;
+                width = value.length;
             }
-            if (value) {
-                e.innerText = value;
-                width = parseFloat(getComputedStyle(e).width) / chInPx;
+            else {
+                if (placeholder) {
+                    e.innerText = placeholder;
+                    minWidth = parseFloat(getComputedStyle(e).width) / chInPx;
+                }
+                if (value) {
+                    e.innerText = value;
+                    width = parseFloat(getComputedStyle(e).width) / chInPx;
+                }
             }
             e.remove();
         }
@@ -600,7 +606,9 @@ var Input = /** @class */ (function () {
         this.element.removeAttribute('aria-activedescendant');
     };
     Input.prototype._onInput = function () {
-        this.setWidth();
+        if (this.type !== PassedElementTypes.SelectOne) {
+            this.setWidth();
+        }
     };
     Input.prototype._onPaste = function (event) {
         if (this.preventPaste) {
@@ -3664,7 +3672,7 @@ var Choices = /** @class */ (function () {
             throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
         }
     };
-    Choices.version = '11.2.2';
+    Choices.version = '11.2.3';
     return Choices;
 }());
 
