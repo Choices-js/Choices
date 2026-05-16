@@ -355,7 +355,6 @@ const templates: TemplatesInterface = {
 
     addClassesToElement(div, list);
     addClassesToElement(div, listDropdown);
-    div.setAttribute('aria-expanded', 'false');
 
     return div;
   },

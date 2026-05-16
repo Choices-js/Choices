@@ -31,7 +31,6 @@ export default class Dropdown {
    */
   show(): this {
     addClassesToElement(this.element, this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'true');
     this.isActive = true;
 
     return this;
@@ -42,7 +41,6 @@ export default class Dropdown {
    */
   hide(): this {
     removeClassesFromElement(this.element, this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'false');
     this.isActive = false;
 
     return this;
