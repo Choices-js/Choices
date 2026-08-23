@@ -1,4 +1,4 @@
-/*! choices.js v11.2.3 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
+/*! choices.js v11.2.4 | © 2026 Josh Johnson | https://github.com/Choices-js/Choices#readme */
 
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -348,7 +348,9 @@
          */
         Dropdown.prototype.show = function () {
             addClassesToElement(this.element, this.classNames.activeState);
-            this.element.setAttribute('aria-expanded', 'true');
+            if (this.type !== PassedElementTypes.Text) {
+                this.element.setAttribute('aria-expanded', 'true');
+            }
             this.isActive = true;
             return this;
         };
@@ -357,7 +359,9 @@
          */
         Dropdown.prototype.hide = function () {
             removeClassesFromElement(this.element, this.classNames.activeState);
-            this.element.setAttribute('aria-expanded', 'false');
+            if (this.type !== PassedElementTypes.Text) {
+                this.element.setAttribute('aria-expanded', 'false');
+            }
             this.isActive = false;
             return this;
         };
@@ -1683,12 +1687,14 @@
             }
             return inp;
         },
-        dropdown: function (_a) {
+        dropdown: function (_a, passedElementType) {
             var _b = _a.classNames, list = _b.list, listDropdown = _b.listDropdown;
             var div = document.createElement('div');
             addClassesToElement(div, list);
             addClassesToElement(div, listDropdown);
-            div.setAttribute('aria-expanded', 'false');
+            if (passedElementType !== PassedElementTypes.Text) {
+                div.setAttribute('aria-expanded', 'false');
+            }
             return div;
         },
         notice: function (_a, innerHTML, type) {
@@ -2063,13 +2069,14 @@
                 // eslint-disable-next-line no-param-reassign
                 preventInputFocus = !this._canSearch;
             }
+            // to ensure a virtual keyboard trigger as expected, the focus/animation must be started from the input event and not an animation frame which
+            this.dropdown.show();
+            var rect = this.dropdown.element.getBoundingClientRect();
+            this.containerOuter.open(rect.bottom, rect.height);
+            if (!preventInputFocus) {
+                this.input.focus();
+            }
             requestAnimationFrame(function () {
-                _this.dropdown.show();
-                var rect = _this.dropdown.element.getBoundingClientRect();
-                _this.containerOuter.open(rect.bottom, rect.height);
-                if (!preventInputFocus) {
-                    _this.input.focus();
-                }
                 _this.passedElement.triggerEvent(EventType.showDropdown);
                 var activeElement = _this.choiceList.element.querySelector(getClassNamesSelector(_this.config.classNames.selectedState));
                 if (activeElement !== null && !isScrolledIntoView(activeElement, _this.choiceList.element)) {
@@ -2204,7 +2211,6 @@
          */
         Choices.prototype.setChoices = function (choicesArrayOrFetcher, value, label, replaceChoices, clearSearchFlag, replaceItems) {
             var _this = this;
-            if (choicesArrayOrFetcher === void 0) { choicesArrayOrFetcher = []; }
             if (value === void 0) { value = 'value'; }
             if (label === void 0) { label = 'label'; }
             if (replaceChoices === void 0) { replaceChoices = false; }
@@ -2224,7 +2230,7 @@
                 // it's a choices fetcher function
                 var fetcher_1 = choicesArrayOrFetcher(this);
                 if (typeof Promise === 'function' && fetcher_1 instanceof Promise) {
-                    // that's a promise
+                    // @ts-expect-error wonky typing
                     // eslint-disable-next-line no-promise-executor-return
                     return new Promise(function (resolve) { return requestAnimationFrame(resolve); })
                         .then(function () { return _this._handleLoadingState(true); })
@@ -2244,6 +2250,7 @@
                 if (!Array.isArray(fetcher_1)) {
                     throw new TypeError(".setChoices first argument function must return either array of choices or Promise, got: ".concat(typeof fetcher_1));
                 }
+                // @ts-expect-error wonky typing
                 // eslint-disable-next-line no-param-reassign
                 choicesArrayOrFetcher = fetcher_1;
             }
@@ -2289,6 +2296,7 @@
             }
             // @todo integrate with Store
             this._searcher.reset();
+            // @ts-expect-error wonky typing
             return this;
         };
         Choices.prototype.refresh = function (withEvents, selectFirstOption, deselectAll) {
@@ -2851,10 +2859,6 @@
             var config = this.config;
             var canAddItem = true;
             var notice = '';
-            if (canAddItem && typeof config.addItemFilter === 'function' && !config.addItemFilter(value)) {
-                canAddItem = false;
-                notice = resolveNoticeFunction(config.customAddItemText, value, undefined);
-            }
             if (canAddItem) {
                 var foundChoice = this._store.choices.find(function (choice) { return config.valueComparer(choice.value, value); });
                 if (foundChoice) {
@@ -2868,6 +2872,10 @@
                         notice = resolveNoticeFunction(config.uniqueItemText, value, undefined);
                     }
                 }
+            }
+            if (canAddItem && typeof config.addItemFilter === 'function' && !config.addItemFilter(value)) {
+                canAddItem = false;
+                notice = resolveNoticeFunction(config.customAddItemText, value, undefined);
             }
             if (canAddItem) {
                 notice = resolveNoticeFunction(config.addItemText, value, undefined);
@@ -3188,7 +3196,8 @@
                     }
                 }
                 else {
-                    var currentEl = this.dropdown.element.querySelector(getClassNamesSelector(this.config.classNames.highlightedState));
+                    var currentEl = this.dropdown.element.querySelector(getClassNamesSelector(this.config.classNames.highlightedState)) ||
+                        this.dropdown.element.querySelector(getClassNamesSelector(this.config.classNames.selectedState));
                     if (currentEl) {
                         nextEl = getAdjacentEl(currentEl, selectableChoiceIdentifier, directionInt);
                     }
@@ -3293,8 +3302,8 @@
                         }
                     }
                     else {
-                        this.showDropdown();
                         containerOuter.element.focus();
+                        this.showDropdown();
                     }
                 }
                 else if (this._isSelectOneElement &&
@@ -3564,7 +3573,7 @@
                 element: templating.itemList(config, isSelectOneElement),
             });
             this.dropdown = new Dropdown({
-                element: templating.dropdown(config),
+                element: templating.dropdown(config, elementType),
                 classNames: classNames,
                 type: elementType,
             });
@@ -3678,7 +3687,7 @@
                 throw new TypeError("".concat(caller, " called for an element which has multiple instances of Choices initialised on it"));
             }
         };
-        Choices.version = '11.2.3';
+        Choices.version = '11.2.4';
         return Choices;
     }());
 

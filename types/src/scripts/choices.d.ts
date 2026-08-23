@@ -67,8 +67,8 @@ declare class Choices {
     destroy(): void;
     enable(): this;
     disable(): this;
-    highlightItem(item: InputChoice, runEvent?: boolean): this;
-    unhighlightItem(item: InputChoice, runEvent?: boolean): this;
+    highlightItem(item: InputChoice | null, runEvent?: boolean): this;
+    unhighlightItem(item: InputChoice | null, runEvent?: boolean): this;
     highlightAll(): this;
     unhighlightAll(): this;
     removeActiveItemsByValue(value: string): this;
@@ -142,7 +142,7 @@ declare class Choices {
      * }], 'value', 'label', false);
      * ```
      */
-    setChoices(choicesArrayOrFetcher?: (InputChoice | InputGroup)[] | ((instance: Choices) => (InputChoice | InputGroup)[] | Promise<(InputChoice | InputGroup)[]>), value?: string | null, label?: string, replaceChoices?: boolean, clearSearchFlag?: boolean, replaceItems?: boolean): this | Promise<this>;
+    setChoices<T extends (InputChoice | InputGroup)[] | ((instance: Choices) => (InputChoice | InputGroup)[] | Promise<(InputChoice | InputGroup)[]>)>(choicesArrayOrFetcher: T, value?: string | null, label?: string, replaceChoices?: boolean, clearSearchFlag?: boolean, replaceItems?: boolean): T extends (InputChoice | InputGroup)[] ? this : Promise<this>;
     refresh(withEvents?: boolean, selectFirstOption?: boolean, deselectAll?: boolean): this;
     removeChoice(value: string): this;
     clearChoices(clearOptions?: boolean, clearItems?: boolean): this;
