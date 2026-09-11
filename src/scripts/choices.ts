@@ -1657,17 +1657,24 @@ class Choices {
       (event.key.length === 2 && event.key.charCodeAt(0) >= 0xd800) ||
       event.key === 'Unidentified';
 
-    /*
-      We do not show the dropdown if focusing out with esc or navigating through input fields.
-      An activated search can still be opened with any other key.
-     */
-    if (
-      !this._isTextElement &&
-      !hasActiveDropdown &&
-      keyCode !== KeyCodeMap.ESC_KEY &&
-      keyCode !== KeyCodeMap.TAB_KEY &&
-      keyCode !== KeyCodeMap.SHIFT_KEY
-    ) {
+    const isShortcut = (event.ctrlKey || event.metaKey) && !event.getModifierState('AltGraph');
+    const opensDropdown =
+      wasPrintableChar ||
+      ['Dead', 'Home', 'End'].includes(event.key) ||
+      (
+        [
+          KeyCodeMap.ENTER_KEY,
+          KeyCodeMap.UP_KEY,
+          KeyCodeMap.DOWN_KEY,
+          KeyCodeMap.PAGE_UP_KEY,
+          KeyCodeMap.PAGE_DOWN_KEY,
+          KeyCodeMap.DELETE_KEY,
+          KeyCodeMap.BACK_KEY,
+        ] as number[]
+      ).includes(keyCode);
+
+    // Only editing and navigation keys open the select; browser shortcuts keep their default behavior.
+    if (!this._isTextElement && !hasActiveDropdown && !isShortcut && opensDropdown) {
       this.showDropdown();
 
       if (!this.input.isFocussed && wasPrintableChar) {

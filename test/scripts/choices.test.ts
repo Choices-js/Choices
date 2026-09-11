@@ -2221,6 +2221,80 @@ describe('choices', () => {
     });
 
     describe('_onKeyDown', () => {
+      describe('closed select keyboard shortcuts', () => {
+        const shortcuts: KeyboardEventInit[] = [
+          { key: 'F5', keyCode: 116 },
+          { key: 'F5', keyCode: 116, ctrlKey: true },
+          { key: 'F5', keyCode: 116, shiftKey: true },
+          { key: 'Control', keyCode: 17, ctrlKey: true },
+          { key: 'Meta', keyCode: 91, metaKey: true },
+          { key: 'Alt', keyCode: 18, altKey: true },
+          { key: 'r', keyCode: 82, ctrlKey: true },
+          { key: 'r', keyCode: 82, metaKey: true },
+          { key: 'R', keyCode: 82, ctrlKey: true, shiftKey: true },
+          { key: 'R', keyCode: 82, metaKey: true, shiftKey: true },
+        ];
+
+        shortcuts.forEach((init) => {
+          it(`does not open or consume ${JSON.stringify(init)}`, () => {
+            const select = document.createElement('select');
+            document.body.appendChild(select);
+            const choices = new Choices(select);
+            const show = vi.spyOn(choices, 'showDropdown');
+            const event = new KeyboardEvent('keydown', { ...init, cancelable: true });
+
+            choices._onKeyDown(event);
+
+            expect(show).not.toHaveBeenCalled();
+            expect(event.defaultPrevented).to.equal(false);
+            expect(choices.input.value).to.equal('');
+            choices.destroy();
+            select.remove();
+          });
+        });
+
+        [
+          { key: 'a', keyCode: 65 },
+          { key: ' ', keyCode: 32 },
+          { key: 'Enter', keyCode: 13 },
+          { key: 'ArrowDown', keyCode: 40 },
+          { key: 'Dead', keyCode: 0 },
+          { key: 'Unidentified', keyCode: 229 },
+        ].forEach((init) => {
+          it(`still opens for ${init.key}`, () => {
+            const select = document.createElement('select');
+            document.body.appendChild(select);
+            const choices = new Choices(select);
+            const show = vi.spyOn(choices, 'showDropdown');
+            choices._onKeyDown(new KeyboardEvent('keydown', init));
+            expect(show).toHaveBeenCalled();
+            choices.destroy();
+            select.remove();
+          });
+        });
+
+        it('preserves printable AltGr input', () => {
+          const select = document.createElement('select');
+          document.body.appendChild(select);
+          const choices = new Choices(select);
+          const show = vi.spyOn(choices, 'showDropdown');
+          const event = new KeyboardEvent('keydown', {
+            key: '@',
+            keyCode: 81,
+            ctrlKey: true,
+            altKey: true,
+            cancelable: true,
+          });
+          vi.spyOn(event, 'getModifierState').mockImplementation((modifier) => modifier === 'AltGraph');
+          choices._onKeyDown(event);
+          expect(show).toHaveBeenCalled();
+          expect(choices.input.isFocussed).to.equal(true);
+          expect(event.defaultPrevented).to.equal(false);
+          choices.destroy();
+          select.remove();
+        });
+      });
+
       let items;
       let hasItems;
       let hasActiveDropdown;
