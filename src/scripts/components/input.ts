@@ -83,6 +83,8 @@ export default class Input {
     const el = this.element;
     el.setAttribute('disabled', '');
     this.isDisabled = true;
+    // The blur listener may already be detached when the input is disabled.
+    this.isFocussed = false;
   }
 
   focus(): void {

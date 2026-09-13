@@ -180,6 +180,26 @@ describe('components/input', () => {
     });
   });
 
+  it('can focus again after focus moves while disabled and listeners are detached', () => {
+    const outside = document.createElement('button');
+    document.body.append(choicesElement, outside);
+    instance.addEventListeners();
+    instance.focus();
+    expect(document.activeElement).to.equal(choicesElement);
+
+    // Choices.disable removes listeners before disabling the input.
+    instance.removeEventListeners();
+    instance.disable();
+    outside.focus();
+    instance.enable();
+    instance.addEventListeners();
+    instance.focus();
+
+    expect(document.activeElement).to.equal(choicesElement);
+    expect(instance.isFocussed).to.equal(true);
+    instance.removeEventListeners();
+  });
+
   describe('focus', () => {
     let focusStub;
 
