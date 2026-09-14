@@ -1132,6 +1132,8 @@ choices.disable();
 
 This behaves the similar as passing items via the `choices` option but can be called after initialising Choices. This can also be used to add groups of choices (see example 3); Optionally pass a true `replaceChoices` value to remove any existing choices. Optionally pass a true `replaceItems` value to remove any items, if false choices for selected items are preserved. Optionally pass a `customProperties` object to add additional data to your choices (useful when searching/filtering etc). Passing an empty array as the first parameter, and a true `replaceChoices` is the same as calling `clearChoices` (see below).
 
+Note; using a `Promise<(InputChoice | InputGroup)[]>)` (or `async () => { ... }`) for `fetcher` causes Choices to disable itself while the promise resolves. This is very likely not desirable user experience.
+
 **Example 1:**
 
 ```js
