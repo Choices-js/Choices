@@ -28,7 +28,7 @@ import Store from './store/store';
 import { coerceBool, mapInputToChoice } from './lib/choice-input';
 import { ChoiceFull } from './interfaces/choice-full';
 import { GroupFull } from './interfaces/group-full';
-import { EventChoiceValueType, EventType, KeyCodeMap, PassedElementType, PassedElementTypes } from './interfaces';
+import { EventChoiceValueType, EventType, PassedElementType, PassedElementTypes } from './interfaces';
 import { EventChoice } from './interfaces/event-choice';
 import { NoticeType, NoticeTypes, Templates } from './interfaces/templates';
 import { isHtmlInputElement, isHtmlSelectElement } from './lib/html-guard-statements';
@@ -37,6 +37,7 @@ import { getSearcher } from './search';
 // eslint-disable-next-line import/no-named-default
 import { default as defaultTemplates } from './templates';
 import { canUseDom } from './interfaces/build-flags';
+import { KeyTypes } from './interfaces/key-types';
 
 /** @see {@link http://browserhacks.com/#hack-acea075d0ac6954f275a70023906050c} */
 const IS_IE11 =
@@ -1622,7 +1623,7 @@ class Choices {
   }
 
   _onKeyDown(event: KeyboardEvent): void {
-    const { keyCode } = event;
+    const key = event.key as KeyTypes;
     const hasActiveDropdown = this.dropdown.isActive;
     /*
     See:
@@ -1664,9 +1665,9 @@ class Choices {
     if (
       !this._isTextElement &&
       !hasActiveDropdown &&
-      keyCode !== KeyCodeMap.ESC_KEY &&
-      keyCode !== KeyCodeMap.TAB_KEY &&
-      keyCode !== KeyCodeMap.SHIFT_KEY
+      key !== 'Escape' &&
+      key !== 'Tab' &&
+      key !== 'Shift'
     ) {
       this.showDropdown();
 
@@ -1684,20 +1685,21 @@ class Choices {
       }
     }
 
-    switch (keyCode) {
-      case KeyCodeMap.A_KEY:
+    switch (key) {
+      case 'A':
         return this._onSelectKey(event, this.itemList.element.hasChildNodes());
-      case KeyCodeMap.ENTER_KEY:
+      case 'Enter':
         return this._onEnterKey(event, hasActiveDropdown);
-      case KeyCodeMap.ESC_KEY:
+      case 'Escape':
+      case 'Esc':
         return this._onEscapeKey(event, hasActiveDropdown);
-      case KeyCodeMap.UP_KEY:
-      case KeyCodeMap.PAGE_UP_KEY:
-      case KeyCodeMap.DOWN_KEY:
-      case KeyCodeMap.PAGE_DOWN_KEY:
+      case 'ArrowUp':
+      case 'PageUp':
+      case 'ArrowDown':
+      case 'PageDown':
         return this._onDirectionKey(event, hasActiveDropdown);
-      case KeyCodeMap.DELETE_KEY:
-      case KeyCodeMap.BACK_KEY:
+      case 'Delete':
+      case 'Backspace':
         return this._onDeleteKey(event, this._store.items, this.input.isFocussed);
       default:
     }
@@ -1832,15 +1834,15 @@ class Choices {
   }
 
   _onDirectionKey(event: KeyboardEvent, hasActiveDropdown: boolean): void {
-    const { keyCode } = event;
+    const key = event.key as KeyTypes;
 
     // If up or down key is pressed, traverse through options
     if (hasActiveDropdown || this._isSelectOneElement) {
       this.showDropdown();
       this._canSearch = false;
 
-      const directionInt = keyCode === KeyCodeMap.DOWN_KEY || keyCode === KeyCodeMap.PAGE_DOWN_KEY ? 1 : -1;
-      const skipKey = event.metaKey || keyCode === KeyCodeMap.PAGE_DOWN_KEY || keyCode === KeyCodeMap.PAGE_UP_KEY;
+      const directionInt = key === 'ArrowDown' || key === 'PageDown' ? 1 : -1;
+      const skipKey = event.metaKey || key === 'PageDown' || key === 'PageUp';
 
       let nextEl: HTMLElement | null;
       if (skipKey) {

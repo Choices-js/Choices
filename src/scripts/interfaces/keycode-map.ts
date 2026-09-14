@@ -1,3 +1,4 @@
+/** @deprecated */
 export const KeyCodeMap = {
   TAB_KEY: 9,
   SHIFT_KEY: 16,
