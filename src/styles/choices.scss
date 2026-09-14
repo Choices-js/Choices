@@ -44,6 +44,7 @@ $choices-arrow-right: 11.5px !default;
 $choices-button-line-height: 1 !default;
 $choices-button-border-radius: 0 !default;
 $choices-button-opacity: 0.75 !default;
+$choices-button-opacity-single: 0.25 !default;
 $choices-button-opacity-hover: 1 !default;
 $choices-placeholder-opacity: 0.5 !default;
 
@@ -110,7 +111,7 @@ $choices-placeholder-opacity: 0.5 !default;
     height: 20px;
     width: 20px;
     border-radius: 10em;
-    opacity: 0.25;
+    opacity: var(--choices-button-opacity, #{$choices-button-opacity-single});
 
     &:is(:hover, :focus) {
       opacity: var(--choices-button-opacity-hover, #{$choices-button-opacity-hover});
