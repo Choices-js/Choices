@@ -40,11 +40,11 @@ jobs:
             browser: firefox
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 1
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v7
       with:
         node-version: 24
         cache: 'npm'
@@ -58,14 +58,14 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test --project=${{ matrix.browser }}
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       name: Upload screenshots to GitHub Actions Artifacts
       if: failure()
       with:
         name: screenshot-${{ matrix.os }}-${{ matrix.browser }}
         path: test-results/**/*.png
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       name: Upload blob report to GitHub Actions Artifacts
       if: ${{ !cancelled() }}
       with:
