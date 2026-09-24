@@ -2289,14 +2289,15 @@ describe('choices', () => {
       });
 
       describe('delete key', () => {
-        // this is not an error; the constants are named the reverse of their assigned key names, according
-        // to their actual values, which appear to conform to the Windows VK mappings:
-        // 0x08 = 'Backspace', 0x2E = 'Delete'
-        // https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values#editing_keys
         const keyCodes = [
-          [KeyCodeMap.DELETE_KEY, 'Backspace'],
-          [KeyCodeMap.BACK_KEY, 'Delete'],
+          [KeyCodeMap.BACK_KEY, 'Backspace'],
+          [KeyCodeMap.DELETE_KEY, 'Delete'],
         ];
+
+        it('maps BACK_KEY to Backspace and DELETE_KEY to Delete', () => {
+          expect(KeyCodeMap.BACK_KEY).to.equal(8);
+          expect(KeyCodeMap.DELETE_KEY).to.equal(46);
+        });
 
         keyCodes.forEach(([keyCode, key]) => {
           it(`calls _onDeleteKey with the expected arguments`, () => {
