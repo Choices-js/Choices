@@ -54,6 +54,102 @@ describe('templates', () => {
     });
     const direction = 'rtl';
 
+    describe('native label fallback', () => {
+      ["fruit'quoted", 'fruit\\backslash', 'fruit"quoted'].forEach((id) => {
+        it(`matches the literal for attribute for ${id}`, () => {
+          const root = document.createElement('div');
+          const select = document.createElement('select');
+          select.id = id;
+          const otherLabel = document.createElement('label');
+          otherLabel.htmlFor = 'other';
+          otherLabel.innerText = 'Other field';
+          const label = document.createElement('label');
+          label.htmlFor = id;
+          label.innerText = 'Favorite fruit';
+          root.append(otherLabel, label, select);
+
+          const output = _templates.containerOuter.call(
+            { _docRoot: root, passedElement: { element: select } },
+            options,
+            direction,
+            true,
+            true,
+            true,
+            'select-one',
+            '',
+          );
+
+          expect(output.getAttribute('aria-label')).to.equal('Favorite fruit');
+          expect(select.id).to.equal(id);
+          expect(label.htmlFor).to.equal(id);
+        });
+      });
+
+      [true, false].forEach((searchEnabled) => {
+        [true, false].forEach((isSelectOneElement) => {
+          const passedElementType = isSelectOneElement ? 'select-one' : 'select-multiple';
+
+          it(`copies a native label for ${passedElementType}, searchEnabled=${searchEnabled}`, () => {
+            const root = document.createElement('div');
+            const select = document.createElement('select');
+            select.id = 'fruit';
+            const label = document.createElement('label');
+            label.htmlFor = select.id;
+            // jsdom does not compute innerText from rendered text.
+            label.innerText = 'Favorite fruit';
+            root.append(label, select);
+
+            const output = _templates.containerOuter.call(
+              { _docRoot: root, passedElement: { element: select } },
+              options,
+              direction,
+              true,
+              isSelectOneElement,
+              searchEnabled,
+              passedElementType,
+              '',
+            );
+
+            expect(output.getAttribute('aria-label')).to.equal('Favorite fruit');
+            expect(output.hasAttribute('aria-labelledby')).to.equal(false);
+            expect(label.id).to.equal('');
+          });
+        });
+
+        it(`preserves explicit labelId precedence, searchEnabled=${searchEnabled}`, () => {
+          const root = document.createElement('div');
+          const select = document.createElement('select');
+          select.id = 'fruit';
+          const label = document.createElement('label');
+          label.htmlFor = select.id;
+          label.innerText = 'Native label';
+          root.append(label, select);
+
+          const output = _templates.containerOuter.call(
+            { _docRoot: root, passedElement: { element: select } },
+            options,
+            direction,
+            true,
+            true,
+            searchEnabled,
+            'select-one',
+            'explicit-label',
+          );
+
+          expect(output.getAttribute('aria-labelledby')).to.equal('explicit-label');
+          expect(output.hasAttribute('aria-label')).to.equal(false);
+        });
+
+        it(`does not invent a name for an unlabelled select, searchEnabled=${searchEnabled}`, () => {
+          const templates = shimTemplates('select');
+          const output = templates.containerOuter(options, direction, true, true, searchEnabled, 'select-one', '');
+
+          expect(output.hasAttribute('aria-label')).to.equal(false);
+          expect(output.hasAttribute('aria-labelledby')).to.equal(false);
+        });
+      });
+    });
+
     describe('select element', () => {
       const templates = shimTemplates('select');
       describe('search enabled', () => {

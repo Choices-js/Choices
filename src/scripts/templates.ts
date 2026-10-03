@@ -54,7 +54,8 @@ const assignCustomProperties = (el: HTMLElement, choice: ChoiceFull, withCustomP
 };
 
 const addAriaLabel = (docRoot: HTMLElement | ShadowRoot, id: string | undefined, element: HTMLElement): void => {
-  const label = id && docRoot.querySelector<HTMLElement>(`label[for='${id}']`);
+  const label =
+    id && Array.from(docRoot.querySelectorAll<HTMLLabelElement>('label[for]')).find(({ htmlFor }) => htmlFor === id);
   const text = label && (label as HTMLElement).innerText;
   if (text) {
     element.setAttribute('aria-label', text);
@@ -88,7 +89,8 @@ const templates: TemplatesInterface = {
       div.setAttribute('role', searchEnabled ? 'combobox' : 'listbox');
       if (searchEnabled) {
         div.setAttribute('aria-autocomplete', 'list');
-      } else if (!labelId) {
+      }
+      if (!labelId) {
         addAriaLabel(this._docRoot, this.passedElement.element.id, div);
       }
 
