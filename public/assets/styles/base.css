@@ -105,7 +105,7 @@ a:focus {
   width: 100%;
   background-color: var(--form-bg, #f9f9f9);
   padding: 12px;
-  border: 1px solid var(--form-boder, #ddd);
+  border: 1px solid var(--form-border, #ddd);
   border-radius: 2.5px;
   font-size: 14px;
   appearance: none;
