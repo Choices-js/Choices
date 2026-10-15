@@ -141,6 +141,7 @@ import "choices.js/public/assets/styles/choices.css";
   // Passing options (with default options)
   const choices = new Choices(element, {
     silent: false,
+    tabIndex: 0,
     items: [],
     choices: [],
     renderChoiceLimit: -1,
@@ -266,6 +267,16 @@ Choices works with the following input types, referenced in the documentation as
 **Input types affected:** `text`, `select-one`, `select-multiple`
 
 **Usage:** Optionally suppress console errors and warnings.
+
+### tabIndex
+
+**Type:** `Number` **Default:** `0`
+
+**Input types affected:** `text`, `select-one`, `select-multiple`
+
+**Usage:** Set the tab index of the generated input, single-select outer container, and remove-item buttons. Use `-1` to skip these controls during sequential keyboard navigation while keeping them focusable by script or mouse. The default `0` follows document order; positive values participate in the browser's explicit tab order. Multi-select and text outer containers do not become additional tab stops.
+
+The single-select container restores its configured index after `disable()` / `enable()`, including loading choices asynchronously. Custom templates can use `config.tabIndex` when creating their focusable elements.
 
 ### items
 

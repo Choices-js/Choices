@@ -28,6 +28,16 @@ export interface Options {
   silent: boolean;
 
   /**
+   * Tab index for the generated single-select container, input and remove buttons.
+   * Use -1 to omit these controls from sequential keyboard navigation.
+   *
+   * **Input types affected:** text, select-one, select-multiple
+   *
+   * @default 0
+   */
+  tabIndex: number;
+
+  /**
    * Add pre-selected items (see terminology) to text input.
    *
    * **Input types affected:** text

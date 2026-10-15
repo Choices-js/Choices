@@ -63,7 +63,7 @@ const addAriaLabel = (docRoot: HTMLElement | ShadowRoot, id: string | undefined,
 
 const templates: TemplatesInterface = {
   containerOuter(
-    { classNames: { containerOuter } }: TemplateOptions,
+    { classNames: { containerOuter }, tabIndex }: TemplateOptions,
     dir: HTMLElement['dir'],
     isSelectElement: boolean,
     isSelectOneElement: boolean,
@@ -81,7 +81,7 @@ const templates: TemplatesInterface = {
     }
 
     if (isSelectOneElement) {
-      div.tabIndex = 0;
+      div.tabIndex = tabIndex;
     }
 
     if (isSelectElement) {
@@ -142,6 +142,7 @@ const templates: TemplatesInterface = {
       removeItemButtonAlignLeft,
       removeItemIconText,
       removeItemLabelText,
+      tabIndex,
       classNames: { item, button, highlightedState, itemSelectable, placeholder },
     }: TemplateOptions,
     choice: ChoiceFull,
@@ -189,6 +190,9 @@ const templates: TemplatesInterface = {
 
       const removeButton = document.createElement('button');
       removeButton.type = 'button';
+      if (tabIndex !== 0) {
+        removeButton.tabIndex = tabIndex;
+      }
       addClassesToElement(removeButton, button);
       const eventChoice = getChoiceForOutput(choice);
       setElementHtml(removeButton, true, resolveNoticeFunction(removeItemIconText, choice.value, eventChoice));
@@ -329,11 +333,14 @@ const templates: TemplatesInterface = {
   },
 
   input(
-    { classNames: { input, inputCloned }, labelId }: TemplateOptions,
+    { classNames: { input, inputCloned }, labelId, tabIndex }: TemplateOptions,
     placeholderValue: string | null,
   ): HTMLInputElement {
     const inp = document.createElement('input');
     inp.type = 'search';
+    if (tabIndex !== 0) {
+      inp.tabIndex = tabIndex;
+    }
     addClassesToElement(inp, input);
     addClassesToElement(inp, inputCloned);
     inp.autocomplete = 'off';
