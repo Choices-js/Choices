@@ -20,6 +20,8 @@ export default class Container {
 
   isLoading: boolean;
 
+  _tabIndex: number;
+
   constructor({
     element,
     type,
@@ -32,6 +34,7 @@ export default class Container {
     position: PositionOptionsType;
   }) {
     this.element = element;
+    this._tabIndex = element.hasAttribute('tabindex') ? element.tabIndex : 0;
     this.classNames = classNames;
     this.type = type;
     this.position = position;
@@ -112,7 +115,7 @@ export default class Container {
     removeClassesFromElement(this.element, this.classNames.disabledState);
     this.element.removeAttribute('aria-disabled');
     if (this.type === PassedElementTypes.SelectOne) {
-      this.element.setAttribute('tabindex', '0');
+      this.element.tabIndex = this._tabIndex;
     }
     this.isDisabled = false;
   }

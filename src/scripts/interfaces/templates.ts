@@ -15,6 +15,7 @@ export type TemplateOptions = Pick<
   | 'removeItemLabelText'
   | 'searchEnabled'
   | 'labelId'
+  | 'tabIndex'
 >;
 
 export const NoticeTypes = {

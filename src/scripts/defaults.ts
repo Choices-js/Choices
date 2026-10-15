@@ -40,6 +40,7 @@ export const DEFAULT_CONFIG: Options = {
   items: [],
   choices: [],
   silent: false,
+  tabIndex: 0,
   renderChoiceLimit: -1,
   maxItemCount: -1,
   closeDropdownOnSelect: 'auto',
