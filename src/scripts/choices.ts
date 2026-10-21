@@ -149,6 +149,10 @@ class Choices {
 
   _initialItems: string[];
 
+  _lastSelectedOptions: HTMLOptionElement[] = [];
+
+  _pageShowTimeout: number | undefined;
+
   _searcher: Searcher<ChoiceFull>;
 
   _notice?: {
@@ -299,6 +303,7 @@ class Choices {
     this._onMouseDown = this._onMouseDown.bind(this);
     this._onMouseOver = this._onMouseOver.bind(this);
     this._onFormReset = this._onFormReset.bind(this);
+    this._onPageShow = this._onPageShow.bind(this);
     this._onSelectKey = this._onSelectKey.bind(this);
     this._onEnterKey = this._onEnterKey.bind(this);
     this._onEscapeKey = this._onEscapeKey.bind(this);
@@ -353,6 +358,10 @@ class Choices {
     this.initialised = true;
     this.initialisedOK = true;
 
+    if (this._isSelectElement) {
+      window.addEventListener('pageshow', this._onPageShow);
+    }
+
     const { callbackOnInit } = this.config;
     // Run callback if it is a function
     if (typeof callbackOnInit === 'function') {
@@ -366,6 +375,9 @@ class Choices {
     }
 
     this._removeEventListeners();
+    window.removeEventListener('pageshow', this._onPageShow);
+    window.clearTimeout(this._pageShowTimeout);
+    this._pageShowTimeout = undefined;
     this.passedElement.reveal();
     this.containerOuter.unwrap(this.passedElement.element);
 
@@ -955,6 +967,12 @@ class Choices {
 
     if (changes.items) {
       this._renderItems();
+    }
+
+    if (this._isSelectElement) {
+      this._lastSelectedOptions = Array.from((this.passedElement.element as HTMLSelectElement).options).filter(
+        (option) => option.selected,
+      );
     }
   }
 
@@ -2039,6 +2057,41 @@ class Choices {
       this._isScrollingOnIe = false;
       this.input.element.focus();
     }
+  }
+
+  _onPageShow(): void {
+    window.clearTimeout(this._pageShowTimeout);
+    // Allow the browser to finish restoring form state after pageshow.
+    this._pageShowTimeout = window.setTimeout(() => {
+      this._pageShowTimeout = undefined;
+      const select = this.passedElement.element as HTMLSelectElement;
+      const selectedOptions = Array.from(select.options).filter((option) => option.selected);
+      if (
+        selectedOptions.length === this._lastSelectedOptions.length &&
+        selectedOptions.every((option, index) => option === this._lastSelectedOptions[index])
+      ) {
+        return;
+      }
+
+      // Snapshot the restored options before removing items changes the native selection.
+      const restoredOptions = new Set(selectedOptions);
+      const selectedChoices = new Set(
+        this._store.choices.filter((choice) => restoredOptions.has(choice.element as HTMLOptionElement)),
+      );
+      this._store.withTxn(() => {
+        this._store.items
+          .filter((item) => !selectedChoices.has(item))
+          .forEach((item) => this._store.dispatch(removeItem(item)));
+        selectedChoices.forEach((choice) => {
+          if (!choice.selected) {
+            this._addItem(choice, false);
+          }
+        });
+        if (!selectedOptions.length) {
+          select.selectedIndex = -1;
+        }
+      });
+    }, 0);
   }
 
   _onFormReset(): void {
