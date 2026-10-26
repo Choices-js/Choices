@@ -882,8 +882,13 @@ class Choices {
       if (clearItems) {
         this.passedElement.element.replaceChildren('');
       } else {
-        this.passedElement.element.querySelectorAll(':not([selected])').forEach((el): void => {
+        this.passedElement.element.querySelectorAll(':not([selected]):not(optgroup)').forEach((el): void => {
           el.remove();
+        });
+        this.passedElement.element.querySelectorAll('optgroup').forEach((group): void => {
+          if (!group.querySelector('option')) {
+            group.remove();
+          }
         });
       }
     }
