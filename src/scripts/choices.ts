@@ -953,7 +953,7 @@ class Choices {
       }
     }
 
-    if (changes.items && this.config.renderItems) {
+    if (changes.items) {
       this._renderItems();
     }
   }
@@ -1101,7 +1101,9 @@ class Choices {
     };
 
     // new items
-    items.forEach(addItemToFragment);
+    if (config.renderItems) {
+      items.forEach(addItemToFragment);
+    }
 
     let addedItems = !!fragment.childNodes.length;
     if (this._isSelectOneElement) {

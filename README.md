@@ -145,6 +145,7 @@ import "choices.js/public/assets/styles/choices.css";
     choices: [],
     renderChoiceLimit: -1,
     maxItemCount: -1,
+    renderItems: true,
     closeDropdownOnSelect: 'auto',
     singleModeForMultiSelect: false,
     addChoices: false,
@@ -182,6 +183,7 @@ import "choices.js/public/assets/styles/choices.css";
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
     itemSelectText: 'Press to select',
+    itemDeselectText: 'Press to deselect',
     uniqueItemText: 'Only unique values can be added',
     customAddItemText: 'Only values matching specific conditions can be added',
     addItemText: (value, rawValue) => {
@@ -728,6 +730,14 @@ const example = new Choices(element, {
 **Input types affected:** `select-multiple`, `select-one`
 
 **Usage:** The text that is shown when a user hovers over a selectable choice. Set to empty to not reserve space for this text.
+
+### itemDeselectText
+
+**Type:** `String` **Default:** `Press to deselect`
+
+**Input types affected:** `select-multiple`
+
+**Usage:** The text that is shown when a user hovers over a selected choice (requires `renderSelectedChoices`). Clicking a selected choice deselects it. Set to empty to not show this text.
 
 ### addItemText
 

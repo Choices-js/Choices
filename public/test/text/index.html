@@ -68,6 +68,19 @@
           </script>
         </div>
 
+        <div data-test-hook="dont-render-items">
+          <label for="choices-dont-render-items">Don't render items</label>
+          <input class="form-control" id="choices-dont-render-items" type="text" />
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              new Choices('#choices-dont-render-items', {
+                allowHTML: true,
+                renderItems: false,
+              });
+            });
+          </script>
+        </div>
+
         <div data-test-hook="edit-items">
           <label for="choices-edit-items">Edit items</label>
           <input class="form-control" id="choices-edit-items" type="text" />

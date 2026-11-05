@@ -127,7 +127,7 @@ export interface Options {
   /**
    * Whether to render items.
    *
-   * **Input types affected:** text, text-multiple
+   * **Input types affected:** text, select-multiple
    *
    * @default true
    */
@@ -535,9 +535,9 @@ export interface Options {
   itemSelectText: string;
 
   /**
-   * The text that is shown when a user hovers over a selected choice. Set to empty to not reserve space for this text.
+   * The text that is shown when a user hovers over a selected choice (requires `renderSelectedChoices`). Clicking a selected choice deselects it. Set to empty to not show this text.
    *
-   * **Input types affected:** select-multiple, select-one
+   * **Input types affected:** select-multiple
    *
    * @default 'Press to deselect'
    */
