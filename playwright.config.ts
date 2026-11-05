@@ -24,7 +24,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? [['dot'], ['blob']] : 'line',
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'line',
   timeout: process.env.CI ? 5000 : 1000,
   expect : {
     timeout: process.env.CI ? 1000 : 500,

@@ -1,22 +1,29 @@
-import { expect } from 'chai';
-import { spy, stub } from 'sinon';
-
-import sinonChai from 'sinon-chai';
-import Choices, { DEFAULT_CONFIG, ActionType, EventType, KeyCodeMap, InputChoice, InputGroup } from '../../src';
-import { WrappedSelect, WrappedInput } from '../../src/scripts/components/index';
+import { expect, Mock, vi } from 'vitest';
+import Choices, {
+  DEFAULT_CONFIG,
+  ActionType,
+  EventType,
+  KeyCodeMap,
+  InputChoice,
+  InputGroup,
+  Options,
+} from '../../src';
+import { WrappedSelect, WrappedInput, Dropdown, Input } from '../../src/scripts/components/index';
 import { removeItem } from '../../src/scripts/actions/items';
 import templates from '../../src/scripts/templates';
 import { ChoiceFull } from '../../src/scripts/interfaces/choice-full';
 import { SearchByFuse } from '../../src/scripts/search/fuse';
 import { SearchByKMP } from '../../src/scripts/search/kmp';
 import { SearchByPrefixFilter } from '../../src/scripts/search/prefix-filter';
-
-chai.use(sinonChai);
+import { AnyAction, StoreListener } from '../../src/scripts/interfaces/store';
+import Store from '../../src/scripts/store/store';
+import { GroupFull } from '../../src/scripts/interfaces/group-full';
+import { mapInputToChoice } from '../../src/scripts/lib/choice-input';
 
 describe('choices', () => {
-  let instance;
-  let output;
-  let passedElement;
+  let instance: Choices;
+  let output: any;
+  let passedElement: HTMLInputElement;
 
   beforeEach(() => {
     passedElement = document.createElement('input');
@@ -29,7 +36,6 @@ describe('choices', () => {
 
   afterEach(() => {
     output = null;
-    instance = null;
   });
 
   describe('constructor', () => {
@@ -47,6 +53,7 @@ describe('choices', () => {
             searchEnabled: false,
             closeDropdownOnSelect: true,
             renderSelectedChoices: false,
+            searchRenderSelectedChoices: true,
           });
         });
       });
@@ -68,6 +75,7 @@ describe('choices', () => {
             searchEnabled: false,
             closeDropdownOnSelect: true,
             renderSelectedChoices: false,
+            searchRenderSelectedChoices: true,
             ...config,
           });
         });
@@ -96,7 +104,7 @@ describe('choices', () => {
                 searchEnabled: false,
               });
 
-              expect(instance.config.searchEnabled).to.equal(true);
+              expect(instance.config.searchEnabled).to.equal(false);
             });
           });
         });
@@ -113,6 +121,21 @@ describe('choices', () => {
             });
 
             expect(instance.config.renderSelectedChoices).to.equal(false);
+          });
+        });
+
+        describe('passing the searchRenderSelectedChoices config option with false', () => {
+          it('keeps searchRenderSelectedChoices as false', () => {
+            document.body.innerHTML = `
+            <select data-choice multiple></select>
+            `;
+
+            instance = new Choices('[data-choice]', {
+              allowHTML: true,
+              searchRenderSelectedChoices: false,
+            });
+
+            expect(instance.config.searchRenderSelectedChoices).to.equal(false);
           });
         });
       });
@@ -169,7 +192,7 @@ describe('choices', () => {
         });
 
         it('intialises', () => {
-          const initSpy = spy();
+          const initSpy = vi.fn();
           // initialise with the same element
           instance = new Choices('#input-1', {
             allowHTML: true,
@@ -177,7 +200,7 @@ describe('choices', () => {
             callbackOnInit: initSpy,
           });
 
-          expect(initSpy.called).to.equal(true);
+          expect(initSpy).toHaveBeenCalled();
         });
       });
 
@@ -199,7 +222,7 @@ describe('choices', () => {
         });
 
         it('does not reinitialise', () => {
-          const initSpy = spy();
+          const initSpy = vi.fn();
           // initialise with the same element
           instance = new Choices('#input-1', {
             allowHTML: true,
@@ -207,7 +230,7 @@ describe('choices', () => {
             callbackOnInit: initSpy,
           });
 
-          expect(initSpy.called).to.equal(false);
+          expect(initSpy).not.toHaveBeenCalled();
         });
       });
 
@@ -279,7 +302,7 @@ describe('choices', () => {
 
   describe('public methods', () => {
     describe('init', () => {
-      const callbackOnInitSpy = spy();
+      const callbackOnInitSpy = vi.fn();
 
       beforeEach(() => {
         instance = new Choices(passedElement, {
@@ -295,24 +318,24 @@ describe('choices', () => {
           instance.init();
         });
 
-        it("doesn't set initialise flag", () => {
+        it('do not set initialise flag', () => {
           expect(instance.initialised).to.not.equal(false);
         });
       });
 
       describe('not already initialised', () => {
-        let createTemplatesSpy;
-        let createInputSpy;
-        let storeSubscribeSpy;
-        let renderSpy;
-        let addEventListenersSpy;
+        let createTemplatesSpy: Mock<() => void>;
+        let createInputSpy: Mock<() => void>;
+        let storeSubscribeSpy: Mock<(onChange: StoreListener) => Store<Options>>;
+        let renderSpy: Mock<() => void>;
+        let addEventListenersSpy: Mock<() => void>;
 
         beforeEach(() => {
-          createTemplatesSpy = spy(instance, '_createTemplates');
-          createInputSpy = spy(instance, '_createStructure');
-          storeSubscribeSpy = spy(instance._store, 'subscribe');
-          renderSpy = spy(instance, '_render');
-          addEventListenersSpy = spy(instance, '_addEventListeners');
+          createTemplatesSpy = vi.spyOn(instance, '_createTemplates');
+          createInputSpy = vi.spyOn(instance, '_createStructure');
+          storeSubscribeSpy = vi.spyOn(instance._store, 'subscribe');
+          renderSpy = vi.spyOn(instance, '_render');
+          addEventListenersSpy = vi.spyOn(instance, '_addEventListeners');
 
           instance.initialised = false;
           instance.initialisedOK = undefined;
@@ -320,11 +343,7 @@ describe('choices', () => {
         });
 
         afterEach(() => {
-          createTemplatesSpy.restore();
-          createInputSpy.restore();
-          storeSubscribeSpy.restore();
-          renderSpy.restore();
-          addEventListenersSpy.restore();
+          vi.restoreAllMocks();
         });
 
         it('sets initialise flag', () => {
@@ -332,28 +351,28 @@ describe('choices', () => {
         });
 
         it('creates templates', () => {
-          expect(createTemplatesSpy.called).to.equal(true);
+          expect(createTemplatesSpy).toHaveBeenCalled();
         });
 
         it('creates input', () => {
-          expect(createInputSpy.called).to.equal(true);
+          expect(createInputSpy).toHaveBeenCalled();
         });
 
         it('subscribes to store with render method', () => {
-          expect(storeSubscribeSpy.called).to.equal(true);
-          expect(storeSubscribeSpy.lastCall.args[0]).to.equal(instance._render);
+          expect(storeSubscribeSpy).toHaveBeenCalled();
+          expect(storeSubscribeSpy).lastCalledWith(instance._render);
         });
 
         it('fire initial render with no items or choices', () => {
-          expect(renderSpy.called).to.equal(true);
+          expect(renderSpy).toHaveBeenCalled();
         });
 
         it('adds event listeners', () => {
-          expect(addEventListenersSpy.called).to.equal(true);
+          expect(addEventListenersSpy).toHaveBeenCalled();
         });
 
         it('fires callback', () => {
-          expect(callbackOnInitSpy.called).to.equal(true);
+          expect(callbackOnInitSpy).toHaveBeenCalled();
         });
       });
     });
@@ -375,49 +394,46 @@ describe('choices', () => {
           instance.destroy();
         });
 
-        it("doesn't set initialise flag", () => {
+        it('do not set initialise flag', () => {
           expect(instance.initialised).to.not.equal(true);
         });
       });
 
       describe('when already initialised', () => {
-        let removeEventListenersSpy;
-        let passedElementRevealSpy;
-        let containerOuterUnwrapSpy;
-        let clearStoreSpy;
+        let removeEventListenersSpy: Mock<() => void>;
+        let passedElementRevealSpy: Mock<() => void>;
+        let containerOuterUnwrapSpy: Mock<(element: HTMLElement) => void>;
+        let clearStoreSpy: Mock<(clearOptions?: boolean) => Choices>;
 
         beforeEach(() => {
-          removeEventListenersSpy = spy(instance, '_removeEventListeners');
-          passedElementRevealSpy = spy(instance.passedElement, 'reveal');
-          containerOuterUnwrapSpy = spy(instance.containerOuter, 'unwrap');
-          clearStoreSpy = spy(instance, 'clearStore');
+          removeEventListenersSpy = vi.spyOn(instance, '_removeEventListeners');
+          passedElementRevealSpy = vi.spyOn(instance.passedElement, 'reveal');
+          containerOuterUnwrapSpy = vi.spyOn(instance.containerOuter, 'unwrap');
+          clearStoreSpy = vi.spyOn(instance, 'clearStore');
 
           instance.initialised = true;
           instance.destroy();
         });
 
         afterEach(() => {
-          removeEventListenersSpy.restore();
-          passedElementRevealSpy.restore();
-          containerOuterUnwrapSpy.restore();
-          clearStoreSpy.restore();
+          vi.restoreAllMocks();
         });
 
         it('removes event listeners', () => {
-          expect(removeEventListenersSpy.called).to.equal(true);
+          expect(removeEventListenersSpy).toHaveBeenCalled();
         });
 
         it('reveals passed element', () => {
-          expect(passedElementRevealSpy.called).to.equal(true);
+          expect(passedElementRevealSpy).toHaveBeenCalled();
         });
 
         it('reverts outer container', () => {
-          expect(containerOuterUnwrapSpy.called).to.equal(true);
-          expect(containerOuterUnwrapSpy.lastCall.args[0]).to.equal(instance.passedElement.element);
+          expect(containerOuterUnwrapSpy).toHaveBeenCalled();
+          expect(containerOuterUnwrapSpy).lastCalledWith(instance.passedElement.element);
         });
 
         it('clears store', () => {
-          expect(clearStoreSpy.called).to.equal(true);
+          expect(clearStoreSpy).toHaveBeenCalled();
         });
 
         it('restes templates config', () => {
@@ -431,23 +447,20 @@ describe('choices', () => {
     });
 
     describe('enable', () => {
-      let passedElementEnableSpy;
-      let addEventListenersSpy;
-      let containerOuterEnableSpy;
-      let inputEnableSpy;
+      let passedElementEnableSpy: Mock<() => void>;
+      let addEventListenersSpy: Mock<() => void>;
+      let containerOuterEnableSpy: Mock<() => void>;
+      let inputEnableSpy: Mock<() => void>;
 
       beforeEach(() => {
-        addEventListenersSpy = spy(instance, '_addEventListeners');
-        passedElementEnableSpy = spy(instance.passedElement, 'enable');
-        containerOuterEnableSpy = spy(instance.containerOuter, 'enable');
-        inputEnableSpy = spy(instance.input, 'enable');
+        addEventListenersSpy = vi.spyOn(instance, '_addEventListeners');
+        passedElementEnableSpy = vi.spyOn(instance.passedElement, 'enable');
+        containerOuterEnableSpy = vi.spyOn(instance.containerOuter, 'enable');
+        inputEnableSpy = vi.spyOn(instance.input, 'enable');
       });
 
       afterEach(() => {
-        addEventListenersSpy.restore();
-        passedElementEnableSpy.restore();
-        containerOuterEnableSpy.restore();
-        inputEnableSpy.restore();
+        vi.restoreAllMocks();
       });
 
       describe('when already enabled', () => {
@@ -462,10 +475,10 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(passedElementEnableSpy.called).to.equal(false);
-          expect(addEventListenersSpy.called).to.equal(false);
-          expect(inputEnableSpy.called).to.equal(false);
-          expect(containerOuterEnableSpy.called).to.equal(false);
+          expect(passedElementEnableSpy).not.toHaveBeenCalled();
+          expect(addEventListenersSpy).not.toHaveBeenCalled();
+          expect(inputEnableSpy).not.toHaveBeenCalled();
+          expect(containerOuterEnableSpy).not.toHaveBeenCalled();
         });
       });
 
@@ -477,37 +490,34 @@ describe('choices', () => {
         });
 
         it('adds event listeners', () => {
-          expect(addEventListenersSpy.called).to.equal(true);
+          expect(addEventListenersSpy).toHaveBeenCalled();
         });
 
         it('enables input', () => {
-          expect(inputEnableSpy.called).to.equal(true);
+          expect(inputEnableSpy).toHaveBeenCalled();
         });
 
         it('enables containerOuter', () => {
-          expect(containerOuterEnableSpy.called).to.equal(true);
+          expect(containerOuterEnableSpy).toHaveBeenCalled();
         });
       });
     });
 
     describe('disable', () => {
-      let removeEventListenersSpy;
-      let passedElementDisableSpy;
-      let containerOuterDisableSpy;
-      let inputDisableSpy;
+      let removeEventListenersSpy: Mock<() => void>;
+      let passedElementDisableSpy: Mock<() => void>;
+      let containerOuterDisableSpy: Mock<() => void>;
+      let inputDisableSpy: Mock<() => void>;
 
       beforeEach(() => {
-        removeEventListenersSpy = spy(instance, '_removeEventListeners');
-        passedElementDisableSpy = spy(instance.passedElement, 'disable');
-        containerOuterDisableSpy = spy(instance.containerOuter, 'disable');
-        inputDisableSpy = spy(instance.input, 'disable');
+        removeEventListenersSpy = vi.spyOn(instance, '_removeEventListeners');
+        passedElementDisableSpy = vi.spyOn(instance.passedElement, 'disable');
+        containerOuterDisableSpy = vi.spyOn(instance.containerOuter, 'disable');
+        inputDisableSpy = vi.spyOn(instance.input, 'disable');
       });
 
       afterEach(() => {
-        removeEventListenersSpy.restore();
-        passedElementDisableSpy.restore();
-        containerOuterDisableSpy.restore();
-        inputDisableSpy.restore();
+        vi.restoreAllMocks();
       });
 
       describe('when already disabled', () => {
@@ -522,10 +532,10 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(removeEventListenersSpy.called).to.equal(false);
-          expect(passedElementDisableSpy.called).to.equal(false);
-          expect(containerOuterDisableSpy.called).to.equal(false);
-          expect(inputDisableSpy.called).to.equal(false);
+          expect(removeEventListenersSpy).not.toHaveBeenCalled();
+          expect(passedElementDisableSpy).not.toHaveBeenCalled();
+          expect(containerOuterDisableSpy).not.toHaveBeenCalled();
+          expect(inputDisableSpy).not.toHaveBeenCalled();
         });
       });
 
@@ -537,39 +547,36 @@ describe('choices', () => {
         });
 
         it('removes event listeners', () => {
-          expect(removeEventListenersSpy.called).to.equal(true);
+          expect(removeEventListenersSpy).toHaveBeenCalled();
         });
 
         it('disables input', () => {
-          expect(inputDisableSpy.called).to.equal(true);
+          expect(inputDisableSpy).toHaveBeenCalled();
         });
 
         it('enables containerOuter', () => {
-          expect(containerOuterDisableSpy.called).to.equal(true);
+          expect(containerOuterDisableSpy).toHaveBeenCalled();
         });
       });
     });
 
     describe('showDropdown', () => {
-      let containerOuterOpenSpy;
-      let dropdownShowSpy;
-      let inputFocusSpy;
-      let passedElementTriggerEventStub;
+      let containerOuterOpenSpy: Mock<(dropdownPos: number, dropdownHeight: number) => void>;
+      let dropdownShowSpy: Mock<() => Dropdown>;
+      let inputFocusSpy: Mock<() => void>;
+      let passedElementTriggerEventStub: Mock;
 
       beforeEach(() => {
-        containerOuterOpenSpy = spy(instance.containerOuter, 'open');
-        dropdownShowSpy = spy(instance.dropdown, 'show');
-        inputFocusSpy = spy(instance.input, 'focus');
-        passedElementTriggerEventStub = stub();
+        containerOuterOpenSpy = vi.spyOn(instance.containerOuter, 'open');
+        dropdownShowSpy = vi.spyOn(instance.dropdown, 'show');
+        inputFocusSpy = vi.spyOn(instance.input, 'focus');
+        passedElementTriggerEventStub = vi.fn();
 
         instance.passedElement.triggerEvent = passedElementTriggerEventStub;
       });
 
       afterEach(() => {
-        containerOuterOpenSpy.restore();
-        dropdownShowSpy.restore();
-        inputFocusSpy.restore();
-        instance.passedElement.triggerEvent.reset();
+        vi.restoreAllMocks();
       });
 
       describe('dropdown active', () => {
@@ -583,10 +590,10 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(containerOuterOpenSpy.called).to.equal(false);
-          expect(dropdownShowSpy.called).to.equal(false);
-          expect(inputFocusSpy.called).to.equal(false);
-          expect(passedElementTriggerEventStub.called).to.equal(false);
+          expect(containerOuterOpenSpy).not.toHaveBeenCalled();
+          expect(dropdownShowSpy).not.toHaveBeenCalled();
+          expect(inputFocusSpy).not.toHaveBeenCalled();
+          expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
         });
       });
 
@@ -600,10 +607,17 @@ describe('choices', () => {
           expect(output).to.deep.equal(instance);
         });
 
+        it('focuses input synchronously when input focus is allowed', () => {
+          instance.dropdown.isActive = false;
+          instance.showDropdown(false);
+
+          expect(inputFocusSpy).toHaveBeenCalledOnce();
+        });
+
         it('opens containerOuter', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(containerOuterOpenSpy.called).to.equal(true);
+              expect(containerOuterOpenSpy).toHaveBeenCalled();
               done(true);
             });
           }));
@@ -611,7 +625,7 @@ describe('choices', () => {
         it('shows dropdown with blurInput flag', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(dropdownShowSpy.called).to.equal(true);
+              expect(dropdownShowSpy).toHaveBeenCalled();
               done(true);
             });
           }));
@@ -619,9 +633,8 @@ describe('choices', () => {
         it('triggers event on passedElement', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(passedElementTriggerEventStub.called).to.equal(true);
-              expect(passedElementTriggerEventStub.lastCall.args[0]).to.deep.equal(EventType.showDropdown);
-              expect(passedElementTriggerEventStub.lastCall.args[1]).to.undefined;
+              expect(passedElementTriggerEventStub).toHaveBeenCalled();
+              expect(passedElementTriggerEventStub).lastCalledWith(EventType.showDropdown);
               done(true);
             });
           }));
@@ -636,7 +649,7 @@ describe('choices', () => {
           it('focuses input', () =>
             new Promise((done) => {
               requestAnimationFrame(() => {
-                expect(inputFocusSpy.called).to.equal(false);
+                expect(inputFocusSpy).not.toHaveBeenCalled();
                 done(true);
               });
             }));
@@ -645,28 +658,24 @@ describe('choices', () => {
     });
 
     describe('hideDropdown', () => {
-      let containerOuterCloseSpy;
-      let dropdownHideSpy;
-      let inputBlurSpy;
-      let inputRemoveActiveDescendantSpy;
-      let passedElementTriggerEventStub;
+      let containerOuterCloseSpy: Mock<() => void>;
+      let dropdownHideSpy: Mock<() => Dropdown>;
+      let inputBlurSpy: Mock<() => void>;
+      let inputRemoveActiveDescendantSpy: Mock<() => void>;
+      let passedElementTriggerEventStub: Mock;
 
       beforeEach(() => {
-        containerOuterCloseSpy = spy(instance.containerOuter, 'close');
-        dropdownHideSpy = spy(instance.dropdown, 'hide');
-        inputBlurSpy = spy(instance.input, 'blur');
-        inputRemoveActiveDescendantSpy = spy(instance.input, 'removeActiveDescendant');
-        passedElementTriggerEventStub = stub();
+        containerOuterCloseSpy = vi.spyOn(instance.containerOuter, 'close');
+        dropdownHideSpy = vi.spyOn(instance.dropdown, 'hide');
+        inputBlurSpy = vi.spyOn(instance.input, 'blur');
+        inputRemoveActiveDescendantSpy = vi.spyOn(instance.input, 'removeActiveDescendant');
+        passedElementTriggerEventStub = vi.fn();
 
         instance.passedElement.triggerEvent = passedElementTriggerEventStub;
       });
 
       afterEach(() => {
-        containerOuterCloseSpy.restore();
-        dropdownHideSpy.restore();
-        inputBlurSpy.restore();
-        inputRemoveActiveDescendantSpy.restore();
-        instance.passedElement.triggerEvent.reset();
+        vi.restoreAllMocks();
       });
 
       describe('dropdown inactive', () => {
@@ -680,10 +689,10 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(containerOuterCloseSpy.called).to.equal(false);
-          expect(dropdownHideSpy.called).to.equal(false);
-          expect(inputBlurSpy.called).to.equal(false);
-          expect(passedElementTriggerEventStub.called).to.equal(false);
+          expect(containerOuterCloseSpy).not.toHaveBeenCalled();
+          expect(dropdownHideSpy).not.toHaveBeenCalled();
+          expect(inputBlurSpy).not.toHaveBeenCalled();
+          expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
         });
       });
 
@@ -700,7 +709,7 @@ describe('choices', () => {
         it('closes containerOuter', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(containerOuterCloseSpy.called).to.equal(true);
+              expect(containerOuterCloseSpy).toHaveBeenCalled();
               done(true);
             });
           }));
@@ -708,7 +717,7 @@ describe('choices', () => {
         it('hides dropdown with blurInput flag', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(dropdownHideSpy.called).to.equal(true);
+              expect(dropdownHideSpy).toHaveBeenCalled();
               done(true);
             });
           }));
@@ -716,9 +725,8 @@ describe('choices', () => {
         it('triggers event on passedElement', () =>
           new Promise((done) => {
             requestAnimationFrame(() => {
-              expect(passedElementTriggerEventStub.called).to.equal(true);
-              expect(passedElementTriggerEventStub.lastCall.args[0]).to.deep.equal(EventType.hideDropdown);
-              expect(passedElementTriggerEventStub.lastCall.args[1]).to.undefined;
+              expect(passedElementTriggerEventStub).toHaveBeenCalled();
+              expect(passedElementTriggerEventStub).lastCalledWith(EventType.hideDropdown);
               done(true);
             });
           }));
@@ -733,7 +741,7 @@ describe('choices', () => {
           it('removes active descendants', () =>
             new Promise((done) => {
               requestAnimationFrame(() => {
-                expect(inputRemoveActiveDescendantSpy.called).to.equal(true);
+                expect(inputRemoveActiveDescendantSpy).toHaveBeenCalled();
                 done(true);
               });
             }));
@@ -741,7 +749,7 @@ describe('choices', () => {
           it('blurs input', () =>
             new Promise((done) => {
               requestAnimationFrame(() => {
-                expect(inputBlurSpy.called).to.equal(true);
+                expect(inputBlurSpy).toHaveBeenCalled();
                 done(true);
               });
             }));
@@ -750,11 +758,9 @@ describe('choices', () => {
     });
 
     describe('highlightItem', () => {
-      let passedElementTriggerEventStub;
-      let storeDispatchSpy;
-      let storeGetGroupByIdStub;
-      let choicesStub;
-      let itemsStub;
+      let passedElementTriggerEventStub: Mock;
+      let storeDispatchSpy: Mock<(action: AnyAction) => void>;
+      let storeGetGroupByIdStub: Mock;
       const groupIdValue = 'Test';
       const item: ChoiceFull = {
         group: null,
@@ -771,30 +777,28 @@ describe('choices', () => {
       };
 
       beforeEach(() => {
-        choicesStub = stub(instance._store, 'choices').get(() => [item]);
-        itemsStub = stub(instance._store, 'items').get(() => [item]);
-        passedElementTriggerEventStub = stub();
-        storeGetGroupByIdStub = stub().returns({
-          id: 4321,
-          label: groupIdValue,
+        vi.spyOn(instance._store, 'choices', 'get').mockImplementation(() => [item]);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => [item]);
+        passedElementTriggerEventStub = vi.fn();
+        storeGetGroupByIdStub = vi.fn().mockImplementation(() => {
+          return {
+            id: 4321,
+            label: groupIdValue,
+          };
         });
-        storeDispatchSpy = spy(instance._store, 'dispatch');
+        storeDispatchSpy = vi.spyOn(instance._store, 'dispatch');
 
         instance._store.getGroupById = storeGetGroupByIdStub;
         instance.passedElement.triggerEvent = passedElementTriggerEventStub;
       });
 
       afterEach(() => {
-        choicesStub.reset();
-        itemsStub.reset();
-        storeDispatchSpy.restore();
-        instance._store.getGroupById.reset();
-        instance.passedElement.triggerEvent.reset();
+        vi.restoreAllMocks();
       });
 
       describe('no item passed', () => {
         beforeEach(() => {
-          output = instance.highlightItem();
+          output = instance.highlightItem(null);
         });
 
         it('returns this', () => {
@@ -802,9 +806,9 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(passedElementTriggerEventStub.called).to.equal(false);
-          expect(storeDispatchSpy.called).to.equal(false);
-          expect(storeGetGroupByIdStub.called).to.equal(false);
+          expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
+          expect(storeDispatchSpy).not.toHaveBeenCalled();
+          expect(storeGetGroupByIdStub).not.toHaveBeenCalled();
         });
       });
 
@@ -819,8 +823,8 @@ describe('choices', () => {
           });
 
           it('dispatches highlightItem action with correct arguments', () => {
-            expect(storeDispatchSpy.called).to.equal(true);
-            expect(storeDispatchSpy.lastCall.args[0]).to.deep.equal({
+            expect(storeDispatchSpy).toHaveBeenCalled();
+            expect(storeDispatchSpy).lastCalledWith({
               type: ActionType.HIGHLIGHT_ITEM,
               item,
               highlighted: true,
@@ -835,13 +839,21 @@ describe('choices', () => {
           });
 
           it('triggers event with null groupValue', () => {
-            expect(passedElementTriggerEventStub.called).to.equal(true);
-            expect(passedElementTriggerEventStub.lastCall.args[0]).to.equal(EventType.highlightItem);
-            expect(passedElementTriggerEventStub.lastCall.args[1]).to.contains({
-              id: item.id,
-              value: item.value,
-              label: item.label,
+            expect(passedElementTriggerEventStub).toHaveBeenCalled();
+            expect(passedElementTriggerEventStub).lastCalledWith(EventType.highlightItem, {
+              active: false,
+              customProperties: undefined,
+              disabled: false,
+              element: undefined,
               groupValue: undefined,
+              highlighted: false,
+              id: 1234,
+              keyCode: undefined,
+              label: 'Test',
+              labelClass: undefined,
+              labelDescription: '',
+              placeholder: false,
+              value: 'Test',
             });
           });
         });
@@ -861,13 +873,21 @@ describe('choices', () => {
           });
 
           it('triggers event with groupValue', () => {
-            expect(passedElementTriggerEventStub.called).to.equal(true);
-            expect(passedElementTriggerEventStub.lastCall.args[0]).to.equal(EventType.highlightItem);
-            expect(passedElementTriggerEventStub.lastCall.args[1]).to.contains({
-              id: item.id,
-              value: item.value,
-              label: item.label,
-              groupValue: groupIdValue,
+            expect(passedElementTriggerEventStub).toHaveBeenCalled();
+            expect(passedElementTriggerEventStub).lastCalledWith(EventType.highlightItem, {
+              active: false,
+              customProperties: undefined,
+              disabled: false,
+              element: undefined,
+              groupValue: 'Test',
+              highlighted: false,
+              id: 1234,
+              keyCode: undefined,
+              label: 'Test',
+              labelClass: undefined,
+              labelDescription: '',
+              placeholder: false,
+              value: 'Test',
             });
           });
         });
@@ -877,8 +897,8 @@ describe('choices', () => {
             output = instance.highlightItem(item, false);
           });
 
-          it("doesn't trigger event", () => {
-            expect(passedElementTriggerEventStub.called).to.equal(false);
+          it('do not trigger event', () => {
+            expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
           });
 
           it('returns this', () => {
@@ -889,11 +909,9 @@ describe('choices', () => {
     });
 
     describe('unhighlightItem', () => {
-      let choicesStub;
-      let itemsStub;
-      let passedElementTriggerEventStub;
-      let storeDispatchSpy;
-      let storeGetGroupByIdStub;
+      let passedElementTriggerEventStub: Mock;
+      let storeDispatchSpy: Mock<(action: AnyAction) => void>;
+      let storeGetGroupByIdStub: (id: number) => GroupFull | undefined;
       const groupIdValue = 'Test';
       const item: ChoiceFull = {
         group: null,
@@ -910,30 +928,28 @@ describe('choices', () => {
       };
 
       beforeEach(() => {
-        choicesStub = stub(instance._store, 'choices').get(() => [item]);
-        itemsStub = stub(instance._store, 'items').get(() => [item]);
-        passedElementTriggerEventStub = stub();
-        storeGetGroupByIdStub = stub().returns({
-          id: 4321,
-          label: groupIdValue,
+        vi.spyOn(instance._store, 'choices', 'get').mockImplementation(() => [item]);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => [item]);
+        passedElementTriggerEventStub = vi.fn();
+        storeGetGroupByIdStub = vi.fn().mockImplementation(() => {
+          return {
+            id: 4321,
+            label: groupIdValue,
+          };
         });
-        storeDispatchSpy = spy(instance._store, 'dispatch');
+        storeDispatchSpy = vi.spyOn(instance._store, 'dispatch');
 
         instance._store.getGroupById = storeGetGroupByIdStub;
         instance.passedElement.triggerEvent = passedElementTriggerEventStub;
       });
 
       afterEach(() => {
-        choicesStub.reset();
-        itemsStub.reset();
-        storeDispatchSpy.restore();
-        instance._store.getGroupById.reset();
-        instance.passedElement.triggerEvent.reset();
+        vi.restoreAllMocks();
       });
 
       describe('no item passed', () => {
         beforeEach(() => {
-          output = instance.unhighlightItem();
+          output = instance.unhighlightItem(null);
         });
 
         it('returns this', () => {
@@ -941,14 +957,14 @@ describe('choices', () => {
         });
 
         it('returns early', () => {
-          expect(passedElementTriggerEventStub.called).to.equal(false);
-          expect(storeDispatchSpy.called).to.equal(false);
-          expect(storeGetGroupByIdStub.called).to.equal(false);
+          expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
+          expect(storeDispatchSpy).not.toHaveBeenCalled();
+          expect(storeGetGroupByIdStub).not.toHaveBeenCalled();
         });
       });
 
       describe('item passed', () => {
-        describe('passing truthy second paremeter', () => {
+        describe('passing truthy second parameter', () => {
           beforeEach(() => {
             output = instance.unhighlightItem(item, true);
           });
@@ -958,8 +974,8 @@ describe('choices', () => {
           });
 
           it('dispatches highlightItem action with correct arguments', () => {
-            expect(storeDispatchSpy.called).to.equal(true);
-            expect(storeDispatchSpy.lastCall.args[0]).to.deep.contains({
+            expect(storeDispatchSpy).toHaveBeenCalled();
+            expect(storeDispatchSpy).lastCalledWith({
               type: ActionType.HIGHLIGHT_ITEM,
               item,
               highlighted: false,
@@ -974,12 +990,21 @@ describe('choices', () => {
           });
 
           it('triggers event with null groupValue', () => {
-            expect(passedElementTriggerEventStub.called).to.equal(true);
-            expect(passedElementTriggerEventStub.lastCall.args[0]).to.equal(EventType.unhighlightItem);
-            expect(passedElementTriggerEventStub.lastCall.args[1]).to.contains({
-              value: item.value,
-              label: item.label,
+            expect(passedElementTriggerEventStub).toHaveBeenCalled();
+            expect(passedElementTriggerEventStub).lastCalledWith(EventType.unhighlightItem, {
+              active: false,
+              customProperties: undefined,
+              disabled: false,
+              element: undefined,
               groupValue: undefined,
+              highlighted: true,
+              id: 1234,
+              keyCode: undefined,
+              label: 'Test',
+              labelClass: undefined,
+              labelDescription: '',
+              placeholder: false,
+              value: 'Test',
             });
           });
         });
@@ -999,12 +1024,21 @@ describe('choices', () => {
           });
 
           it('triggers event with groupValue', () => {
-            expect(passedElementTriggerEventStub.called).to.equal(true);
-            expect(passedElementTriggerEventStub.lastCall.args[0]).to.equal(EventType.unhighlightItem);
-            expect(passedElementTriggerEventStub.lastCall.args[1]).to.contains({
-              value: item.value,
-              label: item.label,
-              groupValue: groupIdValue,
+            expect(passedElementTriggerEventStub).toHaveBeenCalled();
+            expect(passedElementTriggerEventStub).lastCalledWith(EventType.unhighlightItem, {
+              active: false,
+              customProperties: undefined,
+              disabled: false,
+              element: undefined,
+              groupValue: 'Test',
+              highlighted: true,
+              id: 1234,
+              keyCode: undefined,
+              label: 'Test',
+              labelClass: undefined,
+              labelDescription: '',
+              placeholder: false,
+              value: 'Test',
             });
           });
         });
@@ -1014,8 +1048,8 @@ describe('choices', () => {
             output = instance.unhighlightItem(item, false);
           });
 
-          it("doesn't trigger event", () => {
-            expect(passedElementTriggerEventStub.called).to.equal(false);
+          it('do not trigger event', () => {
+            expect(passedElementTriggerEventStub).not.toHaveBeenCalled();
           });
 
           it('returns this', () => {
@@ -1026,9 +1060,7 @@ describe('choices', () => {
     });
 
     describe('highlightAll', () => {
-      let choicesStub;
-      let itemsStub;
-      let storeDispatchSpy;
+      let storeDispatchSpy: Mock<(action: AnyAction) => void>;
 
       const items: ChoiceFull[] = [
         {
@@ -1060,17 +1092,15 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        choicesStub = stub(instance._store, 'choices').get(() => items);
-        itemsStub = stub(instance._store, 'items').get(() => items);
-        storeDispatchSpy = spy(instance._store, 'dispatch');
+        vi.spyOn(instance._store, 'choices', 'get').mockImplementation(() => items);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items);
+        storeDispatchSpy = vi.spyOn(instance._store, 'dispatch');
 
         output = instance.highlightAll();
       });
 
       afterEach(() => {
-        storeDispatchSpy.restore();
-        choicesStub.reset();
-        itemsStub.reset();
+        vi.restoreAllMocks();
       });
 
       it('returns this', () => {
@@ -1078,13 +1108,13 @@ describe('choices', () => {
       });
 
       it('highlights each item in store', () => {
-        expect(storeDispatchSpy.callCount).to.equal(items.length);
-        expect(storeDispatchSpy.firstCall.args[0]).to.deep.contains({
+        expect(storeDispatchSpy).callCount(items.length);
+        expect(storeDispatchSpy).toHaveBeenNthCalledWith(1, {
           type: ActionType.HIGHLIGHT_ITEM,
           item: items[0],
           highlighted: true,
         });
-        expect(storeDispatchSpy.lastCall.args[0]).to.deep.contains({
+        expect(storeDispatchSpy).lastCalledWith({
           type: ActionType.HIGHLIGHT_ITEM,
           item: items[1],
           highlighted: true,
@@ -1093,9 +1123,7 @@ describe('choices', () => {
     });
 
     describe('unhighlightAll', () => {
-      let choicesStub;
-      let itemsStub;
-      let storeDispatchSpy;
+      let storeDispatchSpy: Mock<(action: AnyAction) => void>;
 
       const items: ChoiceFull[] = [
         {
@@ -1127,17 +1155,15 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        choicesStub = stub(instance._store, 'choices').get(() => items);
-        itemsStub = stub(instance._store, 'items').get(() => items);
-        storeDispatchSpy = spy(instance._store, 'dispatch');
+        vi.spyOn(instance._store, 'choices', 'get').mockImplementation(() => items);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items);
+        storeDispatchSpy = vi.spyOn(instance._store, 'dispatch');
 
         output = instance.unhighlightAll();
       });
 
       afterEach(() => {
-        storeDispatchSpy.restore();
-        choicesStub.reset();
-        itemsStub.reset();
+        vi.restoreAllMocks();
       });
 
       it('returns this', () => {
@@ -1145,13 +1171,13 @@ describe('choices', () => {
       });
 
       it('unhighlights each item in store', () => {
-        expect(storeDispatchSpy.callCount).to.equal(items.length);
-        expect(storeDispatchSpy.firstCall.args[0]).to.deep.contains({
+        expect(storeDispatchSpy).callCount(items.length);
+        expect(storeDispatchSpy).toHaveBeenNthCalledWith(1, {
           type: ActionType.HIGHLIGHT_ITEM,
           item: items[0],
           highlighted: false,
         });
-        expect(storeDispatchSpy.lastCall.args[0]).to.deep.contains({
+        expect(storeDispatchSpy).lastCalledWith({
           type: ActionType.HIGHLIGHT_ITEM,
           item: items[1],
           highlighted: false,
@@ -1160,17 +1186,17 @@ describe('choices', () => {
     });
 
     describe('clearChoices', () => {
-      let storeResetStub;
+      let storeResetStub: Mock;
 
       beforeEach(() => {
-        storeResetStub = stub();
+        storeResetStub = vi.fn();
         instance._store.reset = storeResetStub;
 
         output = instance.clearChoices();
       });
 
       afterEach(() => {
-        instance._store.reset.reset();
+        vi.restoreAllMocks();
       });
 
       it('returns this', () => {
@@ -1178,24 +1204,23 @@ describe('choices', () => {
       });
 
       it('dispatches clearChoices action', () => {
-        expect(storeResetStub.callCount).to.be.eq(1);
+        expect(storeResetStub).callCount(1);
       });
     });
 
     describe('clearInput', () => {
-      let inputClearSpy;
-      let storeDispatchStub;
+      let inputClearSpy: Mock<(setWidth?: boolean) => Input>;
+      let storeDispatchStub: Mock;
 
       beforeEach(() => {
-        inputClearSpy = spy(instance.input, 'clear');
-        storeDispatchStub = stub();
+        inputClearSpy = vi.spyOn(instance.input, 'clear');
+        storeDispatchStub = vi.fn();
         instance._store.dispatch = storeDispatchStub;
         output = instance.clearInput();
       });
 
       afterEach(() => {
-        inputClearSpy.restore();
-        instance._store.dispatch.reset();
+        vi.restoreAllMocks();
       });
 
       it('returns this', () => {
@@ -1211,8 +1236,8 @@ describe('choices', () => {
         });
 
         it('clears input with correct arguments', () => {
-          expect(inputClearSpy.called).to.equal(true);
-          expect(inputClearSpy.lastCall.args[0]).to.equal(true);
+          expect(inputClearSpy).toHaveBeenCalled();
+          expect(inputClearSpy).lastCalledWith(true);
         });
       });
 
@@ -1227,8 +1252,8 @@ describe('choices', () => {
         });
 
         it('clears input with correct arguments', () => {
-          expect(inputClearSpy.called).to.equal(true);
-          expect(inputClearSpy.lastCall.args[0]).to.equal(false);
+          expect(inputClearSpy).toHaveBeenCalled();
+          expect(inputClearSpy).lastCalledWith(false);
         });
 
         it('resets search flag', () => {
@@ -1236,8 +1261,8 @@ describe('choices', () => {
         });
 
         it('dispatches activateChoices action', () => {
-          expect(storeDispatchStub.called).to.equal(true);
-          expect(storeDispatchStub.lastCall.args[0]).to.deep.equal({
+          expect(storeDispatchStub).toHaveBeenCalled();
+          expect(storeDispatchStub).lastCalledWith({
             type: ActionType.ACTIVATE_CHOICES,
             active: true,
           });
@@ -1253,6 +1278,7 @@ describe('choices', () => {
         });
 
         it('should throw', () => {
+          // @ts-expect-error expect type error
           expect(() => instance.setChoices(null)).Throw(TypeError);
         });
       });
@@ -1261,6 +1287,7 @@ describe('choices', () => {
         it('throws', () => {
           instance.initialised = true;
           instance.initialisedOK = false;
+          // @ts-expect-error expect type error
           expect(() => instance.setChoices(null)).to.throw(
             TypeError,
             'setChoices called for an element which has multiple instances of Choices initialised on it',
@@ -1274,6 +1301,7 @@ describe('choices', () => {
         });
 
         it('should throw', () => {
+          // @ts-expect-error expect type error
           expect(() => instance.setChoices(null)).Throw(TypeError);
         });
       });
@@ -1284,10 +1312,12 @@ describe('choices', () => {
         });
 
         it('should throw on non function', () => {
+          // @ts-expect-error expect type error
           expect(() => instance.setChoices(null)).Throw(TypeError, /Promise/i);
         });
 
         it(`should throw on function that doesn't return promise`, () => {
+          // @ts-expect-error expect type error
           expect(() => instance.setChoices(() => 'boo')).to.throw(TypeError, /promise/i);
         });
       });
@@ -1296,10 +1326,10 @@ describe('choices', () => {
         it('fetches and sets choices', async () => {
           document.body.innerHTML = '<select id="test" />';
           const choice = new Choices('#test', { allowHTML: true });
-          const handleLoadingStateSpy = spy(choice, '_handleLoadingState');
+          const handleLoadingStateSpy = vi.spyOn(choice, '_handleLoadingState');
 
           let fetcherCalled = false;
-          const fetcher = async (inst): Promise<InputChoice[]> => {
+          const fetcher = async (inst: any): Promise<InputChoice[]> => {
             expect(inst).to.eq(choice);
             fetcherCalled = true;
             // eslint-disable-next-line no-promise-executor-return
@@ -1312,10 +1342,10 @@ describe('choices', () => {
           };
           expect(choice._store.choices.length).to.equal(0);
           const promise = choice.setChoices(fetcher);
-          expect(fetcherCalled).to.be.true;
+          expect(fetcherCalled).toBe(true);
           const res = await promise;
           expect(res).to.equal(choice);
-          expect(handleLoadingStateSpy.callCount).to.equal(2);
+          expect(handleLoadingStateSpy).callCount(2);
           expect(choice._store.choices[1].value).to.equal('v2');
           expect(choice._store.choices[1].label).to.equal('l2');
           expect(choice._store.choices[1].customProperties).to.deep.equal({
@@ -1326,7 +1356,7 @@ describe('choices', () => {
     });
 
     describe('setValue', () => {
-      let _addChoiceStub;
+      let _addChoiceStub: Mock;
       const value1 = 'Value 1';
       const value2 = {
         value: 'Value 2',
@@ -1334,19 +1364,19 @@ describe('choices', () => {
       const values = [value1, value2];
 
       beforeEach(() => {
-        _addChoiceStub = stub();
+        _addChoiceStub = vi.fn();
         instance._addChoice = _addChoiceStub;
       });
 
       afterEach(() => {
-        instance._addChoice.reset();
+        vi.restoreAllMocks();
       });
 
       describe('not already initialised', () => {
         it('throws', () => {
           instance.initialised = false;
           instance.initialisedOK = undefined;
-          expect(() => instance.setValue(values)).to.throw(
+          expect(() => instance.setValue(values as ChoiceFull[])).to.throw(
             TypeError,
             'setValue called on a non-initialised instance of Choices',
           );
@@ -1357,7 +1387,7 @@ describe('choices', () => {
         it('throws', () => {
           instance.initialised = true;
           instance.initialisedOK = false;
-          expect(() => instance.setValue(values)).to.throw(
+          expect(() => instance.setValue(values as ChoiceFull[])).to.throw(
             TypeError,
             'setValue called for an element which has multiple instances of Choices initialised on it',
           );
@@ -1367,7 +1397,7 @@ describe('choices', () => {
       describe('when already initialised', () => {
         beforeEach(() => {
           instance.initialised = true;
-          output = instance.setValue(values);
+          output = instance.setValue(values as ChoiceFull[]);
         });
 
         it('returns this', () => {
@@ -1375,25 +1405,23 @@ describe('choices', () => {
         });
 
         it('sets each value', () => {
-          expect(_addChoiceStub.callCount).to.equal(2);
-          expect(_addChoiceStub.firstCall.args[0]).to.be.a('object');
-          expect(_addChoiceStub.secondCall.args[0]).to.be.a('object');
-          expect(value1).to.equal(_addChoiceStub.firstCall.args[0].value);
-          expect(value2.value).to.equal(_addChoiceStub.secondCall.args[0].value);
+          expect(_addChoiceStub).callCount(2);
+          expect(_addChoiceStub).toHaveBeenNthCalledWith(1, mapInputToChoice(value1, false));
+          expect(_addChoiceStub).toHaveBeenNthCalledWith(2, mapInputToChoice(value2 as ChoiceFull, false));
         });
       });
     });
 
     describe('setChoiceByValue', () => {
-      let findAndSelectChoiceByValueStub;
+      let findAndSelectChoiceByValueStub: Mock;
 
       beforeEach(() => {
-        findAndSelectChoiceByValueStub = stub();
+        findAndSelectChoiceByValueStub = vi.fn();
         instance._findAndSelectChoiceByValue = findAndSelectChoiceByValueStub;
       });
 
       afterEach(() => {
-        instance._findAndSelectChoiceByValue.reset();
+        vi.restoreAllMocks();
       });
 
       describe('not already initialised', () => {
@@ -1436,8 +1464,8 @@ describe('choices', () => {
           });
 
           it('sets each choice with same value', () => {
-            expect(findAndSelectChoiceByValueStub.called).to.equal(true);
-            expect(findAndSelectChoiceByValueStub.firstCall.args[0]).to.equal(value);
+            expect(findAndSelectChoiceByValueStub).toHaveBeenCalled();
+            expect(findAndSelectChoiceByValueStub).toHaveBeenNthCalledWith(1, value);
           });
         });
 
@@ -1453,16 +1481,15 @@ describe('choices', () => {
           });
 
           it('sets each choice with same value', () => {
-            expect(findAndSelectChoiceByValueStub.callCount).to.equal(2);
-            expect(findAndSelectChoiceByValueStub.firstCall.args[0]).to.equal(values[0]);
-            expect(findAndSelectChoiceByValueStub.secondCall.args[0]).to.equal(values[1]);
+            expect(findAndSelectChoiceByValueStub).callCount(2);
+            expect(findAndSelectChoiceByValueStub).toHaveBeenNthCalledWith(1, values[0]);
+            expect(findAndSelectChoiceByValueStub).toHaveBeenNthCalledWith(2, values[1]);
           });
         });
       });
     });
 
     describe('getValue', () => {
-      let activeItemsStub;
       const items = [
         {
           id: '1',
@@ -1475,11 +1502,11 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        activeItemsStub = stub(instance._store, 'items').get(() => items);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items as unknown as ChoiceFull[]);
       });
 
       afterEach(() => {
-        activeItemsStub.reset();
+        vi.restoreAllMocks();
       });
 
       describe('passing true valueOnly flag', () => {
@@ -1525,7 +1552,7 @@ describe('choices', () => {
           });
 
           it('returns all active items', () => {
-            output.forEach((choice) => {
+            output.forEach((choice: object) => {
               expect(choice).to.contain.keys(Object.keys(items[0])).all;
             });
           });
@@ -1534,8 +1561,7 @@ describe('choices', () => {
     });
 
     describe('removeActiveItemsByValue', () => {
-      let activeItemsStub;
-      let removeItemStub;
+      let removeItemStub: Mock;
       const value = 'Removed';
       const items = [
         {
@@ -1553,52 +1579,49 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        removeItemStub = stub();
-        activeItemsStub = stub(instance._store, 'items').get(() => items);
+        removeItemStub = vi.fn();
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items as unknown as ChoiceFull[]);
         instance._removeItem = removeItemStub;
 
         output = instance.removeActiveItemsByValue(value);
       });
 
       afterEach(() => {
-        activeItemsStub.reset();
-        instance._removeItem.reset();
+        vi.restoreAllMocks();
       });
 
       it('removes each active item in store with matching value', () => {
-        expect(removeItemStub.callCount).to.equal(2);
-        expect(removeItemStub.firstCall.args[0]).to.equal(items[1]);
-        expect(removeItemStub.secondCall.args[0]).to.equal(items[2]);
+        expect(removeItemStub).callCount(2);
+        expect(removeItemStub).toHaveBeenNthCalledWith(1, items[1]);
+        expect(removeItemStub).toHaveBeenNthCalledWith(2, items[2]);
       });
     });
 
     describe('removeActiveItems', () => {
-      let activeItemsStub;
-      let removeItemStub;
+      let removeItemStub: Mock;
       const items = [
         {
-          id: '1',
+          id: 1,
           value: 'Not removed',
         },
         {
-          id: '2',
+          id: 2,
           value: 'Removed',
         },
         {
-          id: '3',
+          id: 3,
           value: 'Removed',
         },
       ];
 
       beforeEach(() => {
-        removeItemStub = stub();
-        activeItemsStub = stub(instance._store, 'items').get(() => items);
+        removeItemStub = vi.fn();
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items as unknown as ChoiceFull[]);
         instance._removeItem = removeItemStub;
       });
 
       afterEach(() => {
-        activeItemsStub.reset();
-        instance._removeItem.reset();
+        vi.restoreAllMocks();
       });
 
       describe('not passing id to exclude', () => {
@@ -1607,33 +1630,31 @@ describe('choices', () => {
         });
 
         it('removes all active items in store', () => {
-          expect(removeItemStub.callCount).to.equal(items.length);
-          expect(removeItemStub.firstCall.args[0]).to.equal(items[0]);
-          expect(removeItemStub.secondCall.args[0]).to.equal(items[1]);
-          expect(removeItemStub.thirdCall.args[0]).to.equal(items[2]);
+          expect(removeItemStub).callCount(items.length);
+          expect(removeItemStub).toHaveBeenNthCalledWith(1, items[0]);
+          expect(removeItemStub).toHaveBeenNthCalledWith(2, items[1]);
+          expect(removeItemStub).toHaveBeenNthCalledWith(3, items[2]);
         });
       });
 
       describe('passing id to exclude', () => {
-        const idToExclude = '2';
+        const idToExclude = 2;
 
         beforeEach(() => {
           output = instance.removeActiveItems(idToExclude);
         });
 
         it('removes all active items in store with id that does match excludedId', () => {
-          expect(removeItemStub.callCount).to.equal(2);
-          expect(removeItemStub.firstCall.args[0]).to.equal(items[0]);
-          expect(removeItemStub.secondCall.args[0]).to.equal(items[2]);
+          expect(removeItemStub).callCount(2);
+          expect(removeItemStub).toHaveBeenNthCalledWith(1, items[0]);
+          expect(removeItemStub).toHaveBeenNthCalledWith(2, items[2]);
         });
       });
     });
 
     describe('removeChoice', () => {
-      let choicesStub;
-      let itemsStub;
-      let dispatchStub;
-      let triggerEventStub;
+      let dispatchStub: Mock;
+      let triggerEventStub: Mock;
 
       const items = [
         {
@@ -1649,20 +1670,17 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        choicesStub = stub(instance._store, 'choices').get(() => items);
-        itemsStub = stub(instance._store, 'items').get(() => items);
-        triggerEventStub = stub();
-        dispatchStub = stub();
+        vi.spyOn(instance._store, 'choices', 'get').mockImplementation(() => items as ChoiceFull[]);
+        vi.spyOn(instance._store, 'items', 'get').mockImplementation(() => items as ChoiceFull[]);
+        triggerEventStub = vi.fn();
+        dispatchStub = vi.fn();
 
         instance._store.dispatch = dispatchStub;
         instance.passedElement.triggerEvent = triggerEventStub;
       });
 
       afterEach(() => {
-        choicesStub.reset();
-        itemsStub.reset();
-        instance._store.dispatch.reset();
-        instance.passedElement.triggerEvent.reset();
+        vi.restoreAllMocks();
       });
 
       describe('remove a selected choice from the store', () => {
@@ -1712,9 +1730,8 @@ describe('choices', () => {
     });
 
     describe('removeHighlightedItems', () => {
-      let highlightedActiveItemsStub;
-      let removeItemStub;
-      let triggerChangeStub;
+      let removeItemStub: Mock;
+      let triggerChangeStub: Mock;
 
       const items = [
         {
@@ -1728,18 +1745,18 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        highlightedActiveItemsStub = stub(instance._store, 'highlightedActiveItems').get(() => items);
-        removeItemStub = stub();
-        triggerChangeStub = stub();
+        vi.spyOn(instance._store, 'highlightedActiveItems', 'get').mockImplementation(
+          () => items as unknown as ChoiceFull[],
+        );
+        removeItemStub = vi.fn();
+        triggerChangeStub = vi.fn();
 
         instance._removeItem = removeItemStub;
         instance._triggerChange = triggerChangeStub;
       });
 
       afterEach(() => {
-        highlightedActiveItemsStub.reset();
-        instance._removeItem.reset();
-        instance._triggerChange.reset();
+        vi.restoreAllMocks();
       });
 
       describe('runEvent parameter being passed', () => {
@@ -1752,7 +1769,7 @@ describe('choices', () => {
         });
 
         it('removes each highlighted item in store', () => {
-          expect(removeItemStub.callCount).to.equal(2);
+          expect(removeItemStub).callCount(2);
         });
       });
 
@@ -1766,18 +1783,18 @@ describe('choices', () => {
         });
 
         it('triggers event with item value', () => {
-          expect(triggerChangeStub.callCount).to.equal(2);
-          expect(triggerChangeStub.firstCall.args[0]).to.equal(items[0].value);
-          expect(triggerChangeStub.secondCall.args[0]).to.equal(items[1].value);
+          expect(triggerChangeStub).callCount(2);
+          expect(triggerChangeStub).toHaveBeenNthCalledWith(1, items[0].value);
+          expect(triggerChangeStub).toHaveBeenNthCalledWith(2, items[1].value);
         });
       });
     });
 
     describe('setChoices', () => {
-      let clearChoicesStub;
-      let addGroupStub;
-      let addChoiceStub;
-      let containerOuterRemoveLoadingStateStub;
+      let clearChoicesStub: Mock;
+      let addGroupStub: Mock;
+      let addChoiceStub: Mock;
+      let containerOuterRemoveLoadingStateStub: Mock;
       const value = 'value';
       const label = 'label';
       const choices: InputChoice[] = [
@@ -1806,10 +1823,10 @@ describe('choices', () => {
       ];
 
       beforeEach(() => {
-        clearChoicesStub = stub();
-        addGroupStub = stub();
-        addChoiceStub = stub();
-        containerOuterRemoveLoadingStateStub = stub();
+        clearChoicesStub = vi.fn();
+        addGroupStub = vi.fn();
+        addChoiceStub = vi.fn();
+        containerOuterRemoveLoadingStateStub = vi.fn();
 
         instance.clearChoices = clearChoicesStub;
         instance._addGroup = addGroupStub;
@@ -1818,10 +1835,7 @@ describe('choices', () => {
       });
 
       afterEach(() => {
-        instance.clearChoices.reset();
-        instance._addGroup.reset();
-        instance._addChoice.reset();
-        instance.containerOuter.removeLoadingState.reset();
+        vi.restoreAllMocks();
       });
 
       describe('when element is not select element', () => {
@@ -1853,15 +1867,52 @@ describe('choices', () => {
 
         it('removes loading state', () => {
           instance.setChoices(choices, value, label, false);
-          expect(containerOuterRemoveLoadingStateStub.called).to.equal(true);
+          expect(containerOuterRemoveLoadingStateStub).toHaveBeenCalled();
         });
 
         describe('passing choices with children choices', () => {
           it('adds groups', () => {
             instance.setChoices(groups, value, label, false);
-            expect(addGroupStub.callCount).to.equal(2);
-            expect(addGroupStub.firstCall.args[0]).to.contain({
-              label: groups[0].label,
+            expect(addGroupStub).callCount(2);
+            expect(addGroupStub).toHaveBeenNthCalledWith(1, {
+              active: true,
+              choices: [
+                {
+                  active: true,
+                  customProperties: undefined,
+                  disabled: false,
+                  group: null,
+                  highlighted: false,
+                  id: 0,
+                  label: 'Test 1',
+                  labelClass: undefined,
+                  labelDescription: undefined,
+                  placeholder: false,
+                  rank: 0,
+                  score: 0,
+                  selected: false,
+                  value: '1',
+                },
+                {
+                  active: true,
+                  customProperties: undefined,
+                  disabled: true,
+                  group: null,
+                  highlighted: false,
+                  id: 0,
+                  label: 'Test 2',
+                  labelClass: undefined,
+                  labelDescription: undefined,
+                  placeholder: false,
+                  rank: 0,
+                  score: 0,
+                  selected: false,
+                  value: '2',
+                },
+              ],
+              disabled: false,
+              id: 0,
+              label: 'Test 1',
             });
           });
         });
@@ -1872,9 +1923,9 @@ describe('choices', () => {
         describe('passing choices without children choices', () => {
           it('adds passed choices', () => {
             instance.setChoices(choices, value, label, false);
-            expect(addChoiceStub.callCount).to.equal(2);
-            addChoiceStub.getCalls().forEach((call, index) => {
-              expect(call.args[0]).to.deep.contain({
+            expect(addChoiceStub).callCount(2);
+            choices.forEach((_v, index) => {
+              expect(addChoiceStub).toHaveBeenNthCalledWith(index + 1, {
                 value: choices[index][value],
                 label: choices[index][label],
                 active: coerceBool(choices[index].active),
@@ -1882,6 +1933,13 @@ describe('choices', () => {
                 disabled: coerceBool(choices[index].disabled, false),
                 customProperties: choices[index].customProperties,
                 placeholder: coerceBool(choices[index].placeholder, false),
+                group: null,
+                highlighted: false,
+                id: 0,
+                labelClass: undefined,
+                labelDescription: undefined,
+                rank: 0,
+                score: 0,
               });
             });
           });
@@ -1891,7 +1949,7 @@ describe('choices', () => {
           it('choices are cleared', () => {
             instance._isSelectElement = true;
             instance.setChoices([], value, label, true);
-            expect(clearChoicesStub.called).to.equal(true);
+            expect(clearChoicesStub).toHaveBeenCalled();
           });
         });
 
@@ -1899,21 +1957,21 @@ describe('choices', () => {
           it('choices stay the same', () => {
             instance._isSelectElement = true;
             instance.setChoices([], value, label, false);
-            expect(clearChoicesStub.called).to.equal(false);
+            expect(clearChoicesStub).not.toHaveBeenCalled();
           });
         });
 
         describe('passing true replaceChoices flag', () => {
           it('choices are cleared', () => {
             instance.setChoices(choices, value, label, true);
-            expect(clearChoicesStub.called).to.equal(true);
+            expect(clearChoicesStub).toHaveBeenCalled();
           });
         });
 
         describe('passing false replaceChoices flag', () => {
           it('choices are not cleared', () => {
             instance.setChoices(choices, value, label, false);
-            expect(clearChoicesStub.called).to.equal(false);
+            expect(clearChoicesStub).not.toHaveBeenCalled();
           });
         });
       });
@@ -1962,7 +2020,7 @@ describe('choices', () => {
             instance.input.focus();
             instance.passedElement.element.addEventListener(
               'search',
-              (event) => {
+              (event: CustomEvent) => {
                 expect(event.detail).to.contains({
                   value: query,
                   resultCount: 0,
@@ -1972,8 +2030,8 @@ describe('choices', () => {
               { once: true },
             );
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
 
         it('uses Fuse options', () =>
@@ -1986,15 +2044,15 @@ describe('choices', () => {
             instance.input.focus();
             instance.passedElement.element.addEventListener(
               'search',
-              (event) => {
+              (event: CustomEvent) => {
                 expect(event.detail.resultCount).to.eql(0);
                 done(true);
               },
               { once: true },
             );
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
 
         it('is fired with a searchFloor of 0', () =>
@@ -2002,7 +2060,7 @@ describe('choices', () => {
             instance.config.searchFloor = 0;
             instance.input.value = 'qwerty';
             instance.input.focus();
-            instance.passedElement.element.addEventListener('search', (event) => {
+            instance.passedElement.element.addEventListener('search', (event: CustomEvent) => {
               expect(event.detail).to.contains({
                 value: instance.input.value,
                 resultCount: 0,
@@ -2010,8 +2068,8 @@ describe('choices', () => {
               done(true);
             });
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
       });
 
@@ -2027,7 +2085,7 @@ describe('choices', () => {
             instance.input.focus();
             instance.passedElement.element.addEventListener(
               'search',
-              (event) => {
+              (event: CustomEvent) => {
                 expect(event.detail).to.contains({
                   value: query,
                   resultCount: 0,
@@ -2037,8 +2095,8 @@ describe('choices', () => {
               { once: true },
             );
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
 
         it('is fired with a searchFloor of 0', () =>
@@ -2046,7 +2104,7 @@ describe('choices', () => {
             instance.config.searchFloor = 0;
             instance.input.value = 'qwerty';
             instance.input.focus();
-            instance.passedElement.element.addEventListener('search', (event) => {
+            instance.passedElement.element.addEventListener('search', (event: CustomEvent) => {
               expect(event.detail).to.contains({
                 value: instance.input.value,
                 resultCount: 0,
@@ -2054,8 +2112,8 @@ describe('choices', () => {
               done(true);
             });
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
       });
 
@@ -2071,7 +2129,7 @@ describe('choices', () => {
             instance.input.focus();
             instance.passedElement.element.addEventListener(
               'search',
-              (event) => {
+              (event: CustomEvent) => {
                 expect(event.detail).to.contains({
                   value: query,
                   resultCount: 0,
@@ -2081,8 +2139,8 @@ describe('choices', () => {
               { once: true },
             );
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
 
         it('is fired with a searchFloor of 0', () =>
@@ -2090,7 +2148,7 @@ describe('choices', () => {
             instance.config.searchFloor = 0;
             instance.input.value = 'qwerty';
             instance.input.focus();
-            instance.passedElement.element.addEventListener('search', (event) => {
+            instance.passedElement.element.addEventListener('search', (event: CustomEvent) => {
               expect(event.detail).to.contains({
                 value: instance.input.value,
                 resultCount: 0,
@@ -2098,8 +2156,8 @@ describe('choices', () => {
               done(true);
             });
 
-            instance._onKeyUp({ target: null, keyCode: null });
-            instance._onInput({ target: null });
+            instance._onKeyUp(/* { target: null, keyCode: null } */);
+            instance._onInput(/* { target: null } */);
           }));
       });
     });
@@ -2113,7 +2171,7 @@ describe('choices', () => {
             const placeholderValue = 'I am a placeholder';
 
             instance._isSelectElement = true;
-            instance.passedElement.placeholderOption = {
+            (instance.passedElement as WrappedSelect).placeholderOption = {
               text: placeholderValue,
             };
 
@@ -2125,7 +2183,7 @@ describe('choices', () => {
         describe('when a placeholder option is not defined', () => {
           it('returns null', () => {
             instance._isSelectElement = true;
-            instance.passedElement.placeholderOption = undefined;
+            (instance.passedElement as WrappedSelect).placeholderOption = undefined;
 
             const value = instance._generatePlaceholderValue();
             expect(value).to.equal(null);
@@ -2169,12 +2227,12 @@ describe('choices', () => {
       let hasFocussedInput;
 
       beforeEach(() => {
-        instance.showDropdown = stub();
-        instance._onSelectKey = stub();
-        instance._onEnterKey = stub();
-        instance._onEscapeKey = stub();
-        instance._onDirectionKey = stub();
-        instance._onDeleteKey = stub();
+        instance.showDropdown = vi.fn();
+        instance._onSelectKey = vi.fn();
+        instance._onEnterKey = vi.fn();
+        instance._onEscapeKey = vi.fn();
+        instance._onDirectionKey = vi.fn();
+        instance._onDeleteKey = vi.fn();
 
         ({ items } = instance._store);
         hasItems = instance.itemList.element.hasChildNodes();
@@ -2195,7 +2253,7 @@ describe('choices', () => {
             const event = {
               keyCode,
               key,
-            };
+            } as KeyboardEvent;
 
             instance._onKeyDown(event);
 
@@ -2209,7 +2267,7 @@ describe('choices', () => {
           const event = {
             keyCode: KeyCodeMap.A_KEY,
             key: 'A',
-          };
+          } as KeyboardEvent;
 
           instance._onKeyDown(event);
 
@@ -2222,7 +2280,7 @@ describe('choices', () => {
           const event = {
             keyCode: KeyCodeMap.ENTER_KEY,
             key: 'Enter',
-          };
+          } as KeyboardEvent;
 
           instance._onKeyDown(event);
 
@@ -2245,7 +2303,7 @@ describe('choices', () => {
             const event = {
               keyCode,
               key,
-            };
+            } as KeyboardEvent;
 
             instance._onKeyDown(event);
 
@@ -2257,11 +2315,11 @@ describe('choices', () => {
 
     describe('_removeItem', () => {
       beforeEach(() => {
-        instance._store.dispatch = stub();
+        instance._store.dispatch = vi.fn();
       });
 
       afterEach(() => {
-        instance._store.dispatch.reset();
+        vi.restoreAllMocks();
       });
 
       describe('when given an item to remove', () => {
@@ -2290,7 +2348,7 @@ describe('choices', () => {
           new Promise((done) => {
             passedElement.addEventListener(
               'removeItem',
-              (event) => {
+              (event: CustomEvent) => {
                 expect(event.detail).to.contains({
                   id: item.id,
                   value: item.value,
@@ -2315,22 +2373,21 @@ describe('choices', () => {
             ...item,
             value: 'testing',
             group,
-          };
+          } as ChoiceFull;
 
           beforeEach(() => {
-            instance._store.getGroupById = stub();
-            instance._store.getGroupById.returns(group);
+            instance._store.getGroupById = vi.fn().mockImplementation(() => group);
           });
 
           afterEach(() => {
-            instance._store.getGroupById.reset();
+            vi.restoreAllMocks();
           });
 
           it("includes the group's value in the triggered event", () =>
             new Promise((done) => {
               passedElement.addEventListener(
                 'removeItem',
-                (event) => {
+                (event: CustomEvent) => {
                   expect(event.detail).to.contains({
                     id: itemWithGroup.id,
                     value: itemWithGroup.value,

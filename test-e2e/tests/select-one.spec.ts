@@ -27,6 +27,34 @@ describe(`Choices - select one`, () => {
         });
 
         describe('click selected element', () => {
+          test('focuses the search input before deferred dropdown layout', async ({ page, bundle }) => {
+            const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+            await suite.start();
+
+            const beforeFrame = await page.evaluate(() => {
+              const choices = (
+                window as unknown as {
+                  choicesBasic: {
+                    showDropdown: () => void;
+                    input: { element: HTMLInputElement };
+                    containerOuter: { element: HTMLElement };
+                  };
+                }
+              ).choicesBasic;
+              choices.showDropdown();
+
+              return {
+                inputFocused: document.activeElement === choices.input.element,
+                containerExpanded: choices.containerOuter.element.getAttribute('aria-expanded'),
+              };
+            });
+
+            expect(beforeFrame).toEqual({ inputFocused: true, containerExpanded: 'true' });
+            await expect(suite.dropdown).toBeVisible();
+            await suite.advanceClock();
+            await expect(suite.wrapper).toHaveAttribute('aria-expanded', 'true');
+          });
+
           test('toggles the dropdown', async ({ page, bundle }) => {
             const suite = new SelectTestSuit(page, bundle, testUrl, testId);
             await suite.startWithClick();
@@ -126,6 +154,32 @@ describe(`Choices - select one`, () => {
           await suite.input.press('PageUp');
           await expect(suite.choices.first()).toHaveClass(/is-highlighted/);
           await expect(suite.choices.last()).not.toHaveClass(/is-highlighted/);
+        });
+
+        test('arrow key navigation resumes from selected item after closing without confirming', async ({
+          page,
+          bundle,
+        }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          // Navigate down twice so choices.nth(2) is highlighted, then escape
+          await suite.input.press('ArrowDown');
+          await suite.input.press('ArrowDown');
+          await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
+          await suite.escapeKey();
+          await suite.expectHiddenDropdown();
+
+          // The first choice should still be the selected (confirmed) item
+          await expect(suite.choices.first()).toHaveClass(/is-selected/);
+
+          // Reopen and press ArrowDown; should move relative to the selected item
+          await suite.startWithClick();
+          await suite.input.press('ArrowDown');
+
+          // Navigation should continue from the selected item, not restart from item 0
+          await expect(suite.choices.first()).not.toHaveClass(/is-highlighted/);
+          await expect(suite.choices.nth(1)).toHaveClass(/is-highlighted/);
         });
       });
 
@@ -229,6 +283,19 @@ describe(`Choices - select one`, () => {
             await expect(suite.input).toBeEnabled();
           });
         });
+      });
+    });
+
+    describe('selected choice highlighted in dropdown', () => {
+      const selectedChoice = 'Choice 3';
+      test('on', async ({ page, bundle }) => {
+        const suite = new SelectTestSuit(page, bundle, testUrl, 'selected-choice-in-dropdown');
+        await suite.startWithClick();
+
+        await suite.expectedItemCount(1);
+        await suite.expectedValue(selectedChoice);
+
+        await expect(suite.choices.nth(2)).toHaveClass(/is-highlighted/);
       });
     });
 
@@ -1029,6 +1096,44 @@ describe(`Choices - select one`, () => {
         await suite.expectedValue('Choice 2');
         await suite.expectedItemCount(1);
         await suite.expectChoiceCount(2);
+      });
+    });
+
+    describe('Input width', () => {
+      describe('placeholder', () => {
+        const testId = 'input-width-placeholder';
+
+        // For select-one the search input lives inside the dropdown and setWidth should not be called.
+        // Verify the placeholder attribute is correctly applied to the search input instead.
+        test('sets search placeholder on input when dropdown opens', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          const placeholder = await suite.input.evaluate((el) => (el as HTMLInputElement).placeholder);
+          expect(placeholder).toEqual('搜索');
+        });
+      });
+
+      describe('typing', () => {
+        const testId = 'input-width-typing';
+
+        test('sets width for English character', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          const originalWidth = parseInt(await suite.input.evaluate((el) => (el as HTMLInputElement).style.width), 10);
+          await suite.typeText('f');
+          await expect(suite.input).toHaveValue('f');
+
+          let width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(parseInt(width, 10)).toEqual(originalWidth);
+          await suite.startWithClick();
+          await suite.typeText('中');
+          await expect(suite.input).toHaveValue('中');
+
+          width = await suite.input.evaluate((el) => (el as HTMLInputElement).style.width);
+          expect(parseInt(width, 10)).toEqual(originalWidth);
+        });
       });
     });
   });

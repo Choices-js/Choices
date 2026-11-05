@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 // eslint-disable-next-line import/no-named-default
 import { default as _templates } from '../../src/scripts/templates';
 import { strToEl, getClassNames } from '../../src/scripts/lib/utils';
@@ -429,6 +429,7 @@ describe('templates', () => {
             data-select-text="${itemSelectText}"
             data-deselect-text="${itemDeselectText}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="option"
             >
@@ -496,6 +497,7 @@ describe('templates', () => {
             data-select-text="${itemSelectText}"
             data-deselect-text="${itemDeselectText}"
             data-choice-selectable
+            aria-selected="true"
             id="${data.elementId}"
             role="option"
             >
@@ -530,6 +532,7 @@ describe('templates', () => {
             data-select-text="${itemSelectText}"
             data-deselect-text="${itemDeselectText}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="option"
             >
@@ -563,6 +566,7 @@ describe('templates', () => {
             data-deselect-text="${itemDeselectText}"
             data-group-id="${data.groupId}"
             data-choice-selectable
+            aria-selected="false"
             id="${data.elementId}"
             role="treeitem"
             >
@@ -611,11 +615,20 @@ describe('templates', () => {
       listDropdown: 'class-2',
     });
 
-    it('returns expected html', () => {
+    it('returns expected html for select elements', () => {
       const expectedOutput = strToEl(
         `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}" aria-expanded="false"></div>`,
       );
-      const actualOutput = templates.dropdown(dropdownOptions);
+      const actualOutput = templates.dropdown(dropdownOptions, 'select-one');
+
+      expectEqualElements(actualOutput, expectedOutput);
+    });
+
+    it('returns expected html for text inputs', () => {
+      const expectedOutput = strToEl(
+        `<div class="${getClassNames(dropdownOptions.classNames.list).join(' ')} ${getClassNames(dropdownOptions.classNames.listDropdown).join(' ')}"></div>`,
+      );
+      const actualOutput = templates.dropdown(dropdownOptions, 'text');
 
       expectEqualElements(actualOutput, expectedOutput);
     });

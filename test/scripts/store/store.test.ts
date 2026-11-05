@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
-import { beforeEach } from 'vitest';
+import { expect, vi, beforeEach, Mock } from 'vitest';
 import Store from '../../../src/scripts/store/store';
 // eslint-disable-next-line import/no-named-default
 import { ActionType, State, default as Choices } from '../../../src';
@@ -14,17 +12,16 @@ function shimStore() {
 
 describe('reducers/store', () => {
   let instance: Store<Options>;
-  let subscribeStub: sinon.SinonStub<[listener: StoreListener], Store<Options>>;
-  let dispatchStub: sinon.SinonStub<[action: AnyAction], void>;
-  let getStateStub: sinon.SinonStub<any[], State>;
+  let subscribeStub: Mock<(onChange: StoreListener) => Store<Options>>;
+  let dispatchStub: Mock<(action: AnyAction) => void>;
   let emptyState: State;
   let state: State;
 
   beforeEach(() => {
     instance = shimStore();
-    subscribeStub = sinon.stub(instance, 'subscribe');
-    dispatchStub = sinon.stub(instance, 'dispatch');
-    getStateStub = sinon.stub(instance, 'state');
+    subscribeStub = vi.spyOn(instance, 'subscribe');
+    dispatchStub = vi.spyOn(instance, 'dispatch');
+
     emptyState = instance.defaultState;
     state = {
       items: [
@@ -123,9 +120,8 @@ describe('reducers/store', () => {
   });
 
   afterEach(() => {
-    subscribeStub.restore();
-    dispatchStub.restore();
-    getStateStub.restore();
+    instance.reset();
+    vi.restoreAllMocks();
   });
 
   describe('constructor', () => {
@@ -137,41 +133,37 @@ describe('reducers/store', () => {
   describe('subscribe', () => {
     it('wraps redux-like subscribe method', () => {
       const onChange = (): void => {};
-      expect(subscribeStub.callCount).to.equal(0);
+      expect(subscribeStub).not.toHaveBeenCalled();
       instance.subscribe(onChange);
-      expect(subscribeStub.callCount).to.equal(1);
-      expect(subscribeStub.firstCall.args[0]).to.equal(onChange);
+      expect(subscribeStub).toHaveBeenCalled();
+      expect(subscribeStub).toHaveBeenCalledWith(onChange);
     });
   });
 
   describe('dispatch', () => {
     it('wraps redux-like dispatch method', () => {
       const action: AnyAction = { type: ActionType.CLEAR_CHOICES };
-      expect(dispatchStub.callCount).to.equal(0);
+      expect(dispatchStub).not.toHaveBeenCalled();
       instance.dispatch(action);
-      expect(dispatchStub.callCount).to.equal(1);
-      expect(dispatchStub.firstCall.args[0]).to.equal(action);
+      expect(dispatchStub).toHaveBeenCalled();
+      expect(dispatchStub).toHaveBeenCalledWith(action);
     });
   });
 
   describe('state getter', () => {
     it('returns state', () => {
-      getStateStub.value(cloneObject(emptyState));
-
       expect(instance.state).to.deep.equal(emptyState);
     });
   });
 
   describe('txn', () => {
-    let listenerStub: sinon.SinonStub;
+    let listenerStub: Mock;
 
     beforeEach(() => {
-      subscribeStub.restore();
-      dispatchStub.restore();
-      getStateStub.restore();
+      vi.restoreAllMocks();
 
       instance._state = cloneObject(state);
-      listenerStub = sinon.stub();
+      listenerStub = vi.fn();
       instance.subscribe(listenerStub);
     });
 
@@ -186,7 +178,7 @@ describe('reducers/store', () => {
         instance.dispatch(action);
       });
 
-      expect(listenerStub.callCount).eq(1);
+      expect(listenerStub).callCount(1);
       expect(instance.state).to.deep.equal(emptyChoicesState);
     });
 
@@ -198,21 +190,19 @@ describe('reducers/store', () => {
         instance.reset();
       });
 
-      expect(listenerStub.callCount).eq(1);
+      expect(listenerStub).callCount(1);
       expect(instance.state).to.deep.equal(emptyState);
     });
   });
 
   describe('without txn', () => {
-    let listenerStub: sinon.SinonStub;
+    let listenerStub: Mock;
 
     beforeEach(() => {
-      subscribeStub.restore();
-      dispatchStub.restore();
-      getStateStub.restore();
+      vi.restoreAllMocks();
 
       instance._state = cloneObject(state);
-      listenerStub = sinon.stub();
+      listenerStub = vi.fn();
       instance.subscribe(listenerStub);
     });
 
@@ -225,7 +215,7 @@ describe('reducers/store', () => {
       instance.dispatch(action);
       instance.dispatch(action);
 
-      expect(listenerStub.callCount).eq(2);
+      expect(listenerStub).callCount(2);
       expect(instance.state).to.deep.equal(emptyChoicesState);
     });
 
@@ -235,14 +225,14 @@ describe('reducers/store', () => {
       instance.dispatch(action);
       instance.reset();
 
-      expect(listenerStub.callCount).eq(3);
+      expect(listenerStub).callCount(3);
       expect(instance.state).to.deep.equal(emptyState);
     });
   });
 
   describe('store selectors', () => {
     beforeEach(() => {
-      getStateStub.value(cloneObject(state));
+      instance._state = cloneObject(state);
     });
 
     describe('items getter', () => {
@@ -277,6 +267,15 @@ describe('reducers/store', () => {
       it('returns choices that are not placeholders and are selectable', () => {
         const expectedResponse = state.choices.filter((choice) => !choice.disabled && !choice.placeholder);
         expect(instance.searchableChoices).to.deep.equal(expectedResponse);
+      });
+
+      it('includes disabled choices when searchDisabledChoices is true', () => {
+        const configWithDisabled = { ...Choices.defaults.allOptions, searchDisabledChoices: true };
+        const instanceWithConfig = new Store(configWithDisabled);
+        instanceWithConfig._state = state;
+
+        const expectedResponse = state.choices.filter((choice) => !choice.placeholder);
+        expect(instanceWithConfig.searchableChoices).to.deep.equal(expectedResponse);
       });
     });
 

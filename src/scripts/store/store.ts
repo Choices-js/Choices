@@ -2,6 +2,7 @@ import { AnyAction, Reducer, Store as IStore, StoreListener } from '../interface
 import { StateChangeSet, State } from '../interfaces/state';
 import { ChoiceFull } from '../interfaces/choice-full';
 import { GroupFull } from '../interfaces/group-full';
+import { Options } from '../interfaces/options';
 import items from '../reducers/items';
 import groups from '../reducers/groups';
 import choices from '../reducers/choices';
@@ -142,7 +143,9 @@ export default class Store<T> implements IStore {
    * Get choices that can be searched (excluding placeholders or disabled choices)
    */
   get searchableChoices(): ChoiceFull[] {
-    return this.choices.filter((choice) => !choice.disabled && !choice.placeholder);
+    const context = this._context as Options;
+
+    return this.choices.filter((choice) => !choice.placeholder && (context.searchDisabledChoices || !choice.disabled));
   }
 
   /**

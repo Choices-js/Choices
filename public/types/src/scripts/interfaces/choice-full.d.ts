@@ -1,4 +1,5 @@
 import { StringUntrusted } from './string-untrusted';
+import { StringPreEscaped } from './string-pre-escaped';
 import { Types } from './types';
 import { GroupFull } from './group-full';
 export interface ChoiceFull {
@@ -8,7 +9,7 @@ export interface ChoiceFull {
     itemEl?: HTMLElement;
     choiceEl?: HTMLElement;
     labelClass?: Array<string>;
-    labelDescription?: string;
+    labelDescription?: StringPreEscaped | StringUntrusted | string;
     customProperties?: Types.CustomProperties;
     disabled: boolean;
     active: boolean;

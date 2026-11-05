@@ -1,6 +1,5 @@
 /* eslint-disable no-new-wrappers */
-import { expect } from 'chai';
-import { stub } from 'sinon';
+import { expect, vi } from 'vitest';
 
 import {
   cloneObject,
@@ -144,7 +143,7 @@ describe('utils', () => {
   describe('dispatchEvent', () => {
     it('dispatches custom event of given type on given element', () => {
       const fakeElement = {
-        dispatchEvent: stub(),
+        dispatchEvent: vi.fn(),
       };
       const eventType = EventType.addItem;
       const customArgs = {
@@ -153,12 +152,14 @@ describe('utils', () => {
 
       dispatchEvent(fakeElement as any, eventType, customArgs);
 
-      expect(fakeElement.dispatchEvent.called).to.equal(true);
-      const event = fakeElement.dispatchEvent.lastCall.args[0];
-      expect(event).to.be.instanceof(CustomEvent);
-      expect(event.bubbles).to.equal(true);
-      expect(event.cancelable).to.equal(true);
-      expect(event.detail).to.equal(customArgs);
+      expect(fakeElement.dispatchEvent).toHaveBeenCalled();
+      expect(fakeElement.dispatchEvent).lastCalledWith(
+        new CustomEvent(eventType, {
+          bubbles: true,
+          cancelable: true,
+          detail: customArgs,
+        }),
+      );
     });
   });
 

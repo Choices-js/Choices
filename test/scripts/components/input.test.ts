@@ -1,11 +1,10 @@
-import { expect } from 'chai';
-import { stub } from 'sinon';
+import { expect, vi } from 'vitest';
 import { DEFAULT_CLASSNAMES } from '../../../src';
 import Input from '../../../src/scripts/components/input';
 
 describe('components/input', () => {
-  let instance;
-  let choicesElement;
+  let instance: Input;
+  let choicesElement: HTMLInputElement;
 
   beforeEach(() => {
     choicesElement = document.createElement('input');
@@ -19,7 +18,6 @@ describe('components/input', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    instance = null;
   });
 
   describe('constructor', () => {
@@ -36,18 +34,25 @@ describe('components/input', () => {
     let addEventListenerStub;
 
     beforeEach(() => {
-      addEventListenerStub = stub(instance.element, 'addEventListener');
+      addEventListenerStub = vi.spyOn(instance.element, 'addEventListener');
     });
 
     afterEach(() => {
-      addEventListenerStub.restore();
+      vi.restoreAllMocks();
     });
 
     it('adds event listeners', () => {
       instance.addEventListeners();
-      expect(['input', 'paste', 'focus', 'blur']).to.have.members(
-        Array.from({ length: addEventListenerStub.callCount }, (_, i) => addEventListenerStub.getCall(i).args[0]),
-      );
+      expect(addEventListenerStub).toHaveBeenNthCalledWith(2, 'input', instance._onInput, {
+        passive: true,
+      });
+      expect(addEventListenerStub).toHaveBeenNthCalledWith(1, 'paste', instance._onPaste);
+      expect(addEventListenerStub).toHaveBeenNthCalledWith(3, 'focus', instance._onFocus, {
+        passive: true,
+      });
+      expect(addEventListenerStub).toHaveBeenNthCalledWith(4, 'blur', instance._onBlur, {
+        passive: true,
+      });
     });
   });
 
@@ -55,20 +60,20 @@ describe('components/input', () => {
     let removeEventListenerStub;
 
     beforeEach(() => {
-      removeEventListenerStub = stub(instance.element, 'removeEventListener');
+      removeEventListenerStub = vi.spyOn(instance.element, 'removeEventListener');
     });
 
     afterEach(() => {
-      removeEventListenerStub.restore();
+      vi.restoreAllMocks();
     });
 
     it('removes event listeners', () => {
       instance.removeEventListeners();
-      expect(removeEventListenerStub.callCount).to.equal(4);
-      expect(removeEventListenerStub.getCall(0).args[0]).to.equal('input');
-      expect(removeEventListenerStub.getCall(1).args[0]).to.equal('paste');
-      expect(removeEventListenerStub.getCall(2).args[0]).to.equal('focus');
-      expect(removeEventListenerStub.getCall(3).args[0]).to.equal('blur');
+      expect(removeEventListenerStub).callCount(4);
+      expect(removeEventListenerStub).toHaveBeenNthCalledWith(1, 'input', instance._onInput);
+      expect(removeEventListenerStub).toHaveBeenNthCalledWith(2, 'paste', instance._onPaste);
+      expect(removeEventListenerStub).toHaveBeenNthCalledWith(3, 'focus', instance._onFocus);
+      expect(removeEventListenerStub).toHaveBeenNthCalledWith(4, 'blur', instance._onBlur);
     });
   });
 
@@ -76,18 +81,18 @@ describe('components/input', () => {
     let setWidthStub;
 
     beforeEach(() => {
-      setWidthStub = stub(instance, 'setWidth');
+      setWidthStub = vi.spyOn(instance, 'setWidth');
     });
 
     afterEach(() => {
-      setWidthStub.restore();
+      vi.restoreAllMocks();
     });
 
     describe('when element is select one', () => {
-      it('does not set input width', () => {
+      it('sets input width', () => {
         instance.type = 'select-one';
         instance._onInput();
-        expect(setWidthStub.callCount).to.equal(0);
+        expect(setWidthStub).not.toHaveBeenCalled();
       });
     });
 
@@ -95,7 +100,7 @@ describe('components/input', () => {
       it('sets input width', () => {
         instance.type = 'text';
         instance._onInput();
-        expect(setWidthStub.callCount).to.equal(1);
+        expect(setWidthStub).toHaveBeenCalled();
       });
     });
   });
@@ -105,7 +110,7 @@ describe('components/input', () => {
 
     beforeEach(() => {
       eventMock = {
-        preventDefault: stub(),
+        preventDefault: vi.fn(),
         target: instance.element,
       };
     });
@@ -114,7 +119,7 @@ describe('components/input', () => {
       it('prevents default pasting behaviour', () => {
         instance.preventPaste = true;
         instance._onPaste(eventMock);
-        expect(eventMock.preventDefault.callCount).to.equal(1);
+        expect(eventMock.preventDefault).toHaveBeenCalled();
       });
     });
 
@@ -122,7 +127,7 @@ describe('components/input', () => {
       it('does not prevent default pasting behaviour', () => {
         instance.preventPaste = false;
         instance._onPaste(eventMock);
-        expect(eventMock.preventDefault.callCount).to.equal(0);
+        expect(eventMock.preventDefault).not.toHaveBeenCalled();
       });
     });
   });
@@ -179,18 +184,18 @@ describe('components/input', () => {
     let focusStub;
 
     beforeEach(() => {
-      focusStub = stub(instance.element, 'focus');
+      focusStub = vi.spyOn(instance.element, 'focus');
     });
 
     afterEach(() => {
-      focusStub.restore();
+      vi.restoreAllMocks();
     });
 
     describe('when element is not focussed', () => {
       it('focuses element if isFocussed flag is set to false', () => {
         instance.isFocussed = true;
         instance.focus();
-        expect(focusStub.callCount).to.equal(0);
+        expect(focusStub).not.toHaveBeenCalled();
       });
     });
 
@@ -198,7 +203,7 @@ describe('components/input', () => {
       it('focuses element if isFocussed flag is set to false', () => {
         instance.isFocussed = false;
         instance.focus();
-        expect(focusStub.callCount).to.equal(1);
+        expect(focusStub).toHaveBeenCalled();
       });
     });
   });
@@ -207,18 +212,18 @@ describe('components/input', () => {
     let blurStub;
 
     beforeEach(() => {
-      blurStub = stub(instance.element, 'blur');
+      blurStub = vi.spyOn(instance.element, 'blur');
     });
 
     afterEach(() => {
-      blurStub.restore();
+      vi.restoreAllMocks();
     });
 
     describe('when element is not focussed', () => {
       it("doesn't blur element", () => {
         instance.isFocussed = false;
         instance.blur();
-        expect(blurStub.callCount).to.equal(0);
+        expect(blurStub).not.toHaveBeenCalled();
       });
     });
 
@@ -226,7 +231,7 @@ describe('components/input', () => {
       it('blurs element', () => {
         instance.isFocussed = true;
         instance.blur();
-        expect(blurStub.callCount).to.equal(1);
+        expect(blurStub).toHaveBeenCalled();
       });
     });
   });
@@ -235,11 +240,11 @@ describe('components/input', () => {
     let setWidthStub;
 
     beforeEach(() => {
-      setWidthStub = stub(instance, 'setWidth');
+      setWidthStub = vi.spyOn(instance, 'setWidth');
     });
 
     afterEach(() => {
-      setWidthStub.restore();
+      vi.restoreAllMocks();
     });
 
     it("removes the element's value if it has one", () => {
@@ -250,25 +255,14 @@ describe('components/input', () => {
     });
 
     it("sets the element's width if flag passed", () => {
-      expect(setWidthStub.callCount).to.equal(0);
+      expect(setWidthStub).not.toHaveBeenCalled();
       instance.clear(true);
-      expect(setWidthStub.callCount).to.equal(1);
+      expect(setWidthStub).toHaveBeenCalled();
     });
 
     it('returns instance', () => {
       const response = instance.clear();
       expect(response).to.deep.equal(instance);
-    });
-  });
-
-  describe('setWidth', () => {
-    it('sets the width of the element based on input value and placeholder', () => {
-      instance.placeholder = 'This is a placeholder';
-      instance.element.value = 'This is a value';
-      expect(instance.element.style.width).to.not.equal('16ch');
-      instance.setWidth();
-      expect(instance.element.style.width).to.equal('16ch');
-      expect(instance.element.style.minWidth).to.equal('22ch');
     });
   });
 

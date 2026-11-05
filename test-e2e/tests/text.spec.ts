@@ -185,13 +185,11 @@ describe(`Choices - text element`, () => {
           await suite.typeTextAndEnter(textInput);
           await suite.expectHiddenDropdown();
         }
-        await suite.typeText(textInput);
-
         expect(await suite.items.count()).toEqual(inputLimit);
-        await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
 
         await suite.typeText(textInput);
-        expect(await suite.items.count()).toEqual(inputLimit);
+        await suite.expectHiddenDropdown();
+        await suite.enterKey();
         await suite.expectVisibleNoticeHtml(`Only ${inputLimit} values can be added`);
       });
     });

@@ -1,6 +1,7 @@
 import { ClassNames } from './interfaces/class-names';
 import { Options } from './interfaces/options';
-import { sortByAlpha } from './lib/utils';
+import { sanitise, sortByAlpha } from './lib/utils';
+import { EventChoice } from './interfaces';
 
 export const DEFAULT_CLASSNAMES: ClassNames = {
   containerOuter: ['choices'],
@@ -28,6 +29,7 @@ export const DEFAULT_CLASSNAMES: ClassNames = {
   selectedState: ['is-selected'],
   flippedState: ['is-flipped'],
   loadingState: ['is-loading'],
+  invalidState: ['is-invalid'],
   notice: ['choices__notice'],
   addChoice: ['choices__item--selectable', 'add-choice'],
   noResults: ['has-no-results'],
@@ -57,6 +59,7 @@ export const DEFAULT_CONFIG: Options = {
   paste: true,
   searchEnabled: true,
   searchChoices: true,
+  searchDisabledChoices: false,
   searchFloor: 1,
   searchResultLimit: 4,
   searchFields: ['label', 'value'],
@@ -72,6 +75,7 @@ export const DEFAULT_CONFIG: Options = {
   prependValue: null,
   appendValue: null,
   renderSelectedChoices: 'auto',
+  searchRenderSelectedChoices: true,
   loadingText: 'Loading...',
   noResultsText: 'No results found',
   noChoicesText: 'No choices to choose from',
@@ -81,7 +85,8 @@ export const DEFAULT_CONFIG: Options = {
   customAddItemText: 'Only values matching specific conditions can be added',
   addItemText: (value: string) => `Press Enter to add <b>"${value}"</b>`,
   removeItemIconText: (): string => `Remove item`,
-  removeItemLabelText: (value: string): string => `Remove item: ${value}`,
+  removeItemLabelText: (value: string, _valueRaw: string, i?: EventChoice): string =>
+    `Remove item: ${i ? sanitise<string>(i.label) : value}`,
   maxItemText: (maxItemCount: number): string => `Only ${maxItemCount} values can be added`,
   valueComparer: (value1: string, value2: string): boolean => value1 === value2,
   fuseOptions: {

@@ -1,11 +1,10 @@
-import { expect } from 'chai';
-import { stub } from 'sinon';
+import { expect, vi } from 'vitest';
 import { DEFAULT_CLASSNAMES } from '../../../src';
 import WrappedElement from '../../../src/scripts/components/wrapped-element';
 import WrappedInput from '../../../src/scripts/components/wrapped-input';
 
 describe('components/wrappedInput', () => {
-  let instance: WrappedInput | null;
+  let instance: WrappedInput;
   let element: HTMLInputElement;
 
   beforeEach(() => {
@@ -18,23 +17,14 @@ describe('components/wrappedInput', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    instance = null;
   });
 
   describe('constructor', () => {
     it('assigns choices element to class', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.element).to.equal(element);
     });
 
     it('assigns classnames to class', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.classNames).to.deep.equal(DEFAULT_CLASSNAMES);
     });
   });
@@ -45,21 +35,17 @@ describe('components/wrappedInput', () => {
     methods.forEach((method) => {
       describe(method, () => {
         beforeEach(() => {
-          stub(WrappedElement.prototype, method as keyof WrappedElement<HTMLInputElement>);
+          WrappedElement.prototype[method] = vi.spyOn(WrappedElement.prototype, method as any);
         });
 
         afterEach(() => {
-          WrappedElement.prototype[method].restore();
+          vi.restoreAllMocks();
         });
 
         it(`calls super.${method}`, () => {
-          expect(instance).to.not.be.null;
-          if (!instance) {
-            return;
-          }
-          expect(WrappedElement.prototype[method].called).to.equal(false);
+          expect(WrappedElement.prototype[method]).not.toHaveBeenCalled();
           instance[method]();
-          expect(WrappedElement.prototype[method].called).to.equal(true);
+          expect(WrappedElement.prototype[method]).toHaveBeenCalled();
         });
       });
     });
@@ -67,10 +53,6 @@ describe('components/wrappedInput', () => {
 
   describe('value setter', () => {
     it('sets the value of the input to the given value', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       const newValue = 'Value 1, Value 2, Value 3';
       expect(instance.element.value).to.equal('');
       instance.value = newValue;

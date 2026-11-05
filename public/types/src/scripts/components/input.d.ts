@@ -24,8 +24,11 @@ export default class Input {
     blur(): void;
     clear(setWidth?: boolean): this;
     /**
-     * Set the correct input width based on placeholder
-     * value or input value
+     * Set the correct input width based on placeholder value or input value.
+     * Renders text into a hidden off-screen span that inherits the input's
+     * CSS classes and measures its pixel width, then converts to `ch` units.
+     * This correctly handles CJK, Hangul, fullwidth forms, emoji, and any
+     * font — no hard-coded code-point ranges required.
      */
     setWidth(): void;
     setActiveDescendant(activeDescendantID: string): void;

@@ -67,8 +67,8 @@ declare class Choices {
     destroy(): void;
     enable(): this;
     disable(): this;
-    highlightItem(item: InputChoice, runEvent?: boolean): this;
-    unhighlightItem(item: InputChoice, runEvent?: boolean): this;
+    highlightItem(item: InputChoice | null, runEvent?: boolean): this;
+    unhighlightItem(item: InputChoice | null, runEvent?: boolean): this;
     highlightAll(): this;
     unhighlightAll(): this;
     removeActiveItemsByValue(value: string): this;
@@ -142,7 +142,7 @@ declare class Choices {
      * }], 'value', 'label', false);
      * ```
      */
-    setChoices(choicesArrayOrFetcher?: (InputChoice | InputGroup)[] | ((instance: Choices) => (InputChoice | InputGroup)[] | Promise<(InputChoice | InputGroup)[]>), value?: string | null, label?: string, replaceChoices?: boolean, clearSearchFlag?: boolean, replaceItems?: boolean): this | Promise<this>;
+    setChoices<T extends (InputChoice | InputGroup)[] | ((instance: Choices) => (InputChoice | InputGroup)[] | Promise<(InputChoice | InputGroup)[]>)>(choicesArrayOrFetcher: T, value?: string | null, label?: string, replaceChoices?: boolean, clearSearchFlag?: boolean, replaceItems?: boolean): T extends (InputChoice | InputGroup)[] ? this : Promise<this>;
     refresh(withEvents?: boolean, selectFirstOption?: boolean, deselectAll?: boolean): this;
     removeChoice(value: string): this;
     clearChoices(clearOptions?: boolean, clearItems?: boolean): this;
@@ -155,6 +155,9 @@ declare class Choices {
     _displayNotice(text: string, type: NoticeType, openDropdown?: boolean): void;
     _clearNotice(): void;
     _renderNotice(fragment?: DocumentFragment): void;
+    /**
+     * @deprecated Use utils.getChoiceForOutput
+     */
     _getChoiceForOutput(choice: ChoiceFull, keyCode?: number): EventChoice;
     _triggerChange(value: any): void;
     _handleButtonAction(element: HTMLElement): void;
@@ -193,6 +196,14 @@ declare class Choices {
     _onFocus({ target }: Pick<FocusEvent, 'target'>): void;
     _onBlur({ target }: Pick<FocusEvent, 'target'>): void;
     _onFormReset(): void;
+    _onChange(event: Event & {
+        target: HTMLInputElement | HTMLSelectElement;
+    }): void;
+    _onInvalid(): void;
+    /**
+     * Removes any highlighted choice options
+     */
+    _removeHighlightedChoices(): void;
     _highlightChoice(el?: HTMLElement | null): void;
     _addItem(item: ChoiceFull, withEvents?: boolean, userTriggered?: boolean): void;
     _removeItem(item: ChoiceFull): void;

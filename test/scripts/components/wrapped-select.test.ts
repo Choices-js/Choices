@@ -1,12 +1,11 @@
-import { expect } from 'chai';
-import { stub, spy } from 'sinon';
+import { expect, vi } from 'vitest';
 import WrappedElement from '../../../src/scripts/components/wrapped-element';
 import WrappedSelect from '../../../src/scripts/components/wrapped-select';
-import Templates from '../../../src/scripts/templates';
 import { DEFAULT_CLASSNAMES } from '../../../src';
+import Templates from '../../../src/scripts/templates';
 
 describe('components/wrappedSelect', () => {
-  let instance: WrappedSelect | null;
+  let instance: WrappedSelect;
   let element: HTMLSelectElement;
 
   beforeEach(() => {
@@ -38,30 +37,21 @@ describe('components/wrappedSelect', () => {
     instance = new WrappedSelect({
       element: document.getElementById('target') as HTMLSelectElement,
       classNames: DEFAULT_CLASSNAMES,
-      template: spy(Templates.option),
+      template: Templates.option,
       extractPlaceholder: true,
     });
   });
 
   afterEach(() => {
     document.body.innerHTML = '';
-    instance = null;
   });
 
   describe('constructor', () => {
     it('assigns choices element to class', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.element).to.equal(element);
     });
 
     it('assigns classnames to class', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.classNames).to.deep.equal(DEFAULT_CLASSNAMES);
     });
   });
@@ -71,22 +61,18 @@ describe('components/wrappedSelect', () => {
 
     methods.forEach((method) => {
       beforeEach(() => {
-        stub(WrappedElement.prototype, method as keyof WrappedElement<HTMLSelectElement>);
+        WrappedElement.prototype[method] = vi.spyOn(WrappedElement.prototype, method as any);
       });
 
       afterEach(() => {
-        WrappedElement.prototype[method].restore();
+        vi.restoreAllMocks();
       });
 
       describe(method, () => {
         it(`calls super.${method}`, () => {
-          expect(instance).to.not.be.null;
-          if (!instance) {
-            return;
-          }
-          expect(WrappedElement.prototype[method].called).to.equal(false);
+          expect(WrappedElement.prototype[method]).not.toHaveBeenCalled();
           instance[method]();
-          expect(WrappedElement.prototype[method].called).to.equal(true);
+          expect(WrappedElement.prototype[method]).toHaveBeenCalled();
         });
       });
     });
@@ -94,10 +80,6 @@ describe('components/wrappedSelect', () => {
 
   describe('placeholderOption getter', () => {
     it('returns option element with empty value attribute', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.placeholderOption).to.be.instanceOf(HTMLOptionElement);
       if (instance.placeholderOption) {
         expect(instance.placeholderOption.value).to.equal('');
@@ -105,10 +87,6 @@ describe('components/wrappedSelect', () => {
     });
 
     it('returns option element with placeholder attribute as fallback', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       expect(instance.element.firstChild).to.not.be.null;
       if (instance.element.firstChild) {
         instance.element.removeChild(instance.element.firstChild);
@@ -123,10 +101,6 @@ describe('components/wrappedSelect', () => {
 
   describe('options getter', () => {
     it('returns all option elements', () => {
-      expect(instance).to.not.be.null;
-      if (!instance) {
-        return;
-      }
       const optionsAsChoices = instance.optionsAsChoices();
       expect(optionsAsChoices).to.be.an('array');
     });

@@ -1,5 +1,5 @@
 import { ClassNames } from '../interfaces/class-names';
-import { PassedElementType } from '../interfaces/passed-element-type';
+import { PassedElementType, PassedElementTypes } from '../interfaces/passed-element-type';
 import { addClassesToElement, removeClassesFromElement } from '../lib/utils';
 
 export default class Dropdown {
@@ -31,7 +31,9 @@ export default class Dropdown {
    */
   show(): this {
     addClassesToElement(this.element, this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'true');
+    if (this.type !== PassedElementTypes.Text) {
+      this.element.setAttribute('aria-expanded', 'true');
+    }
     this.isActive = true;
 
     return this;
@@ -42,7 +44,9 @@ export default class Dropdown {
    */
   hide(): this {
     removeClassesFromElement(this.element, this.classNames.activeState);
-    this.element.setAttribute('aria-expanded', 'false');
+    if (this.type !== PassedElementTypes.Text) {
+      this.element.setAttribute('aria-expanded', 'false');
+    }
     this.isActive = false;
 
     return this;

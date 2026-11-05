@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import { stub } from 'sinon';
+import { expect, Mock, vi } from 'vitest';
 import { DEFAULT_CLASSNAMES } from '../../../src';
 import Container from '../../../src/scripts/components/container';
 
@@ -97,16 +96,16 @@ describe('components/container', () => {
     });
 
     describe('flipping dropdown', () => {
-      let shouldFlipStub;
+      let shouldFlipStub: Mock;
       beforeEach(() => {
-        shouldFlipStub = stub().returns(true);
+        shouldFlipStub = vi.fn().mockImplementation(() => true);
 
         instance.shouldFlip = shouldFlipStub;
         instance.open();
       });
 
       afterEach(() => {
-        instance.shouldFlip.reset();
+        vi.resetAllMocks();
       });
 
       it('adds adds flipped state class', () => {

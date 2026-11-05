@@ -38,7 +38,8 @@ export interface Store {
      */
     get activeChoices(): ChoiceFull[];
     /**
-     * Get choices that can be searched (excluding placeholders)
+     * Get choices that can be searched (excluding placeholders,
+     * optionally excluding disabled based on config)
      */
     get searchableChoices(): ChoiceFull[];
     /**

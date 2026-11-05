@@ -50,6 +50,8 @@ export interface ClassNames {
   flippedState: string | Array<string>;
   /** @default ['is-loading'] */
   loadingState: string | Array<string>;
+  /** @default ['is-invalid'] */
+  invalidState: string | Array<string>;
   /** @default ['choices__notice'] */
   notice: string | Array<string>;
   /** @default ['choices__item--selectable', 'add-choice'] */

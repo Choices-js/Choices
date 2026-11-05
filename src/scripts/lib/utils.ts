@@ -4,6 +4,7 @@ import { StringPreEscaped } from '../interfaces/string-pre-escaped';
 import { ChoiceFull } from '../interfaces/choice-full';
 import { Types } from '../interfaces/types';
 import { canUseDom } from '../interfaces/build-flags';
+import { EventChoice } from '../interfaces';
 
 const getRandomNumber = (min: number, max: number): number => Math.floor(Math.random() * (max - min) + min);
 
@@ -91,10 +92,6 @@ export const strToEl = ((): ((str: string) => Element) => {
   };
 })();
 
-export const resolveNoticeFunction = (fn: Types.NoticeStringFunction | string, value: string): string => {
-  return typeof fn === 'function' ? fn(sanitise(value), value) : fn;
-};
-
 export const resolveStringFunction = (fn: Types.StringFunction | string): string => {
   return typeof fn === 'function' ? fn() : fn;
 };
@@ -131,6 +128,32 @@ export const unwrapStringForEscaped = (s?: StringUntrusted | StringPreEscaped | 
   }
 
   return '';
+};
+
+export const getChoiceForOutput = (choice: ChoiceFull, keyCode?: number): EventChoice => {
+  return {
+    id: choice.id,
+    highlighted: choice.highlighted,
+    labelClass: choice.labelClass,
+    labelDescription: unwrapStringForRaw(choice.labelDescription),
+    customProperties: choice.customProperties,
+    disabled: choice.disabled,
+    active: choice.active,
+    label: choice.label,
+    placeholder: choice.placeholder,
+    value: choice.value,
+    groupValue: choice.group ? choice.group.label : undefined,
+    element: choice.element,
+    keyCode,
+  };
+};
+
+export const resolveNoticeFunction = (
+  fn: Types.NoticeStringFunction | string,
+  value: StringUntrusted | StringPreEscaped | string,
+  item?: EventChoice,
+): string => {
+  return typeof fn === 'function' ? fn(sanitise<string>(value), unwrapStringForRaw(value), item) : fn;
 };
 
 export const escapeForTemplate = (allowHTML: boolean, s: StringUntrusted | StringPreEscaped | string): string =>

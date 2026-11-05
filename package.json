@@ -1,6 +1,6 @@
 {
   "name": "choices.js",
-  "version": "11.1.0",
+  "version": "11.2.4",
   "description": "A vanilla JS customisable text input/select box plugin",
   "main": "./public/assets/scripts/choices.js",
   "module": "./public/assets/scripts/choices.mjs",
@@ -71,7 +71,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jshjohnson/Choices.git"
+    "url": "https://github.com/Choices-js/Choices.git"
   },
   "author": "Josh Johnson",
   "license": "MIT",
@@ -82,9 +82,9 @@
     "src"
   ],
   "bugs": {
-    "url": "https://github.com/jshjohnson/Choices/issues"
+    "url": "https://github.com/Choices-js/Choices/issues"
   },
-  "homepage": "https://github.com/jshjohnson/Choices#readme",
+  "homepage": "https://github.com/Choices-js/Choices#readme",
   "keywords": [
     "customisable",
     "input",
@@ -101,18 +101,15 @@
     "@babel/preset-typescript": "^7.24.7",
     "@playwright/test": "^1.46.0",
     "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/chai": "^4.3.17",
-    "@types/node": "^22.2.0",
-    "@types/sinon": "^17.0.3",
-    "@types/sinon-chai": "^3.2.12",
-    "@vitest/coverage-v8": "^2.0.5",
+    "@types/node": "^22.12.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/spy": "^4.1.10",
     "autoprefixer": "^10.4.20",
-    "bundlesize": "^0.18.2",
+    "bundlesize2": "^0.0.35",
     "chai": "^5.1.1",
     "cross-process-lock": "^2.1.1",
     "csso-cli": "^4.0.2",
@@ -125,26 +122,22 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-sort-class-members": "^1.20.0",
     "eslint-plugin-tree-shaking": "^1.12.2",
-    "husky": "^9.1.4",
     "jsdom": "^24.1.1",
-    "lint-staged": "^15.2.7",
     "nodemon": "^3.1.4",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.41",
     "postcss-cli": "^11.0.0",
     "prettier": "^3.3.3",
     "rollup": "^4.20.0",
-    "rollup-plugin-dev": "^2.0.5",
+    "rollup-plugin-dev": "^2.0.3",
     "sass": "^1.77.8",
-    "sinon": "^18.0.0",
-    "sinon-chai": "^4.0.0",
     "stylelint": "^16.7.0",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-config-standard-scss": "^13.1.0",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.4",
+    "typescript": "5.5.x",
     "typescript-eslint": "^8.0.1",
-    "vitest": "^2.0.5"
+    "vitest": "^4.1.10"
   },
   "dependencies": {
     "fuse.js": "^7.0.0"

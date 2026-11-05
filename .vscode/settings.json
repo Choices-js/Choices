@@ -29,7 +29,6 @@
   // associations for some files this project is using
   "files.associations": {
     ".browserslistrc": "gitignore",
-    ".huskyrc": "jsonc",
     ".npmrc": "ini"
   },
   // We use NPM as package manager
@@ -38,11 +37,6 @@
   "npm.fetchOnlinePackageInfo": true,
   "eslint.packageManager": "npm",
   "json.schemas": [
-    // Husky config file
-    {
-      "fileMatch": [".huskyrc"],
-      "url": "http://json.schemastore.org/huskyrc"
-    },
     // Prettier config
     {
       "fileMatch": [".prettierrc.json"],

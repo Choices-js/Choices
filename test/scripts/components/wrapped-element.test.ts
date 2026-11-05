@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import { getClassNames } from '../../../src/scripts/lib/utils';
 import { DEFAULT_CLASSNAMES, EventMap, EventType } from '../../../src';
 import WrappedElement from '../../../src/scripts/components/wrapped-element';

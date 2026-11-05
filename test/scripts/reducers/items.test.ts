@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import items from '../../../src/scripts/reducers/items';
 import { RemoveItemAction } from '../../../src/scripts/actions/items';
 import { cloneObject } from '../../../src/scripts/lib/utils';

@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import * as actions from '../../../src/scripts/actions/groups';
 import { GroupFull } from '../../../src/scripts/interfaces/group-full';
 import { cloneObject } from '../../../src/scripts/lib/utils';

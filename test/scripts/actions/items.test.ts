@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import * as actions from '../../../src/scripts/actions/items';
 import { cloneObject } from '../../../src/scripts/lib/utils';
 import { ChoiceFull } from '../../../src/scripts/interfaces/choice-full';

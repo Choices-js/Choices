@@ -100,6 +100,14 @@ export default class Container {
     removeClassesFromElement(this.element, this.classNames.focusState);
   }
 
+  addInvalidState(): void {
+    addClassesToElement(this.element, this.classNames.invalidState);
+  }
+
+  removeInvalidState(): void {
+    removeClassesFromElement(this.element, this.classNames.invalidState);
+  }
+
   enable(): void {
     removeClassesFromElement(this.element, this.classNames.disabledState);
     this.element.removeAttribute('aria-disabled');

@@ -7,7 +7,7 @@ export default defineConfig({
     setupFiles: ['./test/setupFiles/window-matchMedia.ts'],
     include: ['test/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
   },
-  esbuild: {
+  oxc: {
     target: 'es2017',
   },
 });

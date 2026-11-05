@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import List from '../../../src/scripts/components/list';
 
 describe('components/list', () => {

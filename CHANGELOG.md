@@ -1,6 +1,57 @@
 # Changelog
 
-## [11.1.0]
+## [11.2.4] (2026-07-)
+
+### Bugfixes
+- Focus input synchronously to open iOS keyboard (Fix [#1373](https://github.com/Choices-js/Choices/issues/1373)) [#1418](https://github.com/Choices-js/Choices/issues/1418)
+- Fix addItemFilter config option regression from v10.2.0 [#1419](https://github.com/Choices-js/Choices/issues/1419)
+- Fix incorrect `aria-expanded` attribute for text backing field (Fix [#1016](https://github.com/Choices-js/Choices/issues/1016)) [#1391](https://github.com/Choices-js/Choices/issues/1391)
+- Fix arrow-key navigation did not start from the selected choice when no choice is currently highlighted [#1400](https://github.com/Choices-js/Choices/pull/1400)
+
+### Maintenance
+- Update unit test framework to vitest v4.1.10
+
+## [11.2.3] (2026-04-30)
+
+### Bugfixes
+- Fix search input width unexpectedly collapses for select-one backing elements (Fix [#1399](https://github.com/Choices-js/Choices/issues/1399)) [#1401](https://github.com/Choices-js/Choices/pull/1401)
+
+## [11.2.2] (2026-04-14)
+
+### Bugfixes
+- Fix maxItemText would cause the dropdown to display if choices.js is created with that many items selected (Fix [#1299](https://github.com/Choices-js/Choices/issues/1299)) @Xon [#1393](https://github.com/Choices-js/Choices/pull/1393)
+- Fix non-fixed width font support when computing width for input element @terminalchai (#1384](https://github.com/Choices-js/Choices/pull/1384)
+- Fix setChoices() could cause the add choice notice to incorrectly render and replaceChoices/clearSearchFlag/replaceItems arguments could be ignored @Xon [#1389](https://github.com/Choices-js/Choices/pull/1389)
+- Fix opening the dropdown could cause the entire page to scroll @Xon [#1388](https://github.com/Choices-js/Choices/pull/1388)
+
+## [11.2.0] (2026-01-05)
+
+### Features
+- Add `searchRenderSelectedChoices` configuration option to control whether selected choices appear in search results for select-multiple inputs. Defaults to `true` (backward compatible behavior). Set to `false` to hide selected choices from search results.
+- Add support for `required` html attribute [#1332](https://github.com/Choices-js/Choices/pull/1332)
+   - Note; This feature requires updating any css targeting the `.choices [hidden]` selector
+- Improve UX on the select dropdown [#1361](https://github.com/Choices-js/Choices/pull/1361)
+- Add `searchDisabledChoices` configuration option to allow disabled choices to appear in search results [#1357](https://github.com/Choices-js/Choices/pull/1357)
+- Add additional SCSS variables [#1304](https://github.com/Choices-js/Choices/pull/1304)
+- Add CSS custom properties support (+ dark mode for the intro page) [#1335](https://github.com/Choices-js/Choices/pull/1335)
+- Soften constraints on remove buttons [#1338](https://github.com/Choices-js/Choices/pull/1338)
+
+### Bugfixes
+- Fix data-label-description from source html was not treated as trusted [#1365](https://github.com/Choices-js/Choices/pull/1365)
+- Fix kmp search not returning results as expected [#1364](https://github.com/Choices-js/Choices/pull/1364)
+- Fix selected choice was not reliably highlighted when opening the dropdown [#1339](https://github.com/Choices-js/Choices/pull/1339)
+- Define `[aria-selected]` for selectable choices per WAI-ARIA 1.2 spec, and avoid triple state with aria-selected [#1330](https://github.com/Choices-js/Choices/pull/1330)
+- Fix `appendGroupInSearch` option was non-functional [#1324](https://github.com/Choices-js/Choices/pull/1324)
+- When resolving the remove item/label/icon, add a 3rd argument item argument. Update default remove item label to use this (Fixes #1296) [#1323](https://github.com/Choices-js/Choices/pull/1323)
+- Fix `searchResultLimit` could not be set to `-1` when `renderChoiceLimit` was set [#1322](https://github.com/Choices-js/Choices/pull/1322)
+- Fix dropdown would stick closed when a search loses focus [#1308](https://github.com/Choices-js/Choices/pull/1308)
+- Fix `searchEnabled` being disabled for `select-multiple` did not work [#1366](https://github.com/Choices-js/Choices/pull/1366)
+
+### Chore
+- Update callback argument documentation
+- Update development dependencies to fix npm install warning
+
+## [11.1.0] (2025-03-14)
 
 ### Features
 - Support `<option>` label attribute [#1289](https://github.com/Choices-js/Choices/pull/1289)

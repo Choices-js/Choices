@@ -73,11 +73,12 @@ export class SearchByKMP<T extends object> implements Searcher<T> {
         const field = this._fields[k];
         if (field in obj && kmpSearch(needle, (obj[field] as string).toLowerCase()) !== -1) {
           results.push({
-            item: obj[field],
+            item: obj,
             score: count,
             rank: count + 1,
           });
           count++;
+          break;
         }
       }
     }
