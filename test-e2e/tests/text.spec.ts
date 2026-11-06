@@ -40,6 +40,17 @@ describe(`Choices - text element`, () => {
       });
     });
 
+    describe('dont render items', () => {
+      const testId = 'dont-render-items';
+      test('adds the value without rendering the item', async ({ page, bundle }) => {
+        const suite = new TextTestSuit(page, bundle, testUrl, testId);
+        await suite.start(textInput);
+
+        await suite.expectedItemCount(0);
+        expect(await suite.getWrappedElement().inputValue()).toEqual(textInput);
+      });
+    });
+
     describe('editing items', () => {
       const testId = 'edit-items';
       describe('on back space', () => {

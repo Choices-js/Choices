@@ -125,6 +125,15 @@ export interface Options {
   maxItemCount: number;
 
   /**
+   * Whether to render items.
+   *
+   * **Input types affected:** text, select-multiple
+   *
+   * @default true
+   */
+  renderItems: boolean;
+
+  /**
    * Control how the dropdown closes after making a selection for select-one or select-multiple
    *
    * 'auto' defaults based on backing-element type:
@@ -526,6 +535,15 @@ export interface Options {
   itemSelectText: string;
 
   /**
+   * The text that is shown when a user hovers over a selected choice (requires `renderSelectedChoices`). Clicking a selected choice deselects it. Set to empty to not show this text.
+   *
+   * **Input types affected:** select-multiple
+   *
+   * @default 'Press to deselect'
+   */
+  itemDeselectText: string;
+
+  /**
    * The text that is shown when a user has focus on the input but has already reached the **max item count** [https://github.com/jshjohnson/Choices#maxitemcount]. To access the max item count, pass a function with a `maxItemCount` argument (see the **default config** [https://github.com/jshjohnson/Choices#setup] for an example), otherwise pass a string.
    *
    * **Input types affected:** text
@@ -619,7 +637,7 @@ export interface Options {
    *       },
    *       choice: (data) => {
    *         return template(`
-   *           <div class="${getClassNames(classNames.item).join(' ')} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable}" data-select-text="${this.config.itemSelectText}" data-choice ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} data-id="${data.id}" data-value="${data.value}" ${data.groupId ? 'role="treeitem"' : 'role="option"'}>
+   *           <div class="${getClassNames(classNames.item).join(' ')} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable}" data-select-text="${this.config.itemSelectText}" data-deselect-text="${this.config.itemDeselectText}" data-choice ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} data-id="${data.id}" data-value="${data.value}" ${data.groupId ? 'role="treeitem"' : 'role="option"'}>
    *             <span>&bigstar;</span> ${data.label}
    *           </div>
    *         `);

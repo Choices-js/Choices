@@ -356,6 +356,15 @@ $choices-placeholder-opacity: 0.5 !default;
       background-color: var(--choices-highlighted-color, #{$choices-highlighted-color});
     }
   }
+  [data-type*="select-multiple"] & .#{$choices-selector}__item--selectable {
+    &.is-selected.is-highlighted[data-deselect-text] {
+      @media (min-width: 640px) {
+        &::after {
+          content: attr(data-deselect-text) !important;
+        }
+      }
+    }
+  }
 }
 
 .#{$choices-selector}__list--dropdown {

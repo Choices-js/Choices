@@ -145,6 +145,7 @@ import "choices.js/public/assets/styles/choices.css";
     choices: [],
     renderChoiceLimit: -1,
     maxItemCount: -1,
+    renderItems: true,
     closeDropdownOnSelect: 'auto',
     singleModeForMultiSelect: false,
     addChoices: false,
@@ -182,6 +183,7 @@ import "choices.js/public/assets/styles/choices.css";
     noResultsText: 'No results found',
     noChoicesText: 'No choices to choose from',
     itemSelectText: 'Press to select',
+    itemDeselectText: 'Press to deselect',
     uniqueItemText: 'Only unique values can be added',
     customAddItemText: 'Only values matching specific conditions can be added',
     addItemText: (value, rawValue) => {
@@ -360,6 +362,14 @@ Pass an array of objects:
 **Input types affected:** `text`, `select-multiple`
 
 **Usage:** The amount of items a user can input/select ("-1" indicates no limit).
+
+### renderItems
+
+**Type:** `Boolean` **Default:** `true`
+
+**Input types affected:** `text`, `select-multiple`
+
+**Usage:** Whether to render items.
 
 ### closeDropdownOnSelect
 
@@ -721,6 +731,14 @@ const example = new Choices(element, {
 
 **Usage:** The text that is shown when a user hovers over a selectable choice. Set to empty to not reserve space for this text.
 
+### itemDeselectText
+
+**Type:** `String` **Default:** `Press to deselect`
+
+**Input types affected:** `select-multiple`
+
+**Usage:** The text that is shown when a user hovers over a selected choice (requires `renderSelectedChoices`). Clicking a selected choice deselects it. Set to empty to not show this text.
+
 ### addItemText
 
 **Type:** `String/Function` **Default:** `Press Enter to add "${value}"` **Arguments:** `value`, `valueRaw`
@@ -895,7 +913,7 @@ const example = new Choices(element, {
         return strToEl(`
           <div class="${getClassNames(classNames.item).join(' ')} ${getClassNames(classNames.itemChoice).join(' ')} ${
           getClassNames(data.disabled ? classNames.itemDisabled : classNames.itemSelectable).join(' ')
-        }" data-select-text="${this.config.itemSelectText}" data-choice ${
+        }" data-select-text="${this.config.itemSelectText}" data-deselect-text="${this.config.itemDeselectText}" data-choice ${
           data.disabled
             ? 'data-choice-disabled aria-disabled="true"'
             : 'data-choice-selectable'

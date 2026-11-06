@@ -400,6 +400,7 @@ describe('templates', () => {
     });
 
     const itemSelectText = 'test 6';
+    const itemDeselectText = 'test 7';
 
     let data;
 
@@ -422,10 +423,11 @@ describe('templates', () => {
             class="${getClassNames(choiceOptions.classNames.item).join(' ')} ${getClassNames(
               choiceOptions.classNames.itemChoice,
             ).join(' ')} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
-            data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
             data-value="${data.value}"
+            data-select-text="${itemSelectText}"
+            data-deselect-text="${itemDeselectText}"
             data-choice-selectable
             aria-selected="false"
             id="${data.elementId}"
@@ -454,10 +456,11 @@ describe('templates', () => {
             class="${getClassNames(choiceOptions.classNames.item).join(' ')} ${getClassNames(
               choiceOptions.classNames.itemChoice,
             ).join(' ')} ${getClassNames(choiceOptions.classNames.itemDisabled).join(' ')}"
-            data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
             data-value="${data.value}"
+            data-select-text="${itemSelectText}"
+            data-deselect-text="${itemDeselectText}"
             data-choice-disabled
             aria-disabled="true"
             id="${data.elementId}"
@@ -488,10 +491,11 @@ describe('templates', () => {
             ).join(
               ' ',
             )} ${choiceOptions.classNames.selectedState} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
-            data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
             data-value="${data.value}"
+            data-select-text="${itemSelectText}"
+            data-deselect-text="${itemDeselectText}"
             data-choice-selectable
             aria-selected="true"
             id="${data.elementId}"
@@ -522,10 +526,11 @@ describe('templates', () => {
             ).join(
               ' ',
             )} ${choiceOptions.classNames.placeholder} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
-            data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
             data-value="${data.value}"
+            data-select-text="${itemSelectText}"
+            data-deselect-text="${itemDeselectText}"
             data-choice-selectable
             aria-selected="false"
             id="${data.elementId}"
@@ -554,10 +559,11 @@ describe('templates', () => {
             class="${getClassNames(choiceOptions.classNames.item).join(' ')} ${getClassNames(
               choiceOptions.classNames.itemChoice,
             ).join(' ')} ${getClassNames(choiceOptions.classNames.itemSelectable).join(' ')}"
-            data-select-text="${itemSelectText}"
             data-choice
             data-id="${data.id}"
             data-value="${data.value}"
+            data-select-text="${itemSelectText}"
+            data-deselect-text="${itemDeselectText}"
             data-group-id="${data.groupId}"
             data-choice-selectable
             aria-selected="false"

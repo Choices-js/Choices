@@ -1101,7 +1101,9 @@ class Choices {
     };
 
     // new items
-    items.forEach(addItemToFragment);
+    if (config.renderItems) {
+      items.forEach(addItemToFragment);
+    }
 
     let addedItems = !!fragment.childNodes.length;
     if (this._isSelectOneElement) {
@@ -1309,6 +1311,11 @@ class Choices {
         this.unhighlightAll();
       });
 
+      this._triggerChange(choice.value);
+    } else if (this.config.renderSelectedChoices && this._isSelectMultipleElement) {
+      this._store.withTxn(() => {
+        this._removeItem(choice);
+      });
       this._triggerChange(choice.value);
     }
 

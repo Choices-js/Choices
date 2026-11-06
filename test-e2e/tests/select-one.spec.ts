@@ -101,6 +101,19 @@ describe(`Choices - select one`, () => {
           await expect(suite.items.last()).not.toHaveText('!--');
         });
 
+        test('does not show deselect text on hover of selected choice', async ({ page, bundle }) => {
+          const suite = new SelectTestSuit(page, bundle, testUrl, testId);
+          await suite.startWithClick();
+
+          const selectedChoice = suite.choices.first();
+          await expect(selectedChoice).toHaveClass(/is-selected/);
+          await selectedChoice.hover();
+          await expect(selectedChoice).toHaveClass(/is-highlighted/);
+
+          const afterContent = await selectedChoice.evaluate((el) => getComputedStyle(el, '::after').content);
+          expect(afterContent).not.toBe('"Press to deselect"');
+        });
+
         test('does not remove selected choice from dropdown list', async ({ page, bundle }) => {
           const suite = new SelectTestSuit(page, bundle, testUrl, testId);
           await suite.startWithClick();
