@@ -38,6 +38,31 @@ describe('choices', () => {
     output = null;
   });
 
+  it('ignores a dropdown choice after its select is disabled', () => {
+    document.body.innerHTML = `
+      <select>
+        <option value="apple">Apple</option>
+        <option value="banana">Banana</option>
+      </select>
+    `;
+    const select = document.querySelector('select')!;
+    instance = new Choices(select, { searchEnabled: false });
+    instance.dropdown.show();
+    const choice = instance.dropdown.element.querySelector<HTMLElement>('[data-value="banana"]')!;
+    const onChange = vi.fn();
+    select.addEventListener('change', onChange);
+
+    select.disabled = true;
+    expect(instance._handleChoiceAction(choice)).to.equal(false);
+    expect(select.value).to.equal('apple');
+    expect(onChange).not.toHaveBeenCalled();
+
+    select.disabled = false;
+    expect(instance._handleChoiceAction(choice)).to.equal(true);
+    expect(select.value).to.equal('banana');
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
   describe('constructor', () => {
     describe('config', () => {
       describe('not passing config options', () => {

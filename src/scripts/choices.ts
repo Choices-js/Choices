@@ -1288,6 +1288,10 @@ class Choices {
   }
 
   _handleChoiceAction(element: HTMLElement): boolean {
+    if (this.passedElement.element.matches(':disabled')) {
+      return false;
+    }
+
     // If we are clicking on an option
     const id = parseDataSetId(element);
     const choice = id && this._store.getChoiceById(id);
