@@ -1979,6 +1979,48 @@ describe('choices', () => {
   });
 
   describe('events', () => {
+    describe('click inside a wrapping label', () => {
+      const dispatchClick = (target: Element): MouseEvent => {
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+        target.dispatchEvent(event);
+
+        return event;
+      };
+
+      ['', 'multiple'].forEach((multiple) => {
+        it(`prevents the label activation for ${multiple ? 'select-multiple' : 'select-one'}`, () => {
+          document.body.innerHTML = `
+          <label>Label <select data-choice ${multiple}><option value="1">One</option></select></label>
+          `;
+
+          instance = new Choices('[data-choice]', { allowHTML: false });
+
+          expect(dispatchClick(instance.containerInner.element).defaultPrevented).to.equal(true);
+        });
+      });
+
+      it('does not prevent the click dispatched on the passed element', () => {
+        document.body.innerHTML = `
+        <label>Label <select data-choice><option value="1">One</option></select></label>
+        `;
+
+        instance = new Choices('[data-choice]', { allowHTML: false });
+
+        expect(dispatchClick(instance.passedElement.element).defaultPrevented).to.equal(false);
+      });
+
+      it('does not prevent clicks without a wrapping label', () => {
+        document.body.innerHTML = `
+        <label for="choices-select">Label</label>
+        <select data-choice id="choices-select"><option value="1">One</option></select>
+        `;
+
+        instance = new Choices('[data-choice]', { allowHTML: false });
+
+        expect(dispatchClick(instance.containerInner.element).defaultPrevented).to.equal(false);
+      });
+    });
+
     describe('search', () => {
       const choices: InputChoice[] = [
         {
