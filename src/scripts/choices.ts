@@ -297,6 +297,7 @@ class Choices {
     this._onTouchMove = this._onTouchMove.bind(this);
     this._onTouchEnd = this._onTouchEnd.bind(this);
     this._onMouseDown = this._onMouseDown.bind(this);
+    this._onOuterClick = this._onOuterClick.bind(this);
     this._onMouseOver = this._onMouseOver.bind(this);
     this._onFormReset = this._onFormReset.bind(this);
     this._onSelectKey = this._onSelectKey.bind(this);
@@ -1533,6 +1534,7 @@ class Choices {
     documentElement.addEventListener('touchend', this._onTouchEnd, true);
     outerElement.addEventListener('keydown', this._onKeyDown, true);
     outerElement.addEventListener('mousedown', this._onMouseDown, true);
+    outerElement.addEventListener('click', this._onOuterClick);
 
     // passive events - doesn't call `preventDefault` or `stopPropagation`
     documentElement.addEventListener('click', this._onClick, { passive: true });
@@ -1594,6 +1596,7 @@ class Choices {
     documentElement.removeEventListener('touchend', this._onTouchEnd, true);
     outerElement.removeEventListener('keydown', this._onKeyDown, true);
     outerElement.removeEventListener('mousedown', this._onMouseDown, true);
+    outerElement.removeEventListener('click', this._onOuterClick);
 
     documentElement.removeEventListener('click', this._onClick);
     documentElement.removeEventListener('touchmove', this._onTouchMove);
@@ -1942,6 +1945,25 @@ class Choices {
       } else if ('choice' in item.dataset) {
         this._handleChoiceAction(item);
       }
+    }
+
+    event.preventDefault();
+  }
+
+  /**
+   * Handles click event for containerOuter.element
+   * When the container sits inside a `<label>`, the label's activation behaviour would focus and click the hidden
+   * passed element after this click, which closes the dropdown again. The click is already handled by `_onClick`.
+   */
+  _onOuterClick(event: MouseEvent): void {
+    const { target } = event;
+    if (
+      target === this.passedElement.element ||
+      !(target instanceof Element) ||
+      target.closest('a[href]') ||
+      !this.containerOuter.element.closest('label')
+    ) {
+      return;
     }
 
     event.preventDefault();
